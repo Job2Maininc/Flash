@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Flash
 
-## Getting Started
+Dating webapp mobile (Tinder × Omegle) : appel vidéo permanent, swipe gauche/droite, matches rappelables.
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router) sur **Vercel**
+- **LiveKit Cloud** pour le WebRTC
+- **Upstash Redis** pour la file d’attente / sessions / matches
+- Auth **invité** (pseudo + cookie signé)
+
+## Setup local
+
+1. Crée un projet [LiveKit Cloud](https://cloud.livekit.io) et copie URL / API Key / Secret.
+2. Crée une base [Upstash Redis](https://console.upstash.com) (REST URL + token).
+3. Copie l’env :
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Renseigne :
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `LIVEKIT_URL`
+- `LIVEKIT_API_KEY`
+- `LIVEKIT_API_SECRET`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `GUEST_COOKIE_SECRET` (chaîne longue aléatoire)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Installe et lance :
 
-## Learn More
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Ouvre `http://localhost:3000` sur **deux navigateurs** (ou téléphone + PC en HTTPS via tunnel) pour tester le pairage.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Pousse le repo et importe-le dans Vercel (framework Next.js).
+2. Ajoute les mêmes variables d’environnement dans **Project → Settings → Environment Variables**.
+3. Deploy. L’URL HTTPS est requise pour caméra/micro.
 
-## Deploy on Vercel
+```bash
+npx vercel
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Parcours de test
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Deux utilisateurs entrent un pseudo → `/browse`.
+2. Ils se retrouvent en appel vidéo.
+3. **✕** (left) → chacun retourne en file / prochain pair.
+4. **♥** des deux côtés → badge match + entrée dans `/matches`.
+5. **Rappeler** recrée une room LiveKit entre les deux.
+
+## Hors scope V1
+
+Comptes email, premium, filtres, chat texte, modération.
