@@ -8,25 +8,35 @@ type Props = {
 
 export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
   return (
-    <div className="pointer-events-auto flex w-full items-center justify-center gap-6 px-6 pb-8 pt-4">
-      <button
-        type="button"
-        disabled={disabled || myVote === "left"}
-        onClick={() => onSwipe("left")}
-        className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/80 bg-black/40 text-2xl text-white backdrop-blur-sm transition enabled:active:scale-95 disabled:opacity-40"
-        aria-label="Passer"
-      >
-        ✕
-      </button>
-      <button
-        type="button"
-        disabled={disabled || myVote === "right"}
-        onClick={() => onSwipe("right")}
-        className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[var(--accent)] text-2xl text-[var(--ink)] transition enabled:active:scale-95 disabled:opacity-40"
-        aria-label="Matcher"
-      >
-        ♥
-      </button>
+    <div className="pointer-events-auto flex w-full items-center justify-center gap-8 px-6 pb-2 pt-3 safe-bottom">
+      <div className="flex flex-col items-center gap-2">
+        <button
+          type="button"
+          disabled={disabled || myVote === "left"}
+          onClick={() => onSwipe("left")}
+          className="flash-btn flex h-14 w-14 items-center justify-center rounded-full border-2 border-white/25 bg-black/50 text-2xl text-white shadow-lg backdrop-blur-md enabled:hover:border-white/50 enabled:hover:bg-black/65 sm:h-16 sm:w-16"
+          aria-label="Passer"
+        >
+          ✕
+        </button>
+        <span className="text-[10px] font-medium uppercase tracking-widest text-white/45">
+          Passer
+        </span>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <button
+          type="button"
+          disabled={disabled || myVote === "right"}
+          onClick={() => onSwipe("right")}
+          className="flash-btn flex h-14 w-14 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[var(--accent)] text-2xl text-[var(--ink)] shadow-[0_0_28px_rgba(232,255,74,0.4)] enabled:hover:brightness-105 sm:h-16 sm:w-16"
+          aria-label="Matcher"
+        >
+          ♥
+        </button>
+        <span className="text-[10px] font-medium uppercase tracking-widest text-[var(--accent)]/70">
+          Like
+        </span>
+      </div>
     </div>
   );
 }

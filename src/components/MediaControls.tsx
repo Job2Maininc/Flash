@@ -4,12 +4,12 @@ import { TrackToggle } from "@livekit/components-react";
 import { Track } from "livekit-client";
 
 const baseBtn =
-  "flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/50 bg-black/40 text-white backdrop-blur-sm transition active:scale-95 disabled:opacity-40 [&_svg]:h-5 [&_svg]:w-5";
+  "flash-btn flash-btn-ghost-dark flex h-11 w-11 items-center justify-center sm:h-12 sm:w-12 [&_svg]:h-5 [&_svg]:w-5";
 
 export function MediaControls() {
   return (
     <div
-      className="pointer-events-auto flex items-center gap-3"
+      className="pointer-events-auto flex items-center gap-2.5"
       onPointerDown={(e) => e.stopPropagation()}
       onPointerMove={(e) => e.stopPropagation()}
     >

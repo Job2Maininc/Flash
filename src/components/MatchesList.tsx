@@ -2,11 +2,23 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FlashLogo } from "@/components/FlashLogo";
+import { Spinner } from "@/components/Spinner";
 import type { MatchEntry } from "@/lib/types";
 
 type Props = {
   initialMatches: MatchEntry[];
 };
+
+function formatMatchDate(ms: number): string {
+  if (!ms) return "";
+  return new Date(ms).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export function MatchesList({ initialMatches }: Props) {
   const router = useRouter();
@@ -34,10 +46,16 @@ export function MatchesList({ initialMatches }: Props) {
 
   if (matches.length === 0) {
     return (
-      <p className="text-[var(--ink-muted)]">
-        Aucun match pour l&apos;instant. Swipe à droite — deux fois — pour en
-        créer.
-      </p>
+      <div className="flash-fade-in flash-card flex flex-col items-center gap-4 px-6 py-10 text-center">
+        <FlashLogo size={48} glow="strong" />
+        <p className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
+          Pas encore de match
+        </p>
+        <p className="max-w-xs text-sm leading-relaxed text-[var(--ink-muted)]">
+          Swipe à droite pendant un appel. Si la personne like aussi, elle
+          apparaîtra ici pour un rappel vidéo.
+        </p>
+      </div>
     );
   }
 
@@ -48,29 +66,31 @@ export function MatchesList({ initialMatches }: Props) {
           {error}
         </p>
       ) : null}
-      <ul className="divide-y divide-[var(--ink)]/15">
+      <ul className="flex flex-col gap-3">
         {matches.map((m) => (
           <li
             key={m.peerId}
-            className="flex items-center justify-between gap-4 py-4"
+            className="flash-card flash-fade-in flex items-center justify-between gap-4 px-4 py-4 transition hover:bg-white/70"
           >
-            <div>
-              <p className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
+            <div className="min-w-0">
+              <p className="truncate font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
                 {m.nickname}
               </p>
               <p className="text-xs text-[var(--ink-muted)]">
-                {m.matchedAt
-                  ? new Date(m.matchedAt).toLocaleString("fr-FR")
-                  : ""}
+                {formatMatchDate(m.matchedAt)}
               </p>
             </div>
             <button
               type="button"
               disabled={loadingId === m.peerId}
               onClick={() => recall(m.peerId)}
-              className="bg-[var(--ink)] px-4 py-2 text-sm text-[var(--paper)] disabled:opacity-50"
+              className="flash-btn flash-btn-primary shrink-0 px-4 py-2.5 text-sm"
             >
-              {loadingId === m.peerId ? "…" : "Rappeler"}
+              {loadingId === m.peerId ? (
+                <Spinner size="sm" className="border-[var(--paper)]/30 border-t-[var(--paper)]" />
+              ) : (
+                "Rappeler"
+              )}
             </button>
           </li>
         ))}

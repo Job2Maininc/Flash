@@ -41,7 +41,7 @@ export function AttachedVideo({ trackRef, className = "", mirror = false }: Prop
         height: "100%",
         objectFit: "contain",
         transform: mirror ? "scaleX(-1)" : undefined,
-        background: "#0c0a08",
+        background: "var(--surface-dark)",
       }}
     />
   );

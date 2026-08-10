@@ -59,7 +59,7 @@ export function SwipeSurface({
 
         {dragging && swipeRight && canSwipeRight ? (
           <div
-            className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 rounded-full border-4 border-[var(--accent)] px-4 py-2 font-[family-name:var(--font-display)] text-2xl text-[var(--accent)]"
+            className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 rounded-full border-4 border-[var(--accent)] bg-black/30 px-5 py-2.5 font-[family-name:var(--font-display)] text-2xl text-[var(--accent)] shadow-[0_0_24px_rgba(232,255,74,0.35)] backdrop-blur-sm"
             style={{ opacity: progress }}
           >
             ♥
@@ -68,7 +68,7 @@ export function SwipeSurface({
 
         {dragging && swipeLeft && canSwipeLeft ? (
           <div
-            className="pointer-events-none absolute left-6 top-1/2 -translate-y-1/2 rounded-full border-4 border-[var(--danger)] px-4 py-2 text-2xl text-[var(--danger)]"
+            className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 rounded-full border-4 border-[var(--danger)] bg-black/30 px-5 py-2.5 text-2xl text-[var(--danger)] backdrop-blur-sm"
             style={{ opacity: progress }}
           >
             ✕

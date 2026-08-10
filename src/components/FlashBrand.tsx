@@ -29,7 +29,7 @@ export function FlashBrand({
 
   if (href) {
     return (
-      <Link href={href} className="inline-flex">
+      <Link href={href} className="inline-flex transition-opacity hover:opacity-90">
         {content}
       </Link>
     );

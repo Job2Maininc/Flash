@@ -24,13 +24,13 @@ export function LocalPreview({
   });
 
   return (
-    <div className={`relative h-full w-full overflow-hidden bg-[var(--ink)] ${className}`}>
+    <div className={`relative h-full w-full overflow-hidden flash-video-bg ${className}`}>
       <video
         ref={videoRef}
         autoPlay
         playsInline
         muted
-        className={`h-full w-full object-contain [transform:scaleX(-1)] ${ready ? "opacity-100" : "opacity-0"}`}
+        className={`h-full w-full object-contain transition-opacity duration-500 [transform:scaleX(-1)] ${ready ? "opacity-100" : "opacity-0"}`}
       />
 
       {!ready ? (

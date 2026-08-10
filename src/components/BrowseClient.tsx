@@ -8,6 +8,8 @@ import { SwipeSurface } from "@/components/SwipeSurface";
 import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
 import { LocalPreview } from "@/components/LocalPreview";
 import { FlashBrand } from "@/components/FlashBrand";
+import { Spinner } from "@/components/Spinner";
+import { StatusPill } from "@/components/StatusPill";
 import { sessionViewChanged } from "@/lib/session-view";
 import {
   mergeSessionUpdate,
@@ -221,7 +223,7 @@ export function BrowseClient() {
 
   return (
     <div className="relative flex min-h-dvh flex-col bg-[var(--ink)] text-white">
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-4">
+      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 safe-top">
         <FlashBrand
           href="/browse"
           glow="strong"
@@ -231,7 +233,7 @@ export function BrowseClient() {
         <Link
           href="/matches"
           onClick={() => leaveBrowse("disconnect")}
-          className="pointer-events-auto text-sm text-white/80 underline-offset-4 hover:underline"
+          className="flash-btn pointer-events-auto rounded-full border border-white/15 bg-black/35 px-3.5 py-1.5 text-sm text-white/85 backdrop-blur-md hover:bg-black/50"
         >
           Matches
         </Link>
@@ -277,42 +279,52 @@ export function BrowseClient() {
             }}
             onError={() => setMediaPrompt(true)}
           >
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/50 px-6 text-center backdrop-blur-[2px]">
-              <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/20 border-t-[var(--accent)]" />
-              <p className="font-[family-name:var(--font-display)] text-2xl text-white">
-                En attente…
-              </p>
-              <p className="max-w-xs text-sm text-white/70">
-                Dès qu&apos;une personne est dispo, l&apos;appel démarre. Reste sur
-                cet écran.
-              </p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-black/55 px-6 text-center backdrop-blur-[3px]">
+              <div className="relative flex items-center justify-center">
+                <div className="absolute h-16 w-16 rounded-full bg-[var(--accent)]/20 flash-pulse-ring" />
+                <Spinner size="lg" />
+              </div>
+              <div className="flash-fade-in space-y-2">
+                <p className="font-[family-name:var(--font-display)] text-2xl text-white">
+                  En attente…
+                </p>
+                <p className="max-w-xs text-sm leading-relaxed text-white/65">
+                  Dès qu&apos;une personne est dispo, l&apos;appel démarre
+                  automatiquement.
+                </p>
+              </div>
             </div>
           </LocalPreview>
         ) : null}
 
         {peerLeftNotice ? (
-          <div className="pointer-events-none absolute left-1/2 top-24 z-30 -translate-x-1/2 rounded-full bg-black/70 px-4 py-2 text-sm backdrop-blur-sm">
-            {peerLeftNotice}
+          <div className="pointer-events-none absolute left-1/2 top-24 z-30 -translate-x-1/2">
+            <StatusPill variant="muted">{peerLeftNotice}</StatusPill>
           </div>
         ) : null}
 
         {session?.state === "matched" ? (
-          <div className="pointer-events-none absolute left-1/2 top-24 z-10 -translate-x-1/2 rounded-full bg-[var(--accent)] px-4 py-1 text-sm text-[var(--ink)]">
-            C&apos;est un match
+          <div className="pointer-events-none absolute left-1/2 top-24 z-10 -translate-x-1/2">
+            <StatusPill variant="accent">C&apos;est un match ♥</StatusPill>
           </div>
         ) : null}
 
         {session?.myVote === "right" && session.state === "active" ? (
-          <div className="pointer-events-none absolute left-1/2 top-24 z-10 -translate-x-1/2 bg-black/50 px-4 py-1 text-sm backdrop-blur-sm">
-            En attente de son like…
+          <div className="pointer-events-none absolute left-1/2 top-24 z-10 -translate-x-1/2">
+            <StatusPill variant="muted">En attente de son like…</StatusPill>
           </div>
         ) : null}
       </main>
 
       {error ? (
-        <p className="absolute bottom-28 left-0 right-0 z-20 px-4 text-center text-sm text-[var(--danger)]">
-          {error}
-        </p>
+        <div className="absolute bottom-36 left-4 right-4 z-20 mx-auto max-w-sm">
+          <p
+            className="flash-fade-in rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/90 px-4 py-2.5 text-center text-sm text-white shadow-lg"
+            role="alert"
+          >
+            {error}
+          </p>
+        </div>
       ) : null}
 
       <div className="absolute inset-x-0 bottom-0 z-20">
@@ -321,9 +333,11 @@ export function BrowseClient() {
           myVote={session?.myVote ?? null}
           onSwipe={onSwipe}
         />
-        <p className="pb-2 text-center text-[10px] text-white/40">
-          Glisse à gauche ou à droite sur l&apos;écran
-        </p>
+        {inCall ? (
+          <p className="pb-3 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-white/35 safe-bottom">
+            Glisse sur l&apos;écran
+          </p>
+        ) : null}
       </div>
     </div>
   );

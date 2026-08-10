@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/Spinner";
 
 export function GuestForm() {
   const router = useRouter();
@@ -31,7 +32,10 @@ export function GuestForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full max-w-sm flex-col gap-4">
+    <form
+      onSubmit={onSubmit}
+      className="flash-fade-in flex w-full max-w-sm flex-col gap-5"
+    >
       <label className="flex flex-col gap-2">
         <span className="font-[family-name:var(--font-display)] text-sm tracking-wide text-[var(--ink-muted)]">
           Ton pseudo
@@ -42,7 +46,7 @@ export function GuestForm() {
           maxLength={24}
           autoComplete="nickname"
           placeholder="ex. Léa"
-          className="rounded-none border-0 border-b-2 border-[var(--ink)] bg-transparent px-0 py-3 text-2xl text-[var(--ink)] outline-none placeholder:text-[var(--ink-faint)] focus:border-[var(--accent)]"
+          className="flash-input px-4 py-3.5 text-xl text-[var(--ink)] placeholder:text-[var(--ink-faint)]"
           required
           minLength={2}
         />
@@ -55,9 +59,16 @@ export function GuestForm() {
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 bg-[var(--ink)] px-6 py-4 font-[family-name:var(--font-display)] text-lg tracking-wide text-[var(--paper)] transition enabled:hover:bg-[var(--accent)] enabled:hover:text-[var(--ink)] disabled:opacity-60"
+        className="flash-btn flash-btn-primary mt-1 px-6 py-4 text-lg tracking-wide"
       >
-        {loading ? "Entrée…" : "Entrer"}
+        {loading ? (
+          <>
+            <Spinner size="sm" className="border-[var(--paper)]/30 border-t-[var(--paper)]" />
+            Entrée…
+          </>
+        ) : (
+          "Entrer"
+        )}
       </button>
     </form>
   );

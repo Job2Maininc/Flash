@@ -25,24 +25,24 @@ export default async function HomePage() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.12] [background-image:repeating-linear-gradient(-12deg,transparent,transparent_12px,#1a1410_12px,#1a1410_13px)]"
+        className="pointer-events-none absolute inset-0 opacity-[0.12] flash-grain"
       />
 
-      <header className="relative z-10 flex items-center justify-between px-5 pt-6">
+      <header className="relative z-10 flex items-center justify-between px-5 safe-top">
         <FlashBrand
           wordmarkClassName="text-3xl text-[var(--ink)]"
           glow="strong"
         />
         <Link
           href="/matches"
-          className="text-sm text-[var(--ink-muted)] underline-offset-4 hover:underline"
+          className="flash-btn rounded-full border border-[var(--ink)]/10 bg-white/35 px-3.5 py-1.5 text-sm text-[var(--ink-muted)] backdrop-blur-sm hover:bg-white/60 hover:text-[var(--ink)]"
         >
           Matches
         </Link>
       </header>
 
-      <main className="relative z-10 flex flex-1 flex-col justify-end gap-8 px-5 pb-12 pt-16 sm:justify-center sm:pb-24">
-        <div className="max-w-md">
+      <main className="relative z-10 flex flex-1 flex-col justify-end gap-8 px-5 pb-12 pt-16 sm:justify-center sm:pb-24 safe-bottom">
+        <div className="max-w-md flash-fade-in">
           <div className="flex items-center gap-4">
             <FlashLogo size={72} glow="strong" />
             <h1 className="font-[family-name:var(--font-display)] text-5xl leading-[1.05] tracking-tight text-[var(--ink)] sm:text-6xl">

@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${display.variable} ${body.variable} h-full`}>
-      <body className="min-h-dvh antialiased">{children}</body>
+      <body className="min-h-dvh overflow-x-hidden antialiased">{children}</body>
     </html>
   );
 }

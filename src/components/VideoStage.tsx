@@ -24,6 +24,8 @@ import "@livekit/components-styles";
 import { AttachedVideo } from "@/components/AttachedVideo";
 import { MediaControls } from "@/components/MediaControls";
 import { LocalPreview } from "@/components/LocalPreview";
+import { Spinner } from "@/components/Spinner";
+import { StatusPill } from "@/components/StatusPill";
 
 const PeerNicknameContext = createContext<string | null>(null);
 
@@ -152,7 +154,7 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
   }, [remoteParticipants.length, onPeerLeft]);
 
   return (
-    <div className="absolute inset-0 h-full w-full bg-[var(--ink)]">
+    <div className="absolute inset-0 h-full w-full flash-video-bg">
       <div className="absolute inset-0 flex h-full w-full items-center justify-center">
         {hasRemoteVideo && remote ? (
           <AttachedVideo trackRef={remote} className="h-full w-full" />
@@ -165,13 +167,19 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
         )}
       </div>
 
+      {/* Top vignette for header legibility */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28 bg-gradient-to-b from-black/55 to-transparent"
+        aria-hidden
+      />
+
       {hasRemoteVideo && hasLocalVideo && local ? (
-        <div className="absolute bottom-28 right-4 z-20 flex h-36 w-28 items-center justify-center overflow-hidden rounded-md border border-white/30 bg-[var(--ink)] shadow-lg">
+        <div className="absolute bottom-28 right-4 z-20 flex h-36 w-28 items-center justify-center overflow-hidden rounded-2xl border border-white/20 bg-[var(--surface-dark)] shadow-[0_8px_32px_rgba(0,0,0,0.45)] sm:bottom-32 sm:h-40 sm:w-32">
           <AttachedVideo trackRef={local} className="h-full w-full" mirror />
         </div>
       ) : localParticipant && !localParticipant.isCameraEnabled ? (
         <div
-          className="absolute bottom-28 right-4 z-20 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-md border border-white/30 bg-black/60 text-white/70 shadow-lg"
+          className="absolute bottom-28 right-4 z-20 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-2xl border border-white/20 bg-black/60 text-white/70 shadow-lg sm:bottom-32 sm:h-40 sm:w-32"
           aria-hidden
         >
           <span className="text-2xl">📷</span>
@@ -180,19 +188,23 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
       ) : null}
 
       {waitingForPeer ? (
-        <div className="absolute left-4 right-4 top-20 z-20 rounded-md bg-black/55 px-4 py-2 text-center text-sm text-white/90 backdrop-blur-sm">
-          {peerNickname} rejoint l&apos;appel…
+        <div className="absolute left-1/2 top-24 z-20 -translate-x-1/2">
+          <StatusPill variant="muted">
+            {peerNickname} rejoint l&apos;appel…
+          </StatusPill>
         </div>
       ) : null}
 
-      <div className="absolute bottom-28 left-4 z-30">
+      <div className="absolute bottom-28 left-4 z-30 safe-bottom sm:bottom-32">
         <MediaControls />
       </div>
 
       {peerNickname && hasRemoteVideo ? (
-        <p className="absolute left-4 top-16 z-20 font-[family-name:var(--font-display)] text-xl text-white drop-shadow">
-          {peerNickname}
-        </p>
+        <div className="absolute left-4 top-16 z-20 sm:top-[4.5rem]">
+          <StatusPill variant="glass" animate={false} className="font-[family-name:var(--font-display)] text-base">
+            {peerNickname}
+          </StatusPill>
+        </div>
       ) : null}
     </div>
   );
@@ -260,7 +272,8 @@ export function VideoStage({
   if (!creds) {
     return (
       <LocalPreview className="absolute inset-0 h-full w-full">
-        <div className="absolute inset-0 flex items-center justify-center bg-black/45 text-white/80 backdrop-blur-[1px]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/50 text-white/85 backdrop-blur-[2px]">
+          <Spinner size="lg" />
           <p className="font-[family-name:var(--font-display)] text-lg">
             Connexion à l&apos;appel…
           </p>
