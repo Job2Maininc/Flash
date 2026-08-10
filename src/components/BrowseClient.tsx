@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { VideoStage } from "@/components/VideoStage";
 import { SwipeControls } from "@/components/SwipeControls";
+import { SwipeSurface } from "@/components/SwipeSurface";
 import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
 import { FlashBrand } from "@/components/FlashBrand";
 import { requestMediaAccess } from "@/lib/media";
@@ -164,11 +165,19 @@ export function BrowseClient() {
         ) : null}
 
         {inCall && roomKey ? (
-          <VideoStage
-            key={roomKey}
-            roomName={roomKey}
-            peerNickname={session?.peerNickname ?? null}
-          />
+          <SwipeSurface
+            enabled={!swiping}
+            canSwipeLeft={session?.myVote !== "left"}
+            canSwipeRight={session?.myVote !== "right"}
+            onSwipeLeft={() => onSwipe("left")}
+            onSwipeRight={() => onSwipe("right")}
+          >
+            <VideoStage
+              key={roomKey}
+              roomName={roomKey}
+              peerNickname={session?.peerNickname ?? null}
+            />
+          </SwipeSurface>
         ) : null}
 
         {!inCall ? (
@@ -209,6 +218,9 @@ export function BrowseClient() {
           myVote={session?.myVote ?? null}
           onSwipe={onSwipe}
         />
+        <p className="pb-2 text-center text-[10px] text-white/40">
+          Glisse à gauche ou à droite sur l&apos;écran
+        </p>
       </div>
     </div>
   );

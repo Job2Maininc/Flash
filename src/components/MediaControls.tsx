@@ -8,7 +8,11 @@ const baseBtn =
 
 export function MediaControls() {
   return (
-    <div className="pointer-events-auto flex items-center gap-3">
+    <div
+      className="pointer-events-auto flex items-center gap-3"
+      onPointerDown={(e) => e.stopPropagation()}
+      onPointerMove={(e) => e.stopPropagation()}
+    >
       <TrackToggle
         source={Track.Source.Microphone}
         showIcon
