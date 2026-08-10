@@ -1,4 +1,4 @@
-import { AccessToken } from "livekit-server-sdk";
+import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
 
 export function getLiveKitUrl(): string {
   const url = process.env.LIVEKIT_URL;
@@ -8,17 +8,45 @@ export function getLiveKitUrl(): string {
   return url;
 }
 
+function getLiveKitHttpHost(): string {
+  return getLiveKitUrl().replace(/^wss:/, "https:").replace(/^ws:/, "http:");
+}
+
+function getLiveKitCredentials(): { apiKey: string; apiSecret: string } {
+  const apiKey = process.env.LIVEKIT_API_KEY;
+  const apiSecret = process.env.LIVEKIT_API_SECRET;
+  if (!apiKey || !apiSecret) {
+    throw new Error("LIVEKIT_API_KEY et LIVEKIT_API_SECRET sont requis");
+  }
+  return { apiKey, apiSecret };
+}
+
+export async function ensureCallRoom(roomName: string): Promise<void> {
+  const { apiKey, apiSecret } = getLiveKitCredentials();
+  const client = new RoomServiceClient(
+    getLiveKitHttpHost(),
+    apiKey,
+    apiSecret,
+  );
+
+  try {
+    await client.createRoom({
+      name: roomName,
+      maxParticipants: 2,
+      emptyTimeout: 120,
+      departureTimeout: 2,
+    });
+  } catch {
+    // Room may already exist if participants joined first.
+  }
+}
+
 export async function createRoomToken(params: {
   identity: string;
   name: string;
   roomName: string;
 }): Promise<string> {
-  const apiKey = process.env.LIVEKIT_API_KEY;
-  const apiSecret = process.env.LIVEKIT_API_SECRET;
-
-  if (!apiKey || !apiSecret) {
-    throw new Error("LIVEKIT_API_KEY et LIVEKIT_API_SECRET sont requis");
-  }
+  const { apiKey, apiSecret } = getLiveKitCredentials();
 
   const at = new AccessToken(apiKey, apiSecret, {
     identity: params.identity,

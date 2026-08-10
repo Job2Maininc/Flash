@@ -17,6 +17,8 @@ import {
 import type { SessionView } from "@/lib/types";
 
 const POLL_MS = 1000;
+const POLL_IN_CALL_MS = 350;
+const REJOIN_MS = 400;
 
 export function BrowseClient() {
   const [session, setSession] = useState<SessionView | null>(null);
@@ -30,27 +32,23 @@ export function BrowseClient() {
   const leftSent = useRef(false);
   const wasInCall = useRef(false);
   const peerLeftHandled = useRef(false);
+  const lastPeerNickname = useRef<string | null>(null);
+  const [forceOutOfCall, setForceOutOfCall] = useState(false);
   const roomKey = session?.roomName ?? null;
+
+  const inCallSession =
+    session?.state === "active" || session?.state === "matched";
+  const inCall = inCallSession && !forceOutOfCall;
+
+  if (session?.peerNickname) {
+    lastPeerNickname.current = session.peerNickname;
+  }
 
   const applySession = useCallback((next: SessionView) => {
     setSession((prev) =>
       sessionViewChanged(prev, next) ? next : prev,
     );
   }, []);
-
-  const refresh = useCallback(async () => {
-    const res = await fetch("/api/session");
-    if (res.status === 401) {
-      window.location.href = "/";
-      return;
-    }
-    const data = (await res.json()) as {
-      session?: SessionView;
-      error?: string;
-    };
-    if (!res.ok) throw new Error(data.error ?? "Erreur session");
-    if (data.session) applySession(data.session);
-  }, [applySession]);
 
   const join = useCallback(async () => {
     if (joining.current) return;
@@ -72,33 +70,63 @@ export function BrowseClient() {
     }
   }, [applySession]);
 
+  const processPeerLeft = useCallback(
+    (nickname?: string | null) => {
+      if (peerLeftHandled.current) return;
+      peerLeftHandled.current = true;
+      setForceOutOfCall(true);
+
+      const label =
+        nickname ?? lastPeerNickname.current ?? "Ton partenaire";
+      setPeerLeftNotice(`${label} a quitté l'appel`);
+
+      fetch("/api/session/peer-left", { method: "POST" })
+        .then(async (res) => {
+          const data = (await res.json()) as { session?: SessionView };
+          if (data.session) applySession(data.session);
+        })
+        .catch(() => undefined);
+
+      window.setTimeout(() => {
+        setPeerLeftNotice(null);
+        setForceOutOfCall(false);
+        peerLeftHandled.current = false;
+        join().catch((err) =>
+          setError(err instanceof Error ? err.message : "Erreur"),
+        );
+      }, REJOIN_MS);
+    },
+    [applySession, join],
+  );
+
+  const refresh = useCallback(async () => {
+    const res = await fetch("/api/session");
+    if (res.status === 401) {
+      window.location.href = "/";
+      return;
+    }
+    const data = (await res.json()) as {
+      session?: SessionView;
+      error?: string;
+    };
+    if (!res.ok) throw new Error(data.error ?? "Erreur session");
+    if (data.session) {
+      if (data.session.peerLeft) {
+        processPeerLeft(data.session.peerNickname);
+      }
+      applySession(data.session);
+    }
+  }, [applySession, processPeerLeft]);
+
+  const handlePeerLeft = useCallback(() => {
+    processPeerLeft(session?.peerNickname);
+  }, [processPeerLeft, session?.peerNickname]);
+
   const leaveBrowse = useCallback((reason = "disconnect") => {
     if (leftSent.current) return;
     leftSent.current = true;
     sendSessionLeave(reason);
   }, []);
-
-  const handlePeerLeft = useCallback(async () => {
-    if (peerLeftHandled.current) return;
-    peerLeftHandled.current = true;
-
-    const nickname = session?.peerNickname ?? "Ton partenaire";
-    setPeerLeftNotice(`${nickname} a quitté l'appel`);
-    try {
-      const res = await fetch("/api/session/peer-left", { method: "POST" });
-      const data = (await res.json()) as { session?: SessionView };
-      if (data.session) applySession(data.session);
-    } catch {
-      // heartbeat/poll will catch up
-    }
-    window.setTimeout(() => {
-      setPeerLeftNotice(null);
-      peerLeftHandled.current = false;
-      join().catch((err) =>
-        setError(err instanceof Error ? err.message : "Erreur"),
-      );
-    }, 1500);
-  }, [session?.peerNickname, applySession, join]);
 
   const handleLocalDisconnect = useCallback(() => {
     leaveBrowse("disconnect");
@@ -106,7 +134,11 @@ export function BrowseClient() {
 
   usePresenceHeartbeat({
     active: true,
+    inCall: inCallSession,
     onSession: (next) => {
+      if (next.peerLeft) {
+        processPeerLeft(next.peerNickname);
+      }
       setSession((prev) => mergeSessionUpdate(prev, next));
     },
   });
@@ -116,11 +148,14 @@ export function BrowseClient() {
   }, [join]);
 
   useEffect(() => {
+    const ms = inCallSession ? POLL_IN_CALL_MS : POLL_MS;
     const id = window.setInterval(() => {
-      refresh().catch(() => undefined);
-    }, POLL_MS);
+      refresh()
+        .then(() => undefined)
+        .catch(() => undefined);
+    }, ms);
     return () => window.clearInterval(id);
-  }, [refresh]);
+  }, [refresh, inCallSession]);
 
   useEffect(() => {
     if (!session || session.state !== "ended") return;
@@ -133,22 +168,17 @@ export function BrowseClient() {
   }, [session, join]);
 
   useEffect(() => {
-    const inCall =
+    const inCallNow =
       session?.state === "active" || session?.state === "matched";
 
-    if (wasInCall.current && !inCall) {
-      if (session?.state === "waiting") {
-        const nickname = session.peerNickname ?? "Ton partenaire";
-        setPeerLeftNotice(`${nickname} a quitté l'appel`);
-        window.setTimeout(() => setPeerLeftNotice(null), 2000);
-        join().catch((err) =>
-          setError(err instanceof Error ? err.message : "Erreur"),
-        );
+    if (wasInCall.current && !inCallNow) {
+      if (session?.state === "waiting" && !peerLeftHandled.current) {
+        processPeerLeft(session.peerNickname);
       }
     }
 
-    wasInCall.current = inCall;
-  }, [session, join]);
+    wasInCall.current = inCallNow;
+  }, [session, processPeerLeft]);
 
   useEffect(() => {
     function onLeave() {
@@ -188,8 +218,6 @@ export function BrowseClient() {
       setSwiping(false);
     }
   }
-
-  const inCall = session?.state === "active" || session?.state === "matched";
 
   return (
     <div className="relative flex min-h-dvh flex-col bg-[var(--ink)] text-white">

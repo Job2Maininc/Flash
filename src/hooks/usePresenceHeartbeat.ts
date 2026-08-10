@@ -3,14 +3,16 @@ import type { SessionView } from "@/lib/types";
 import { sessionViewChanged } from "@/lib/session-view";
 
 const HEARTBEAT_MS = 5000;
+const HEARTBEAT_IN_CALL_MS = 1000;
 const HIDDEN_PAUSE_MS = 30_000;
 
 type Options = {
   active?: boolean;
+  inCall?: boolean;
   onSession?: (session: SessionView) => void;
 };
 
-export function usePresenceHeartbeat({ active = true, onSession }: Options) {
+export function usePresenceHeartbeat({ active = true, inCall = false, onSession }: Options) {
   const onSessionRef = useRef(onSession);
   onSessionRef.current = onSession;
 
@@ -18,6 +20,7 @@ export function usePresenceHeartbeat({ active = true, onSession }: Options) {
     if (!active) return;
 
     let hiddenSince: number | null = null;
+    const intervalMs = inCall ? HEARTBEAT_IN_CALL_MS : HEARTBEAT_MS;
 
     async function ping() {
       if (
@@ -39,7 +42,7 @@ export function usePresenceHeartbeat({ active = true, onSession }: Options) {
       }
     }
 
-    const interval = window.setInterval(ping, HEARTBEAT_MS);
+    const interval = window.setInterval(ping, intervalMs);
     ping();
 
     function onVisibilityChange() {
@@ -56,17 +59,18 @@ export function usePresenceHeartbeat({ active = true, onSession }: Options) {
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [active]);
+  }, [active, inCall]);
 }
 
 export function sendSessionLeave(reason = "disconnect"): void {
-  const url = `/api/session/leave?reason=${encodeURIComponent(reason)}`;
+  const url = new URL("/api/session/leave", window.location.origin);
+  url.searchParams.set("reason", reason);
 
-  if (navigator.sendBeacon?.(url)) {
+  if (navigator.sendBeacon?.(url.toString())) {
     return;
   }
 
-  fetch(url, {
+  fetch(url.toString(), {
     method: "POST",
     credentials: "include",
     keepalive: true,

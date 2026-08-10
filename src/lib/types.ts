@@ -45,4 +45,6 @@ export type SessionView = {
   myVote: SwipeVote;
   peerVote: SwipeVote;
   endReason: SessionEndReason;
+  /** True when the peer just left — consumed once per poll */
+  peerLeft?: boolean;
 };

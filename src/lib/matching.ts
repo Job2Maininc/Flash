@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { getRedis, keys } from "./redis";
+import { ensureCallRoom } from "./livekit";
 import {
   clearPresence,
   isUserStale,
@@ -95,11 +96,36 @@ async function getActiveSessionForUser(userId: string): Promise<Session | null> 
   return session;
 }
 
+async function signalPeerLeft(
+  session: Session,
+  triggeredBy: string | null,
+  reason: SessionEndReason,
+): Promise<void> {
+  const redis = getRedis();
+  const payload = { reason, sessionId: session.id, at: Date.now() };
+  for (const uid of [session.a, session.b]) {
+    if (triggeredBy && uid === triggeredBy) continue;
+    await redis.set(keys.peerSignal(uid), payload, { ex: 30 });
+  }
+}
+
+async function consumePeerSignal(userId: string): Promise<boolean> {
+  const redis = getRedis();
+  const signal = await redis.get<{ reason: SessionEndReason }>(
+    keys.peerSignal(userId),
+  );
+  if (!signal) return false;
+  await redis.del(keys.peerSignal(userId));
+  return true;
+}
+
 async function enrichView(
   session: Session,
   userId: string,
+  peerLeft = false,
 ): Promise<SessionView> {
   const view = toView(session, userId);
+  view.peerLeft = peerLeft;
   if (view.peerId) {
     const peer = await getGuest(view.peerId);
     view.peerNickname = peer?.nickname ?? null;
@@ -120,7 +146,7 @@ async function applyStalePeerCheck(
     return session;
   }
 
-  const ended = await endSession(session, "peer_left", true);
+  const ended = await endSession(session, "peer_left", true, peerId);
   logSessionEnd(ended, userId, "peer_left");
   return ended;
 }
@@ -157,6 +183,7 @@ async function createPairedSession(
   await bindUserSession(userB, session.id);
   await touchPresence(userA);
   await touchPresence(userB);
+  await ensureCallRoom(session.roomName);
   return session;
 }
 
@@ -229,9 +256,11 @@ async function endSession(
   session: Session,
   reason: SessionEndReason,
   requeue: boolean,
+  triggeredBy: string | null = null,
 ): Promise<Session> {
   session.status = "ended";
   session.endReason = reason;
+  await signalPeerLeft(session, triggeredBy, reason);
   await saveSession(session);
   await clearUserSession(session.a);
   await clearUserSession(session.b);
@@ -344,6 +373,11 @@ async function resolveSessionView(
   return enrichView(current, userId);
 }
 
+function withPeerLeft(view: SessionView, peerLeft: boolean): SessionView {
+  if (peerLeft) view.peerLeft = true;
+  return view;
+}
+
 export async function heartbeat(userId: string): Promise<SessionView> {
   await touchPresence(userId);
   return getSessionForUser(userId);
@@ -367,7 +401,7 @@ export async function leaveSessionForUser(
     session &&
     (session.status === "active" || session.status === "matched")
   ) {
-    const ended = await endSession(session, reason, true);
+    const ended = await endSession(session, reason, true, userId);
     logSessionEnd(ended, userId, reason);
     return toView(ended, userId);
   }
@@ -382,7 +416,7 @@ export async function reportPeerLeft(userId: string): Promise<SessionView> {
     return toView(null, userId);
   }
 
-  const ended = await endSession(session, "peer_left", true);
+  const ended = await endSession(session, "peer_left", true, userId);
   logSessionEnd(ended, userId, "peer_left");
   return enrichView(ended, userId);
 }
@@ -419,6 +453,7 @@ export async function joinQueue(userId: string): Promise<SessionView> {
 }
 
 export async function getSessionForUser(userId: string): Promise<SessionView> {
+  const peerLeft = await consumePeerSignal(userId);
   const redis = getRedis();
   const sessionId = await redis.get<string>(keys.userSession(userId));
 
@@ -427,24 +462,24 @@ export async function getSessionForUser(userId: string): Promise<SessionView> {
     if (waiting.includes(userId)) {
       const paired = await tryPair(userId);
       if (paired) {
-        return enrichView(paired, userId);
+        return withPeerLeft(await enrichView(paired, userId), peerLeft);
       }
       const pairedLate = await getActiveSessionForUser(userId);
       if (pairedLate) {
-        return enrichView(pairedLate, userId);
+        return withPeerLeft(await enrichView(pairedLate, userId), peerLeft);
       }
-      return toView(null, userId);
+      return withPeerLeft(toView(null, userId), peerLeft);
     }
-    return toView(null, userId);
+    return withPeerLeft(toView(null, userId), peerLeft);
   }
 
   let session = await getSession(sessionId);
   if (!session) {
     await clearUserSession(userId);
-    return toView(null, userId);
+    return withPeerLeft(toView(null, userId), peerLeft);
   }
 
-  return resolveSessionView(userId, session);
+  return withPeerLeft(await resolveSessionView(userId, session), peerLeft);
 }
 
 export async function swipe(
@@ -469,7 +504,7 @@ export async function swipe(
   }
 
   if (direction === "left") {
-    session = await endSession(session, "left", true);
+    session = await endSession(session, "left", true, userId);
     logSessionEnd(session, userId, "left");
     return toView(session, userId);
   }

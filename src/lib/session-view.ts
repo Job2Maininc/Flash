@@ -13,6 +13,7 @@ export function sessionViewChanged(
     prev.peerNickname !== next.peerNickname ||
     prev.myVote !== next.myVote ||
     prev.peerVote !== next.peerVote ||
-    prev.endReason !== next.endReason
+    prev.endReason !== next.endReason ||
+    prev.peerLeft !== next.peerLeft
   );
 }

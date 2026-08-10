@@ -31,4 +31,5 @@ export const keys = {
   pairLock: "lock:pair",
   lastSeen: (id: string) => `user:${id}:lastSeen`,
   inBrowse: (id: string) => `user:${id}:inBrowse`,
+  peerSignal: (id: string) => `user:${id}:peerSignal`,
 } as const;
