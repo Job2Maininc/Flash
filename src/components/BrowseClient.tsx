@@ -7,6 +7,7 @@ import { SwipeControls } from "@/components/SwipeControls";
 import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
 import { FlashBrand } from "@/components/FlashBrand";
 import { requestMediaAccess } from "@/lib/media";
+import { sessionViewChanged } from "@/lib/session-view";
 import type { SessionView } from "@/lib/types";
 
 const POLL_MS = 1500;
@@ -31,7 +32,11 @@ export function BrowseClient() {
       error?: string;
     };
     if (!res.ok) throw new Error(data.error ?? "Erreur session");
-    if (data.session) setSession(data.session);
+    if (data.session) {
+      setSession((prev) =>
+        sessionViewChanged(prev, data.session!) ? data.session! : prev,
+      );
+    }
   }, []);
 
   const join = useCallback(async () => {
@@ -48,7 +53,11 @@ export function BrowseClient() {
         error?: string;
       };
       if (!res.ok) throw new Error(data.error ?? "File d'attente indisponible");
-      if (data.session) setSession(data.session);
+      if (data.session) {
+        setSession((prev) =>
+          sessionViewChanged(prev, data.session!) ? data.session! : prev,
+        );
+      }
     } finally {
       joining.current = false;
     }
@@ -110,7 +119,11 @@ export function BrowseClient() {
         error?: string;
       };
       if (!res.ok) throw new Error(data.error ?? "Swipe impossible");
-      if (data.session) setSession(data.session);
+      if (data.session) {
+        setSession((prev) =>
+          sessionViewChanged(prev, data.session!) ? data.session! : prev,
+        );
+      }
       if (direction === "left" || data.session?.state === "ended") {
         await join();
       }

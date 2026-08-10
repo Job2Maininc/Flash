@@ -1,33 +1,67 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  createContext,
+  memo,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   LiveKitRoom,
   RoomAudioRenderer,
   VideoTrack,
+  useParticipants,
   useTracks,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import "@livekit/components-styles";
 
-type Props = {
-  roomName: string;
-  peerNickname: string | null;
+const PeerNicknameContext = createContext<string | null>(null);
+
+type RoomShellProps = {
+  token: string;
+  url: string;
 };
 
-function StageInner({ peerNickname }: { peerNickname: string | null }) {
-  const tracks = useTracks(
-    [
-      { source: Track.Source.Camera, withPlaceholder: true },
-      { source: Track.Source.ScreenShare, withPlaceholder: false },
-    ],
+const LiveKitRoomShell = memo(function LiveKitRoomShell({
+  token,
+  url,
+}: RoomShellProps) {
+  return (
+    <LiveKitRoom
+      token={token}
+      serverUrl={url}
+      connect
+      video
+      audio
+      className="absolute inset-0"
+      options={{ disconnectOnPageLeave: true }}
+    >
+      <StageInner />
+      <RoomAudioRenderer />
+    </LiveKitRoom>
+  );
+});
+
+function StageInner() {
+  const peerNickname = useContext(PeerNicknameContext);
+  const participants = useParticipants();
+  const remoteCount = participants.filter((p) => !p.isLocal).length;
+
+  const remoteTracks = useTracks(
+    [{ source: Track.Source.Camera, withPlaceholder: true }],
+    { onlySubscribed: true },
+  );
+  const localTracks = useTracks(
+    [{ source: Track.Source.Camera, withPlaceholder: true }],
     { onlySubscribed: false },
   );
 
-  const remote = tracks.find(
-    (t) => t.participant.isLocal === false && t.source === Track.Source.Camera,
+  const remote = remoteTracks.find(
+    (t) => !t.participant.isLocal && t.source === Track.Source.Camera,
   );
-  const local = tracks.find(
+  const local = localTracks.find(
     (t) => t.participant.isLocal && t.source === Track.Source.Camera,
   );
 
@@ -39,11 +73,19 @@ function StageInner({ peerNickname }: { peerNickname: string | null }) {
           className="h-full w-full object-cover"
         />
       ) : (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-white/80">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center text-white/80">
           <div className="h-10 w-10 animate-pulse rounded-full bg-white/20" />
           <p className="font-[family-name:var(--font-display)] text-lg">
-            Connexion à {peerNickname ?? "ton match"}…
+            {remoteCount === 0
+              ? `En attente de ${peerNickname ?? "ton partenaire"}…`
+              : `Connexion à ${peerNickname ?? "ton partenaire"}…`}
           </p>
+          {remoteCount === 0 ? (
+            <p className="max-w-xs text-sm text-white/50">
+              Tu es connecté. Ton partenaire doit ouvrir Flash sur la même
+              session — ou attends qu&apos;il rejoigne la file.
+            </p>
+          ) : null}
         </div>
       )}
 
@@ -61,11 +103,14 @@ function StageInner({ peerNickname }: { peerNickname: string | null }) {
           {peerNickname}
         </p>
       ) : null}
-
-      <RoomAudioRenderer />
     </div>
   );
 }
+
+type Props = {
+  roomName: string;
+  peerNickname: string | null;
+};
 
 export function VideoStage({ roomName, peerNickname }: Props) {
   const [creds, setCreds] = useState<{ token: string; url: string } | null>(
@@ -123,16 +168,8 @@ export function VideoStage({ roomName, peerNickname }: Props) {
   }
 
   return (
-    <LiveKitRoom
-      token={creds.token}
-      serverUrl={creds.url}
-      connect
-      video
-      audio
-      className="absolute inset-0"
-      onError={(e) => setError(e.message)}
-    >
-      <StageInner peerNickname={peerNickname} />
-    </LiveKitRoom>
+    <PeerNicknameContext.Provider value={peerNickname}>
+      <LiveKitRoomShell token={creds.token} url={creds.url} />
+    </PeerNicknameContext.Provider>
   );
 }
