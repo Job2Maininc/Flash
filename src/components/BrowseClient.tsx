@@ -8,7 +8,6 @@ import { SwipeSurface } from "@/components/SwipeSurface";
 import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
 import { LocalPreview } from "@/components/LocalPreview";
 import { FlashBrand } from "@/components/FlashBrand";
-import { requestMediaAccess } from "@/lib/media";
 import { sessionViewChanged } from "@/lib/session-view";
 import type { SessionView } from "@/lib/types";
 
@@ -20,6 +19,7 @@ export function BrowseClient() {
   const [mediaReady, setMediaReady] = useState(false);
   const [mediaPrompt, setMediaPrompt] = useState(false);
   const [swiping, setSwiping] = useState(false);
+  const [previewSeed, setPreviewSeed] = useState(0);
   const joining = useRef(false);
   const roomKey = session?.roomName ?? null;
 
@@ -66,28 +66,7 @@ export function BrowseClient() {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        await requestMediaAccess();
-        if (!cancelled) {
-          setMediaReady(true);
-          setMediaPrompt(false);
-        }
-      } catch {
-        if (!cancelled) setMediaPrompt(true);
-      }
-      try {
-        await join();
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Erreur");
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    join().catch((err) => setError(err instanceof Error ? err.message : "Erreur"));
   }, [join]);
 
   useEffect(() => {
@@ -155,10 +134,11 @@ export function BrowseClient() {
         </Link>
       </header>
 
-      <main className="relative flex-1">
+      <main className="relative flex-1 min-h-0">
         {!mediaReady && mediaPrompt ? (
           <MediaPermissionPrompt
             onGranted={() => {
+              setPreviewSeed((n) => n + 1);
               setMediaReady(true);
               setMediaPrompt(false);
             }}
@@ -182,7 +162,16 @@ export function BrowseClient() {
         ) : null}
 
         {!inCall ? (
-          <LocalPreview active={mediaReady} className="absolute inset-0">
+          <LocalPreview
+            key={previewSeed}
+            active
+            className="absolute inset-0 h-full w-full"
+            onReady={() => {
+              setMediaReady(true);
+              setMediaPrompt(false);
+            }}
+            onError={() => setMediaPrompt(true)}
+          >
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/50 px-6 text-center backdrop-blur-[2px]">
               <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/20 border-t-[var(--accent)]" />
               <p className="font-[family-name:var(--font-display)] text-2xl text-white">

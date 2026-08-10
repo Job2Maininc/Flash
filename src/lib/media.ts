@@ -1,3 +1,14 @@
+export const PREVIEW_VIDEO_CONSTRAINTS: MediaTrackConstraints = {
+  facingMode: { ideal: "user" },
+  width: { ideal: 1280, max: 1920 },
+  height: { ideal: 720, max: 1080 },
+};
+
+export const PREVIEW_AUDIO_CONSTRAINTS: MediaTrackConstraints = {
+  echoCancellation: true,
+  noiseSuppression: true,
+};
+
 export type MediaAccess = {
   video: boolean;
   audio: boolean;
@@ -31,16 +42,19 @@ export function humanizeMediaError(error: unknown): string {
   return "Impossible d’accéder à la caméra ou au micro.";
 }
 
-/** Progressive fallback: both → video only → audio only */
+/** Opens camera/mic for permission check — prefer LocalPreview stream on browse. */
 export async function requestMediaAccess(): Promise<MediaAccess> {
   if (!navigator.mediaDevices?.getUserMedia) {
     throw new DOMException("HTTPS requis", "SecurityError");
   }
 
   const attempts: MediaStreamConstraints[] = [
-    { video: true, audio: true },
-    { video: true, audio: false },
-    { audio: true, video: false },
+    {
+      video: PREVIEW_VIDEO_CONSTRAINTS,
+      audio: PREVIEW_AUDIO_CONSTRAINTS,
+    },
+    { video: PREVIEW_VIDEO_CONSTRAINTS, audio: false },
+    { audio: PREVIEW_AUDIO_CONSTRAINTS, video: false },
   ];
 
   let lastError: unknown = null;
@@ -59,4 +73,14 @@ export async function requestMediaAccess(): Promise<MediaAccess> {
   }
 
   throw lastError ?? new Error("getUserMedia failed");
+}
+
+export async function playVideoElement(video: HTMLVideoElement): Promise<void> {
+  video.muted = true;
+  video.playsInline = true;
+  try {
+    await video.play();
+  } catch {
+    // iOS may reject until next gesture — ignore
+  }
 }

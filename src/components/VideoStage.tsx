@@ -10,7 +10,6 @@ import {
 import {
   LiveKitRoom,
   RoomAudioRenderer,
-  VideoTrack,
   useLocalParticipant,
   useRemoteParticipants,
   useTracks,
@@ -18,6 +17,7 @@ import {
 import { Track } from "livekit-client";
 import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
+import { AttachedVideo } from "@/components/AttachedVideo";
 import { MediaControls } from "@/components/MediaControls";
 import { LocalPreview } from "@/components/LocalPreview";
 
@@ -39,8 +39,12 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
       connect
       video
       audio
-      className="absolute inset-0"
-      options={{ disconnectOnPageLeave: true }}
+      className="absolute inset-0 h-full w-full"
+      style={{ width: "100%", height: "100%" }}
+      options={{
+        disconnectOnPageLeave: true,
+        videoCaptureDefaults: { facingMode: "user" },
+      }}
     >
       <StageInner />
       <RoomAudioRenderer />
@@ -48,67 +52,64 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
   );
 });
 
+function isCameraTrack(track: TrackReference): boolean {
+  return Boolean(
+    track.source === Track.Source.Camera &&
+      track.publication?.track &&
+      !track.publication.isMuted,
+  );
+}
+
 function StageInner() {
   const peerNickname = useContext(PeerNicknameContext);
   const remoteParticipants = useRemoteParticipants();
   const { localParticipant } = useLocalParticipant();
-  const cameraOn = localParticipant?.isCameraEnabled ?? false;
 
-  const remoteTracks = useTracks(
-    [{ source: Track.Source.Camera, withPlaceholder: true }],
+  const cameraTracks = useTracks(
+    [{ source: Track.Source.Camera, withPlaceholder: false }],
     { onlySubscribed: true },
   );
-  const localTracks = useTracks(
-    [{ source: Track.Source.Camera, withPlaceholder: true }],
-    { onlySubscribed: false },
-  );
 
-  const remote = remoteTracks.find(
-    (t): t is TrackReference =>
-      !t.participant.isLocal &&
-      t.source === Track.Source.Camera &&
-      t.publication !== undefined,
-  );
-  const local = localTracks.find(
-    (t): t is TrackReference =>
-      t.participant.isLocal &&
-      t.source === Track.Source.Camera &&
-      t.publication !== undefined,
-  );
+  const remote = cameraTracks.find(
+    (t) => !t.participant.isLocal && isCameraTrack(t as TrackReference),
+  ) as TrackReference | undefined;
+  const local = cameraTracks.find(
+    (t) => t.participant.isLocal && isCameraTrack(t as TrackReference),
+  ) as TrackReference | undefined;
 
   const hasRemoteVideo = Boolean(remote);
-  const hasLocalVideo = Boolean(local && cameraOn);
+  const hasLocalVideo = Boolean(local);
   const waitingForPeer =
     !hasRemoteVideo && remoteParticipants.length === 0 && peerNickname;
 
   return (
-    <div className="absolute inset-0 bg-[var(--ink)]">
-      {hasRemoteVideo ? (
-        <VideoTrack
-          trackRef={remote}
-          className="h-full w-full object-cover"
-        />
-      ) : hasLocalVideo ? (
-        <VideoTrack
-          trackRef={local}
-          className="h-full w-full object-cover [transform:scaleX(-1)]"
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center text-white/60">
-          <div className="h-10 w-10 animate-pulse rounded-full bg-white/20" />
-        </div>
-      )}
-
-      {hasRemoteVideo && hasLocalVideo ? (
-        <div className="absolute bottom-28 right-4 overflow-hidden rounded-md border border-white/30 shadow-lg">
-          <VideoTrack
-            trackRef={local}
-            className="h-36 w-28 object-cover [transform:scaleX(-1)]"
+    <div className="absolute inset-0 h-full w-full bg-[var(--ink)]">
+      <div className="absolute inset-0 h-full w-full">
+        {hasRemoteVideo && remote ? (
+          <AttachedVideo
+            trackRef={remote}
+            className="h-full w-full"
           />
+        ) : hasLocalVideo && local ? (
+          <AttachedVideo
+            trackRef={local}
+            className="h-full w-full"
+            mirror
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-white/60">
+            <div className="h-10 w-10 animate-pulse rounded-full bg-white/20" />
+          </div>
+        )}
+      </div>
+
+      {hasRemoteVideo && hasLocalVideo && local ? (
+        <div className="absolute bottom-28 right-4 z-20 h-36 w-28 overflow-hidden rounded-md border border-white/30 shadow-lg">
+          <AttachedVideo trackRef={local} className="h-full w-full" mirror />
         </div>
-      ) : localParticipant && !cameraOn ? (
+      ) : localParticipant && !localParticipant.isCameraEnabled ? (
         <div
-          className="absolute bottom-28 right-4 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-md border border-white/30 bg-black/60 text-white/70 shadow-lg"
+          className="absolute bottom-28 right-4 z-20 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-md border border-white/30 bg-black/60 text-white/70 shadow-lg"
           aria-hidden
         >
           <span className="text-2xl">📷</span>
@@ -117,7 +118,7 @@ function StageInner() {
       ) : null}
 
       {waitingForPeer ? (
-        <div className="absolute left-4 right-4 top-20 z-10 rounded-md bg-black/55 px-4 py-2 text-center text-sm text-white/90 backdrop-blur-sm">
+        <div className="absolute left-4 right-4 top-20 z-20 rounded-md bg-black/55 px-4 py-2 text-center text-sm text-white/90 backdrop-blur-sm">
           {peerNickname} rejoint l&apos;appel…
         </div>
       ) : null}
@@ -127,7 +128,7 @@ function StageInner() {
       </div>
 
       {peerNickname && hasRemoteVideo ? (
-        <p className="absolute left-4 top-16 font-[family-name:var(--font-display)] text-xl text-white drop-shadow">
+        <p className="absolute left-4 top-16 z-20 font-[family-name:var(--font-display)] text-xl text-white drop-shadow">
           {peerNickname}
         </p>
       ) : null}
@@ -189,7 +190,7 @@ export function VideoStage({ roomName, peerNickname }: Props) {
 
   if (!creds) {
     return (
-      <LocalPreview className="absolute inset-0">
+      <LocalPreview className="absolute inset-0 h-full w-full">
         <div className="absolute inset-0 flex items-center justify-center bg-black/45 text-white/80 backdrop-blur-[1px]">
           <p className="font-[family-name:var(--font-display)] text-lg">
             Connexion à l&apos;appel…

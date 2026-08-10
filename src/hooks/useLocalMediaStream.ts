@@ -1,11 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import { humanizeMediaError } from "@/lib/media";
+import {
+  humanizeMediaError,
+  playVideoElement,
+  PREVIEW_VIDEO_CONSTRAINTS,
+} from "@/lib/media";
 
-export function useLocalMediaStream(active: boolean) {
+type Options = {
+  onReady?: () => void;
+  onError?: (message: string) => void;
+};
+
+export function useLocalMediaStream(active: boolean, options?: Options) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const onReadyRef = useRef(options?.onReady);
+  const onErrorRef = useRef(options?.onError);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  onReadyRef.current = options?.onReady;
+  onErrorRef.current = options?.onError;
 
   useEffect(() => {
     if (!active) {
@@ -20,15 +34,17 @@ export function useLocalMediaStream(active: boolean) {
 
     let cancelled = false;
 
-    (async () => {
+    async function start() {
       if (!navigator.mediaDevices?.getUserMedia) {
-        setError("HTTPS requis pour la caméra.");
+        const message = "HTTPS requis pour la caméra.";
+        setError(message);
+        onErrorRef.current?.(message);
         return;
       }
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: PREVIEW_VIDEO_CONSTRAINTS,
           audio: false,
         });
         if (cancelled) {
@@ -38,14 +54,21 @@ export function useLocalMediaStream(active: boolean) {
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          await playVideoElement(videoRef.current);
         }
         setReady(true);
+        setError(null);
+        onReadyRef.current?.();
       } catch (err) {
         if (!cancelled) {
-          setError(humanizeMediaError(err));
+          const message = humanizeMediaError(err);
+          setError(message);
+          onErrorRef.current?.(message);
         }
       }
-    })();
+    }
+
+    start();
 
     return () => {
       cancelled = true;
@@ -60,8 +83,23 @@ export function useLocalMediaStream(active: boolean) {
   useEffect(() => {
     if (videoRef.current && streamRef.current) {
       videoRef.current.srcObject = streamRef.current;
+      playVideoElement(videoRef.current);
     }
   }, [ready]);
+
+  useEffect(() => {
+    if (!active) return;
+
+    function onVisible() {
+      if (document.visibilityState !== "visible") return;
+      if (videoRef.current?.srcObject) {
+        playVideoElement(videoRef.current);
+      }
+    }
+
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [active]);
 
   return { videoRef, ready, error };
 }
