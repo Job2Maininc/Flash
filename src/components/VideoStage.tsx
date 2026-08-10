@@ -11,11 +11,13 @@ import {
   LiveKitRoom,
   RoomAudioRenderer,
   VideoTrack,
+  useLocalParticipant,
   useParticipants,
   useTracks,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import "@livekit/components-styles";
+import { MediaControls } from "@/components/MediaControls";
 
 const PeerNicknameContext = createContext<string | null>(null);
 
@@ -47,6 +49,8 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
 function StageInner() {
   const peerNickname = useContext(PeerNicknameContext);
   const participants = useParticipants();
+  const { localParticipant } = useLocalParticipant();
+  const cameraOn = localParticipant?.isCameraEnabled ?? false;
   const remoteCount = participants.filter((p) => !p.isLocal).length;
 
   const remoteTracks = useTracks(
@@ -89,14 +93,26 @@ function StageInner() {
         </div>
       )}
 
-      {local?.publication ? (
+      {local?.publication && cameraOn ? (
         <div className="absolute bottom-28 right-4 overflow-hidden rounded-md border border-white/30 shadow-lg">
           <VideoTrack
             trackRef={local}
             className="h-36 w-28 object-cover"
           />
         </div>
+      ) : localParticipant && !cameraOn ? (
+        <div
+          className="absolute bottom-28 right-4 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-md border border-white/30 bg-black/60 text-white/70 shadow-lg"
+          aria-hidden
+        >
+          <span className="text-2xl">📷</span>
+          <span className="text-[10px] uppercase tracking-wide">off</span>
+        </div>
       ) : null}
+
+      <div className="absolute bottom-28 left-4 z-30">
+        <MediaControls />
+      </div>
 
       {peerNickname ? (
         <p className="absolute left-4 top-16 font-[family-name:var(--font-display)] text-xl text-white drop-shadow">
