@@ -30,7 +30,7 @@ export function LocalPreview({
         autoPlay
         playsInline
         muted
-        className={`h-full w-full object-cover [transform:scaleX(-1)] ${ready ? "opacity-100" : "opacity-0"}`}
+        className={`h-full w-full object-contain [transform:scaleX(-1)] ${ready ? "opacity-100" : "opacity-0"}`}
       />
 
       {!ready ? (

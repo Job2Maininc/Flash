@@ -39,7 +39,7 @@ export function AttachedVideo({ trackRef, className = "", mirror = false }: Prop
       style={{
         width: "100%",
         height: "100%",
-        objectFit: "cover",
+        objectFit: "contain",
         transform: mirror ? "scaleX(-1)" : undefined,
         background: "#0c0a08",
       }}

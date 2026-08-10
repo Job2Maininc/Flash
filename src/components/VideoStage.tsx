@@ -153,7 +153,7 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
 
   return (
     <div className="absolute inset-0 h-full w-full bg-[var(--ink)]">
-      <div className="absolute inset-0 h-full w-full">
+      <div className="absolute inset-0 flex h-full w-full items-center justify-center">
         {hasRemoteVideo && remote ? (
           <AttachedVideo trackRef={remote} className="h-full w-full" />
         ) : hasLocalVideo && local ? (
@@ -166,7 +166,7 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
       </div>
 
       {hasRemoteVideo && hasLocalVideo && local ? (
-        <div className="absolute bottom-28 right-4 z-20 h-36 w-28 overflow-hidden rounded-md border border-white/30 shadow-lg">
+        <div className="absolute bottom-28 right-4 z-20 flex h-36 w-28 items-center justify-center overflow-hidden rounded-md border border-white/30 bg-[var(--ink)] shadow-lg">
           <AttachedVideo trackRef={local} className="h-full w-full" mirror />
         </div>
       ) : localParticipant && !localParticipant.isCameraEnabled ? (
