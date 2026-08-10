@@ -6,6 +6,7 @@ import { VideoStage } from "@/components/VideoStage";
 import { SwipeControls } from "@/components/SwipeControls";
 import { SwipeSurface } from "@/components/SwipeSurface";
 import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
+import { LocalPreview } from "@/components/LocalPreview";
 import { FlashBrand } from "@/components/FlashBrand";
 import { requestMediaAccess } from "@/lib/media";
 import { sessionViewChanged } from "@/lib/session-view";
@@ -181,16 +182,18 @@ export function BrowseClient() {
         ) : null}
 
         {!inCall ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[radial-gradient(ellipse_at_top,_#2a2218_0%,_#0c0a08_55%)] px-6 text-center">
-            <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/20 border-t-[var(--accent)]" />
-            <p className="font-[family-name:var(--font-display)] text-2xl">
-              En attente…
-            </p>
-            <p className="max-w-xs text-sm text-white/60">
-              Dès qu&apos;une personne est dispo, l&apos;appel démarre. Reste sur
-              cet écran.
-            </p>
-          </div>
+          <LocalPreview active={mediaReady} className="absolute inset-0">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/50 px-6 text-center backdrop-blur-[2px]">
+              <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/20 border-t-[var(--accent)]" />
+              <p className="font-[family-name:var(--font-display)] text-2xl text-white">
+                En attente…
+              </p>
+              <p className="max-w-xs text-sm text-white/70">
+                Dès qu&apos;une personne est dispo, l&apos;appel démarre. Reste sur
+                cet écran.
+              </p>
+            </div>
+          </LocalPreview>
         ) : null}
 
         {session?.state === "matched" ? (

@@ -19,6 +19,7 @@ import { Track } from "livekit-client";
 import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
 import { MediaControls } from "@/components/MediaControls";
+import { LocalPreview } from "@/components/LocalPreview";
 
 const PeerNicknameContext = createContext<string | null>(null);
 
@@ -188,9 +189,13 @@ export function VideoStage({ roomName, peerNickname }: Props) {
 
   if (!creds) {
     return (
-      <div className="absolute inset-0 flex items-center justify-center bg-[var(--ink)] text-white/70">
-        Préparation de l&apos;appel…
-      </div>
+      <LocalPreview className="absolute inset-0">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/45 text-white/80 backdrop-blur-[1px]">
+          <p className="font-[family-name:var(--font-display)] text-lg">
+            Connexion à l&apos;appel…
+          </p>
+        </div>
+      </LocalPreview>
     );
   }
 
