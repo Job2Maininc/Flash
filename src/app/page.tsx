@@ -2,6 +2,8 @@ import Link from "next/link";
 import { GuestForm } from "@/components/GuestForm";
 import { FlashBrand } from "@/components/FlashBrand";
 import { FlashLogo } from "@/components/FlashLogo";
+import { AmbientOrbs } from "@/components/AmbientOrbs";
+import { FeatureChips } from "@/components/FeatureChips";
 import { getGuestFromCookie } from "@/lib/guest";
 import { redirect } from "next/navigation";
 
@@ -23,6 +25,7 @@ export default async function HomePage() {
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,_#ffe08a_0%,_transparent_45%),radial-gradient(ellipse_at_100%_80%,_#ffb4a2_0%,_transparent_40%),linear-gradient(160deg,_#f3ebe0_0%,_#e8dcc8_100%)]"
       />
+      <AmbientOrbs variant="warm" />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.12] flash-grain"
@@ -53,6 +56,7 @@ export default async function HomePage() {
             Appel vidéo en continu. Swipe pour le suivant — droite pour matcher
             et rappeler plus tard.
           </p>
+          <FeatureChips />
         </div>
         <GuestForm />
       </main>

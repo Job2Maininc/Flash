@@ -2,14 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { VideoStage } from "@/components/VideoStage";
 import { SwipeControls } from "@/components/SwipeControls";
 import { SwipeSurface } from "@/components/SwipeSurface";
 import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
 import { LocalPreview } from "@/components/LocalPreview";
 import { FlashBrand } from "@/components/FlashBrand";
+import { AmbientOrbs } from "@/components/AmbientOrbs";
+import { MatchCelebration } from "@/components/MatchCelebration";
 import { Spinner } from "@/components/Spinner";
 import { StatusPill } from "@/components/StatusPill";
+import { hapticSuccess } from "@/lib/haptics";
 import { sessionViewChanged } from "@/lib/session-view";
 import {
   mergeSessionUpdate,
@@ -23,6 +27,7 @@ const POLL_IN_CALL_MS = 350;
 const REJOIN_MS = 400;
 
 export function BrowseClient() {
+  const searchParams = useSearchParams();
   const [session, setSession] = useState<SessionView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [mediaReady, setMediaReady] = useState(false);
@@ -36,6 +41,10 @@ export function BrowseClient() {
   const peerLeftHandled = useRef(false);
   const lastPeerNickname = useRef<string | null>(null);
   const [forceOutOfCall, setForceOutOfCall] = useState(false);
+  const [showMatchCelebration, setShowMatchCelebration] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+  const [recallNotice, setRecallNotice] = useState<string | null>(null);
+  const prevSessionState = useRef<SessionView["state"] | null>(null);
   const roomKey = session?.roomName ?? null;
 
   const inCallSession =
@@ -134,6 +143,35 @@ export function BrowseClient() {
     leaveBrowse("disconnect");
   }, [leaveBrowse]);
 
+  useEffect(() => {
+    if (searchParams.get("recall") === "1") {
+      setRecallNotice("Rappel en cours — connexion à l'appel…");
+      window.history.replaceState({}, "", "/browse");
+      const t = window.setTimeout(() => setRecallNotice(null), 3500);
+      return () => window.clearTimeout(t);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (
+      session?.state === "matched" &&
+      prevSessionState.current !== "matched"
+    ) {
+      hapticSuccess();
+      setShowMatchCelebration(true);
+    }
+    prevSessionState.current = session?.state ?? null;
+  }, [session?.state]);
+
+  useEffect(() => {
+    if (inCall && roomKey) {
+      setConnecting(true);
+      const t = window.setTimeout(() => setConnecting(false), 900);
+      return () => window.clearTimeout(t);
+    }
+    setConnecting(false);
+  }, [inCall, roomKey]);
+
   usePresenceHeartbeat({
     active: true,
     inCall: inCallSession,
@@ -223,6 +261,15 @@ export function BrowseClient() {
 
   return (
     <div className="relative flex min-h-dvh flex-col bg-[var(--ink)] text-white">
+      <AmbientOrbs variant="dark" />
+
+      {showMatchCelebration ? (
+        <MatchCelebration
+          peerNickname={session?.peerNickname ?? null}
+          onComplete={() => setShowMatchCelebration(false)}
+        />
+      ) : null}
+
       <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 safe-top">
         <FlashBrand
           href="/browse"
@@ -251,25 +298,39 @@ export function BrowseClient() {
         ) : null}
 
         {inCall && roomKey ? (
-          <SwipeSurface
-            enabled={!swiping}
-            canSwipeLeft={session?.myVote !== "left"}
-            canSwipeRight={session?.myVote !== "right"}
-            onSwipeLeft={() => onSwipe("left")}
-            onSwipeRight={() => onSwipe("right")}
-          >
-            <VideoStage
-              key={roomKey}
-              roomName={roomKey}
-              peerNickname={session?.peerNickname ?? null}
-              onPeerLeft={handlePeerLeft}
-              onDisconnected={handleLocalDisconnect}
-            />
-          </SwipeSurface>
+          <div className="absolute inset-0 h-full w-full flash-view-in">
+            <SwipeSurface
+              enabled={!swiping}
+              canSwipeLeft={session?.myVote !== "left"}
+              canSwipeRight={session?.myVote !== "right"}
+              onSwipeLeft={() => onSwipe("left")}
+              onSwipeRight={() => onSwipe("right")}
+            >
+              <VideoStage
+                key={roomKey}
+                roomName={roomKey}
+                peerNickname={session?.peerNickname ?? null}
+                onPeerLeft={handlePeerLeft}
+                onDisconnected={handleLocalDisconnect}
+              />
+            </SwipeSurface>
+
+            {connecting ? (
+              <div className="pointer-events-none absolute inset-x-6 top-[4.5rem] z-30 safe-top">
+                <div className="overflow-hidden rounded-full bg-white/10">
+                  <div className="h-1 w-full rounded-full bg-[var(--accent)] flash-connect-bar" />
+                </div>
+                <p className="mt-2 text-center text-xs font-medium uppercase tracking-widest text-white/45">
+                  Connexion…
+                </p>
+              </div>
+            ) : null}
+          </div>
         ) : null}
 
         {!inCall ? (
-          <LocalPreview
+          <div className="absolute inset-0 h-full w-full flash-view-in">
+            <LocalPreview
             key={previewSeed}
             active
             className="absolute inset-0 h-full w-full"
@@ -295,6 +356,13 @@ export function BrowseClient() {
               </div>
             </div>
           </LocalPreview>
+          </div>
+        ) : null}
+
+        {recallNotice ? (
+          <div className="pointer-events-none absolute left-1/2 top-24 z-30 -translate-x-1/2">
+            <StatusPill variant="accent">{recallNotice}</StatusPill>
+          </div>
         ) : null}
 
         {peerLeftNotice ? (
@@ -303,7 +371,7 @@ export function BrowseClient() {
           </div>
         ) : null}
 
-        {session?.state === "matched" ? (
+        {session?.state === "matched" && !showMatchCelebration ? (
           <div className="pointer-events-none absolute left-1/2 top-24 z-10 -translate-x-1/2">
             <StatusPill variant="accent">C&apos;est un match ♥</StatusPill>
           </div>

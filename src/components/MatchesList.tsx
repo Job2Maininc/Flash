@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FlashLogo } from "@/components/FlashLogo";
 import { Spinner } from "@/components/Spinner";
+import { AmbientOrbs } from "@/components/AmbientOrbs";
 import type { MatchEntry } from "@/lib/types";
 
 type Props = {
@@ -46,15 +47,18 @@ export function MatchesList({ initialMatches }: Props) {
 
   if (matches.length === 0) {
     return (
-      <div className="flash-fade-in flash-card flex flex-col items-center gap-4 px-6 py-10 text-center">
-        <FlashLogo size={48} glow="strong" />
-        <p className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
-          Pas encore de match
-        </p>
-        <p className="max-w-xs text-sm leading-relaxed text-[var(--ink-muted)]">
-          Swipe à droite pendant un appel. Si la personne like aussi, elle
-          apparaîtra ici pour un rappel vidéo.
-        </p>
+      <div className="relative overflow-hidden">
+        <AmbientOrbs variant="warm" className="opacity-60" />
+        <div className="flash-fade-in flash-card relative flex flex-col items-center gap-4 px-6 py-10 text-center">
+          <FlashLogo size={48} glow="strong" />
+          <p className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
+            Pas encore de match
+          </p>
+          <p className="max-w-xs text-sm leading-relaxed text-[var(--ink-muted)]">
+            Swipe à droite pendant un appel. Si la personne like aussi, elle
+            apparaîtra ici pour un rappel vidéo.
+          </p>
+        </div>
       </div>
     );
   }
@@ -67,10 +71,11 @@ export function MatchesList({ initialMatches }: Props) {
         </p>
       ) : null}
       <ul className="flex flex-col gap-3">
-        {matches.map((m) => (
+        {matches.map((m, i) => (
           <li
             key={m.peerId}
             className="flash-card flash-fade-in flex items-center justify-between gap-4 px-4 py-4 transition hover:bg-white/70"
+            style={{ animationDelay: `${i * 0.06}s` }}
           >
             <div className="min-w-0">
               <p className="truncate font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">

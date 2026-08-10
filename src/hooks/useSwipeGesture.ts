@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { hapticTap } from "@/lib/haptics";
 
 type Options = {
   enabled?: boolean;
@@ -65,8 +66,10 @@ export function useSwipeGesture({
 
       if (axis.current === "x") {
         if (dx >= threshold) {
+          hapticTap();
           onSwipeRight();
         } else if (dx <= -threshold) {
+          hapticTap();
           onSwipeLeft();
         }
       }

@@ -37,8 +37,11 @@ export function GuestForm() {
       className="flash-fade-in flex w-full max-w-sm flex-col gap-5"
     >
       <label className="flex flex-col gap-2">
-        <span className="font-[family-name:var(--font-display)] text-sm tracking-wide text-[var(--ink-muted)]">
-          Ton pseudo
+        <span className="flex items-center justify-between font-[family-name:var(--font-display)] text-sm tracking-wide text-[var(--ink-muted)]">
+          <span>Ton pseudo</span>
+          <span className="text-xs tabular-nums text-[var(--ink-faint)]">
+            {nickname.length}/24
+          </span>
         </span>
         <input
           value={nickname}
