@@ -163,7 +163,7 @@ export function BrowseClient() {
           />
         ) : null}
 
-        {inCall && roomKey && mediaReady ? (
+        {inCall && roomKey ? (
           <VideoStage
             key={roomKey}
             roomName={roomKey}
@@ -205,7 +205,7 @@ export function BrowseClient() {
 
       <div className="absolute inset-x-0 bottom-0 z-20">
         <SwipeControls
-          disabled={!inCall || swiping || !mediaReady}
+          disabled={!inCall || swiping}
           myVote={session?.myVote ?? null}
           onSwipe={onSwipe}
         />

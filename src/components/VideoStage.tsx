@@ -12,10 +12,11 @@ import {
   RoomAudioRenderer,
   VideoTrack,
   useLocalParticipant,
-  useParticipants,
+  useRemoteParticipants,
   useTracks,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
+import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
 import { MediaControls } from "@/components/MediaControls";
 
@@ -48,10 +49,9 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
 
 function StageInner() {
   const peerNickname = useContext(PeerNicknameContext);
-  const participants = useParticipants();
+  const remoteParticipants = useRemoteParticipants();
   const { localParticipant } = useLocalParticipant();
   const cameraOn = localParticipant?.isCameraEnabled ?? false;
-  const remoteCount = participants.filter((p) => !p.isLocal).length;
 
   const remoteTracks = useTracks(
     [{ source: Track.Source.Camera, withPlaceholder: true }],
@@ -63,41 +63,46 @@ function StageInner() {
   );
 
   const remote = remoteTracks.find(
-    (t) => !t.participant.isLocal && t.source === Track.Source.Camera,
+    (t): t is TrackReference =>
+      !t.participant.isLocal &&
+      t.source === Track.Source.Camera &&
+      t.publication !== undefined,
   );
   const local = localTracks.find(
-    (t) => t.participant.isLocal && t.source === Track.Source.Camera,
+    (t): t is TrackReference =>
+      t.participant.isLocal &&
+      t.source === Track.Source.Camera &&
+      t.publication !== undefined,
   );
+
+  const hasRemoteVideo = Boolean(remote);
+  const hasLocalVideo = Boolean(local && cameraOn);
+  const waitingForPeer =
+    !hasRemoteVideo && remoteParticipants.length === 0 && peerNickname;
 
   return (
     <div className="absolute inset-0 bg-[var(--ink)]">
-      {remote?.publication ? (
+      {hasRemoteVideo ? (
         <VideoTrack
           trackRef={remote}
           className="h-full w-full object-cover"
         />
+      ) : hasLocalVideo ? (
+        <VideoTrack
+          trackRef={local}
+          className="h-full w-full object-cover [transform:scaleX(-1)]"
+        />
       ) : (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center text-white/80">
+        <div className="flex h-full w-full items-center justify-center text-white/60">
           <div className="h-10 w-10 animate-pulse rounded-full bg-white/20" />
-          <p className="font-[family-name:var(--font-display)] text-lg">
-            {remoteCount === 0
-              ? `En attente de ${peerNickname ?? "ton partenaire"}…`
-              : `Connexion à ${peerNickname ?? "ton partenaire"}…`}
-          </p>
-          {remoteCount === 0 ? (
-            <p className="max-w-xs text-sm text-white/50">
-              Tu es connecté. Ton partenaire doit ouvrir Flash sur la même
-              session — ou attends qu&apos;il rejoigne la file.
-            </p>
-          ) : null}
         </div>
       )}
 
-      {local?.publication && cameraOn ? (
+      {hasRemoteVideo && hasLocalVideo ? (
         <div className="absolute bottom-28 right-4 overflow-hidden rounded-md border border-white/30 shadow-lg">
           <VideoTrack
             trackRef={local}
-            className="h-36 w-28 object-cover"
+            className="h-36 w-28 object-cover [transform:scaleX(-1)]"
           />
         </div>
       ) : localParticipant && !cameraOn ? (
@@ -110,11 +115,17 @@ function StageInner() {
         </div>
       ) : null}
 
+      {waitingForPeer ? (
+        <div className="absolute left-4 right-4 top-20 z-10 rounded-md bg-black/55 px-4 py-2 text-center text-sm text-white/90 backdrop-blur-sm">
+          {peerNickname} rejoint l&apos;appel…
+        </div>
+      ) : null}
+
       <div className="absolute bottom-28 left-4 z-30">
         <MediaControls />
       </div>
 
-      {peerNickname ? (
+      {peerNickname && hasRemoteVideo ? (
         <p className="absolute left-4 top-16 font-[family-name:var(--font-display)] text-xl text-white drop-shadow">
           {peerNickname}
         </p>

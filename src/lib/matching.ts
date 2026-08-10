@@ -59,6 +59,33 @@ async function bindUserSession(
   await redis.set(keys.userSession(userId), sessionId, { ex: SESSION_TTL_SEC });
 }
 
+async function getActiveSessionForUser(userId: string): Promise<Session | null> {
+  const redis = getRedis();
+  const sessionId = await redis.get<string>(keys.userSession(userId));
+  if (!sessionId) return null;
+
+  const session = await getSession(sessionId);
+  if (
+    !session ||
+    (session.status !== "active" && session.status !== "matched")
+  ) {
+    return null;
+  }
+  return session;
+}
+
+async function enrichView(
+  session: Session,
+  userId: string,
+): Promise<SessionView> {
+  const view = toView(session, userId);
+  if (view.peerId) {
+    const peer = await getGuest(view.peerId);
+    view.peerNickname = peer?.nickname ?? null;
+  }
+  return view;
+}
+
 async function createPairedSession(
   userA: string,
   userB: string,
@@ -84,13 +111,31 @@ async function createPairedSession(
 
 async function tryPair(userId: string): Promise<Session | null> {
   const redis = getRedis();
+
+  const alreadyPaired = await getActiveSessionForUser(userId);
+  if (alreadyPaired) {
+    await removeFromQueue(userId);
+    return alreadyPaired;
+  }
+
   const locked = await redis.set(keys.pairLock, userId, { nx: true, px: 3000 });
   if (locked !== "OK") {
+    const pairedWhileWaiting = await getActiveSessionForUser(userId);
+    if (pairedWhileWaiting) {
+      await removeFromQueue(userId);
+      return pairedWhileWaiting;
+    }
     await enqueue(userId);
     return null;
   }
 
   try {
+    const pairedAfterLock = await getActiveSessionForUser(userId);
+    if (pairedAfterLock) {
+      await removeFromQueue(userId);
+      return pairedAfterLock;
+    }
+
     await removeFromQueue(userId);
 
     // Drain self / stale ids until a real peer appears
@@ -235,22 +280,23 @@ export async function joinQueue(userId: string): Promise<SessionView> {
     if (session) {
       session = await applyRightTimeout(session);
       if (session.status === "active" || session.status === "matched") {
-        const view = toView(session, userId);
-        const peer = await getGuest(view.peerId!);
-        return { ...view, peerNickname: peer?.nickname ?? null };
+        return enrichView(session, userId);
       }
     }
   }
 
   await clearUserSession(userId);
   const paired = await tryPair(userId);
-  if (!paired) {
-    return toView(null, userId);
+  if (paired) {
+    return enrichView(paired, userId);
   }
 
-  const view = toView(paired, userId);
-  const peer = await getGuest(view.peerId!);
-  return { ...view, peerNickname: peer?.nickname ?? null };
+  const pairedLate = await getActiveSessionForUser(userId);
+  if (pairedLate) {
+    return enrichView(pairedLate, userId);
+  }
+
+  return toView(null, userId);
 }
 
 export async function getSessionForUser(userId: string): Promise<SessionView> {
@@ -264,9 +310,11 @@ export async function getSessionForUser(userId: string): Promise<SessionView> {
       // Attempt pair opportunistically while polling
       const paired = await tryPair(userId);
       if (paired) {
-        const view = toView(paired, userId);
-        const peer = await getGuest(view.peerId!);
-        return { ...view, peerNickname: peer?.nickname ?? null };
+        return enrichView(paired, userId);
+      }
+      const pairedLate = await getActiveSessionForUser(userId);
+      if (pairedLate) {
+        return enrichView(pairedLate, userId);
       }
       return toView(null, userId);
     }
@@ -280,12 +328,7 @@ export async function getSessionForUser(userId: string): Promise<SessionView> {
   }
 
   session = await applyRightTimeout(session);
-  const view = toView(session, userId);
-  if (view.peerId) {
-    const peer = await getGuest(view.peerId);
-    view.peerNickname = peer?.nickname ?? null;
-  }
-  return view;
+  return enrichView(session, userId);
 }
 
 export async function swipe(
@@ -328,12 +371,7 @@ export async function swipe(
     session = await applyRightTimeout(session);
   }
 
-  const view = toView(session, userId);
-  if (view.peerId) {
-    const peer = await getGuest(view.peerId);
-    view.peerNickname = peer?.nickname ?? null;
-  }
-  return view;
+  return enrichView(session, userId);
 }
 
 export async function listMatches(userId: string): Promise<MatchEntry[]> {
@@ -393,9 +431,7 @@ export async function recall(
   session.voteB = "right";
   await saveSession(session);
 
-  const view = toView(session, userId);
-  const peer = await getGuest(peerId);
-  return { ...view, peerNickname: peer?.nickname ?? null };
+  return enrichView(session, userId);
 }
 
 export type { SwipeVote };
