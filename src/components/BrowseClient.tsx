@@ -16,7 +16,7 @@ import {
 } from "@/hooks/usePresenceHeartbeat";
 import type { SessionView } from "@/lib/types";
 
-const POLL_MS = 1500;
+const POLL_MS = 1000;
 
 export function BrowseClient() {
   const [session, setSession] = useState<SessionView | null>(null);
@@ -28,6 +28,8 @@ export function BrowseClient() {
   const [previewSeed, setPreviewSeed] = useState(0);
   const joining = useRef(false);
   const leftSent = useRef(false);
+  const wasInCall = useRef(false);
+  const peerLeftHandled = useRef(false);
   const roomKey = session?.roomName ?? null;
 
   const applySession = useCallback((next: SessionView) => {
@@ -77,6 +79,9 @@ export function BrowseClient() {
   }, []);
 
   const handlePeerLeft = useCallback(async () => {
+    if (peerLeftHandled.current) return;
+    peerLeftHandled.current = true;
+
     const nickname = session?.peerNickname ?? "Ton partenaire";
     setPeerLeftNotice(`${nickname} a quitté l'appel`);
     try {
@@ -88,6 +93,7 @@ export function BrowseClient() {
     }
     window.setTimeout(() => {
       setPeerLeftNotice(null);
+      peerLeftHandled.current = false;
       join().catch((err) =>
         setError(err instanceof Error ? err.message : "Erreur"),
       );
@@ -127,13 +133,33 @@ export function BrowseClient() {
   }, [session, join]);
 
   useEffect(() => {
-    function onPageHide() {
+    const inCall =
+      session?.state === "active" || session?.state === "matched";
+
+    if (wasInCall.current && !inCall) {
+      if (session?.state === "waiting") {
+        const nickname = session.peerNickname ?? "Ton partenaire";
+        setPeerLeftNotice(`${nickname} a quitté l'appel`);
+        window.setTimeout(() => setPeerLeftNotice(null), 2000);
+        join().catch((err) =>
+          setError(err instanceof Error ? err.message : "Erreur"),
+        );
+      }
+    }
+
+    wasInCall.current = inCall;
+  }, [session, join]);
+
+  useEffect(() => {
+    function onLeave() {
       leaveBrowse("disconnect");
     }
 
-    window.addEventListener("pagehide", onPageHide);
+    window.addEventListener("pagehide", onLeave);
+    window.addEventListener("beforeunload", onLeave);
     return () => {
-      window.removeEventListener("pagehide", onPageHide);
+      window.removeEventListener("pagehide", onLeave);
+      window.removeEventListener("beforeunload", onLeave);
       leaveBrowse("disconnect");
     };
   }, [leaveBrowse]);

@@ -11,23 +11,32 @@ const VALID_REASONS: SessionEndReason[] = [
   "disconnect",
 ];
 
+function parseReason(request: Request, bodyReason?: string): SessionEndReason {
+  const url = new URL(request.url);
+  const queryReason = url.searchParams.get("reason");
+  const candidate = bodyReason ?? queryReason;
+  if (candidate && VALID_REASONS.includes(candidate as SessionEndReason)) {
+    return candidate as SessionEndReason;
+  }
+  return "disconnect";
+}
+
 export async function POST(request: Request) {
   try {
     const guest = await requireGuest();
-    let reason: SessionEndReason = "disconnect";
+    let bodyReason: string | undefined;
 
     try {
-      const body = (await request.json()) as { reason?: string };
-      if (
-        body.reason &&
-        VALID_REASONS.includes(body.reason as SessionEndReason)
-      ) {
-        reason = body.reason as SessionEndReason;
+      const text = await request.text();
+      if (text) {
+        const body = JSON.parse(text) as { reason?: string };
+        bodyReason = body.reason;
       }
     } catch {
-      // sendBeacon may send empty body
+      // sendBeacon often sends an empty body
     }
 
+    const reason = parseReason(request, bodyReason);
     const session = await leaveSessionForUser(guest.id, reason);
     return NextResponse.json({ session });
   } catch (error) {

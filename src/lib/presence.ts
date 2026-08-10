@@ -1,7 +1,7 @@
 import { getRedis, keys } from "./redis";
 
-export const PRESENCE_TTL_SEC = 90;
-export const STALE_PEER_MS = 45_000;
+export const PRESENCE_TTL_SEC = 45;
+export const STALE_PEER_MS = 15_000;
 
 export async function touchPresence(userId: string): Promise<void> {
   const redis = getRedis();

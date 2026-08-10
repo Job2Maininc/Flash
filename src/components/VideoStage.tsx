@@ -14,8 +14,11 @@ import {
   useLocalParticipant,
   useRemoteParticipants,
   useTracks,
+  useRoomContext,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
+import type { RemoteParticipant } from "livekit-client";
+import { RoomEvent } from "livekit-client";
 import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
 import { AttachedVideo } from "@/components/AttachedVideo";
@@ -52,11 +55,39 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
       }}
       onDisconnected={() => onDisconnected?.()}
     >
+      <PeerDisconnectListener onPeerLeft={onPeerLeft} />
       <StageInner onPeerLeft={onPeerLeft} />
       <RoomAudioRenderer />
     </LiveKitRoom>
   );
 });
+
+function PeerDisconnectListener({
+  onPeerLeft,
+}: {
+  onPeerLeft?: () => void;
+}) {
+  const room = useRoomContext();
+  const handled = useRef(false);
+
+  useEffect(() => {
+    if (!room) return;
+    handled.current = false;
+
+    const onParticipantDisconnected = (participant: RemoteParticipant) => {
+      if (participant.isLocal || handled.current) return;
+      handled.current = true;
+      onPeerLeft?.();
+    };
+
+    room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
+    return () => {
+      room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
+    };
+  }, [room, onPeerLeft]);
+
+  return null;
+}
 
 function isCameraTrack(track: TrackReference): boolean {
   return Boolean(

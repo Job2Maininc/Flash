@@ -355,10 +355,10 @@ export async function leaveSessionForUser(
 ): Promise<SessionView> {
   const redis = getRedis();
   await removeFromQueue(userId);
+  await clearPresence(userId);
 
   const sessionId = await redis.get<string>(keys.userSession(userId));
   if (!sessionId) {
-    await clearPresence(userId);
     return toView(null, userId);
   }
 
@@ -373,7 +373,6 @@ export async function leaveSessionForUser(
   }
 
   await clearUserSession(userId);
-  await clearPresence(userId);
   return toView(session, userId);
 }
 

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import type { SessionView } from "@/lib/types";
 import { sessionViewChanged } from "@/lib/session-view";
 
-const HEARTBEAT_MS = 9000;
+const HEARTBEAT_MS = 5000;
 const HIDDEN_PAUSE_MS = 30_000;
 
 type Options = {
@@ -60,19 +60,15 @@ export function usePresenceHeartbeat({ active = true, onSession }: Options) {
 }
 
 export function sendSessionLeave(reason = "disconnect"): void {
-  const body = JSON.stringify({ reason });
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon(
-      "/api/session/leave",
-      new Blob([body], { type: "application/json" }),
-    );
+  const url = `/api/session/leave?reason=${encodeURIComponent(reason)}`;
+
+  if (navigator.sendBeacon?.(url)) {
     return;
   }
 
-  fetch("/api/session/leave", {
+  fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body,
+    credentials: "include",
     keepalive: true,
   }).catch(() => undefined);
 }
