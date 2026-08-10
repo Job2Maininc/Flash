@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { VideoStage } from "@/components/VideoStage";
 import { SwipeControls } from "@/components/SwipeControls";
+import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
+import { requestMediaAccess } from "@/lib/media";
 import type { SessionView } from "@/lib/types";
 
 const POLL_MS = 1500;
@@ -11,7 +13,8 @@ const POLL_MS = 1500;
 export function BrowseClient() {
   const [session, setSession] = useState<SessionView | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [mediaError, setMediaError] = useState<string | null>(null);
+  const [mediaReady, setMediaReady] = useState(false);
+  const [mediaPrompt, setMediaPrompt] = useState(false);
   const [swiping, setSwiping] = useState(false);
   const joining = useRef(false);
   const roomKey = session?.roomName ?? null;
@@ -54,13 +57,13 @@ export function BrowseClient() {
     let cancelled = false;
     (async () => {
       try {
-        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      } catch {
+        await requestMediaAccess();
         if (!cancelled) {
-          setMediaError(
-            "Autorise la caméra et le micro (HTTPS requis) pour continuer.",
-          );
+          setMediaReady(true);
+          setMediaPrompt(false);
         }
+      } catch {
+        if (!cancelled) setMediaPrompt(true);
       }
       try {
         await join();
@@ -134,13 +137,16 @@ export function BrowseClient() {
       </header>
 
       <main className="relative flex-1">
-        {mediaError ? (
-          <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
-            <p>{mediaError}</p>
-          </div>
+        {!mediaReady && mediaPrompt ? (
+          <MediaPermissionPrompt
+            onGranted={() => {
+              setMediaReady(true);
+              setMediaPrompt(false);
+            }}
+          />
         ) : null}
 
-        {!mediaError && inCall && roomKey ? (
+        {inCall && roomKey && mediaReady ? (
           <VideoStage
             key={roomKey}
             roomName={roomKey}
@@ -148,7 +154,7 @@ export function BrowseClient() {
           />
         ) : null}
 
-        {!mediaError && !inCall ? (
+        {!inCall ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[radial-gradient(ellipse_at_top,_#2a2218_0%,_#0c0a08_55%)] px-6 text-center">
             <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/20 border-t-[var(--accent)]" />
             <p className="font-[family-name:var(--font-display)] text-2xl">
@@ -182,7 +188,7 @@ export function BrowseClient() {
 
       <div className="absolute inset-x-0 bottom-0 z-20">
         <SwipeControls
-          disabled={!inCall || swiping || Boolean(mediaError)}
+          disabled={!inCall || swiping || !mediaReady}
           myVote={session?.myVote ?? null}
           onSwipe={onSwipe}
         />
