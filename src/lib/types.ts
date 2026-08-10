@@ -2,6 +2,14 @@ export type SwipeVote = "left" | "right" | null;
 
 export type SessionStatus = "pairing" | "active" | "matched" | "ended";
 
+export type SessionEndReason =
+  | "left"
+  | "timeout"
+  | "recall"
+  | "peer_left"
+  | "disconnect"
+  | null;
+
 export type Guest = {
   id: string;
   nickname: string;
@@ -19,7 +27,7 @@ export type Session = {
   createdAt: number;
   /** Timestamp of first "right" vote — used for 30s mutual-match timeout */
   rightStartedAt: number | null;
-  endReason: "left" | "timeout" | "recall" | null;
+  endReason: SessionEndReason;
 };
 
 export type MatchEntry = {
@@ -36,5 +44,5 @@ export type SessionView = {
   peerNickname: string | null;
   myVote: SwipeVote;
   peerVote: SwipeVote;
-  endReason: Session["endReason"];
+  endReason: SessionEndReason;
 };

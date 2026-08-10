@@ -47,6 +47,15 @@ Ouvre `http://localhost:3000` sur **deux navigateurs** (ou téléphone + PC en H
 npx vercel
 ```
 
+### Webhook LiveKit (présence / déconnexion rapide)
+
+Dans [LiveKit Cloud](https://cloud.livekit.io) → **Settings → Webhooks**, ajoute :
+
+- **URL** : `https://<ton-domaine-vercel>/api/livekit/webhook`
+- La signature utilise `LIVEKIT_API_KEY` + `LIVEKIT_API_SECRET` (pas de variable supplémentaire).
+
+Événements utiles : `participant_left`, `room_finished`.
+
 ## Parcours de test
 
 1. Deux utilisateurs entrent un pseudo → `/browse`.
@@ -54,6 +63,19 @@ npx vercel
 3. **✕** (left) → chacun retourne en file / prochain pair.
 4. **♥** des deux côtés → badge match + entrée dans `/matches`.
 5. **Rappeler** recrée une room LiveKit entre les deux.
+
+### Checklist fiabilité présence (2 téléphones + preview Vercel)
+
+| # | Scénario | Résultat attendu |
+|---|----------|------------------|
+| 1 | Pair → vidéo + audio → un peer ferme l'app | Survivant retourne en file en &lt;5 s |
+| 2 | Swipe left | Les deux retournent en file, pas de re-match immédiat |
+| 3 | Match mutual ♥ → peer quitte | Survivant pas bloqué, retour file |
+| 4 | Recall depuis `/matches` | Les deux rejoignent la même room |
+| 5 | Onglet background ~2 min | Pas de faux leave ; vrai leave si app tuée |
+| 6 | PC sans webcam | Audio seul, pas d'écran noir infini pour le peer |
+
+Mécanismes : heartbeat `/api/presence` (9 s), `sendBeacon` sur fermeture, stale peer (~45 s), LiveKit `onDisconnected` + webhook.
 
 ## Hors scope V1
 

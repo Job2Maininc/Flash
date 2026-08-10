@@ -5,6 +5,7 @@ import {
   memo,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import {
@@ -26,11 +27,15 @@ const PeerNicknameContext = createContext<string | null>(null);
 type RoomShellProps = {
   token: string;
   url: string;
+  onPeerLeft?: () => void;
+  onDisconnected?: () => void;
 };
 
 const LiveKitRoomShell = memo(function LiveKitRoomShell({
   token,
   url,
+  onPeerLeft,
+  onDisconnected,
 }: RoomShellProps) {
   return (
     <LiveKitRoom
@@ -45,8 +50,9 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
         disconnectOnPageLeave: true,
         videoCaptureDefaults: { facingMode: "user" },
       }}
+      onDisconnected={() => onDisconnected?.()}
     >
-      <StageInner />
+      <StageInner onPeerLeft={onPeerLeft} />
       <RoomAudioRenderer />
     </LiveKitRoom>
   );
@@ -60,10 +66,12 @@ function isCameraTrack(track: TrackReference): boolean {
   );
 }
 
-function StageInner() {
+function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
   const peerNickname = useContext(PeerNicknameContext);
   const remoteParticipants = useRemoteParticipants();
   const { localParticipant } = useLocalParticipant();
+  const prevRemoteCount = useRef(0);
+  const peerLeftHandled = useRef(false);
 
   const cameraTracks = useTracks(
     [{ source: Track.Source.Camera, withPlaceholder: false }],
@@ -82,20 +90,29 @@ function StageInner() {
   const waitingForPeer =
     !hasRemoteVideo && remoteParticipants.length === 0 && peerNickname;
 
+  useEffect(() => {
+    const count = remoteParticipants.length;
+    if (
+      prevRemoteCount.current > 0 &&
+      count === 0 &&
+      !peerLeftHandled.current
+    ) {
+      peerLeftHandled.current = true;
+      onPeerLeft?.();
+    }
+    if (count > 0) {
+      peerLeftHandled.current = false;
+    }
+    prevRemoteCount.current = count;
+  }, [remoteParticipants.length, onPeerLeft]);
+
   return (
     <div className="absolute inset-0 h-full w-full bg-[var(--ink)]">
       <div className="absolute inset-0 h-full w-full">
         {hasRemoteVideo && remote ? (
-          <AttachedVideo
-            trackRef={remote}
-            className="h-full w-full"
-          />
+          <AttachedVideo trackRef={remote} className="h-full w-full" />
         ) : hasLocalVideo && local ? (
-          <AttachedVideo
-            trackRef={local}
-            className="h-full w-full"
-            mirror
-          />
+          <AttachedVideo trackRef={local} className="h-full w-full" mirror />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-white/60">
             <div className="h-10 w-10 animate-pulse rounded-full bg-white/20" />
@@ -139,9 +156,16 @@ function StageInner() {
 type Props = {
   roomName: string;
   peerNickname: string | null;
+  onPeerLeft?: () => void;
+  onDisconnected?: () => void;
 };
 
-export function VideoStage({ roomName, peerNickname }: Props) {
+export function VideoStage({
+  roomName,
+  peerNickname,
+  onPeerLeft,
+  onDisconnected,
+}: Props) {
   const [creds, setCreds] = useState<{ token: string; url: string } | null>(
     null,
   );
@@ -202,7 +226,12 @@ export function VideoStage({ roomName, peerNickname }: Props) {
 
   return (
     <PeerNicknameContext.Provider value={peerNickname}>
-      <LiveKitRoomShell token={creds.token} url={creds.url} />
+      <LiveKitRoomShell
+        token={creds.token}
+        url={creds.url}
+        onPeerLeft={onPeerLeft}
+        onDisconnected={onDisconnected}
+      />
     </PeerNicknameContext.Provider>
   );
 }

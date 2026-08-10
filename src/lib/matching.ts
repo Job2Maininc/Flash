@@ -1,9 +1,15 @@
 import { randomUUID } from "crypto";
 import { getRedis, keys } from "./redis";
+import {
+  clearPresence,
+  isUserStale,
+  touchPresence,
+} from "./presence";
 import type {
   Guest,
   MatchEntry,
   Session,
+  SessionEndReason,
   SessionView,
   SwipeVote,
 } from "./types";
@@ -18,6 +24,21 @@ function isA(session: Session, userId: string): boolean {
 
 function peerIdOf(session: Session, userId: string): string {
   return isA(session, userId) ? session.b : session.a;
+}
+
+function logSessionEnd(
+  session: Session,
+  triggeredBy: string,
+  reason: SessionEndReason,
+): void {
+  console.info("[flash] session ended", {
+    sessionId: session.id,
+    roomName: session.roomName,
+    triggeredBy,
+    reason,
+    a: session.a,
+    b: session.b,
+  });
 }
 
 async function saveSession(session: Session): Promise<void> {
@@ -86,6 +107,34 @@ async function enrichView(
   return view;
 }
 
+async function applyStalePeerCheck(
+  session: Session,
+  userId: string,
+): Promise<Session> {
+  if (session.status !== "active" && session.status !== "matched") {
+    return session;
+  }
+
+  const peerId = peerIdOf(session, userId);
+  if (!(await isUserStale(peerId))) {
+    return session;
+  }
+
+  const ended = await endSession(session, "peer_left", true);
+  logSessionEnd(ended, userId, "peer_left");
+  return ended;
+}
+
+async function cleanupStaleFromQueue(): Promise<void> {
+  const redis = getRedis();
+  const waiting = await redis.lrange<string>(keys.waiting, 0, -1);
+  for (const userId of waiting) {
+    if (await isUserStale(userId)) {
+      await removeFromQueue(userId);
+    }
+  }
+}
+
 async function createPairedSession(
   userA: string,
   userB: string,
@@ -106,11 +155,15 @@ async function createPairedSession(
   await saveSession(session);
   await bindUserSession(userA, session.id);
   await bindUserSession(userB, session.id);
+  await touchPresence(userA);
+  await touchPresence(userB);
   return session;
 }
 
 async function tryPair(userId: string): Promise<Session | null> {
   const redis = getRedis();
+
+  await cleanupStaleFromQueue();
 
   const alreadyPaired = await getActiveSessionForUser(userId);
   if (alreadyPaired) {
@@ -138,7 +191,6 @@ async function tryPair(userId: string): Promise<Session | null> {
 
     await removeFromQueue(userId);
 
-    // Drain self / stale ids until a real peer appears
     for (let i = 0; i < 20; i++) {
       const peer = await redis.rpop<string>(keys.waiting);
       if (!peer) {
@@ -147,6 +199,10 @@ async function tryPair(userId: string): Promise<Session | null> {
       }
       if (peer === userId) continue;
 
+      if (await isUserStale(peer)) {
+        continue;
+      }
+
       const peerSessionId = await redis.get<string>(keys.userSession(peer));
       if (peerSessionId) {
         const existing = await getSession(peerSessionId);
@@ -154,6 +210,7 @@ async function tryPair(userId: string): Promise<Session | null> {
           existing &&
           (existing.status === "active" || existing.status === "matched")
         ) {
+          await redis.lpush(keys.waiting, peer);
           continue;
         }
       }
@@ -170,7 +227,7 @@ async function tryPair(userId: string): Promise<Session | null> {
 
 async function endSession(
   session: Session,
-  reason: Session["endReason"],
+  reason: SessionEndReason,
   requeue: boolean,
 ): Promise<Session> {
   session.status = "ended";
@@ -180,8 +237,12 @@ async function endSession(
   await clearUserSession(session.b);
 
   if (requeue) {
-    await enqueue(session.a);
-    await enqueue(session.b);
+    for (const uid of [session.a, session.b]) {
+      if (!(await isUserStale(uid))) {
+        await enqueue(uid);
+        await touchPresence(uid);
+      }
+    }
   }
 
   return session;
@@ -228,7 +289,9 @@ async function applyRightTimeout(session: Session): Promise<Session> {
     oneRight &&
     Date.now() - session.rightStartedAt >= RIGHT_TIMEOUT_MS
   ) {
-    return endSession(session, "timeout", true);
+    const ended = await endSession(session, "timeout", true);
+    logSessionEnd(ended, "system", "timeout");
+    return ended;
   }
 
   return session;
@@ -272,16 +335,73 @@ function toView(session: Session | null, userId: string): SessionView {
   };
 }
 
+async function resolveSessionView(
+  userId: string,
+  session: Session,
+): Promise<SessionView> {
+  let current = await applyRightTimeout(session);
+  current = await applyStalePeerCheck(current, userId);
+  return enrichView(current, userId);
+}
+
+export async function heartbeat(userId: string): Promise<SessionView> {
+  await touchPresence(userId);
+  return getSessionForUser(userId);
+}
+
+export async function leaveSessionForUser(
+  userId: string,
+  reason: SessionEndReason = "disconnect",
+): Promise<SessionView> {
+  const redis = getRedis();
+  await removeFromQueue(userId);
+
+  const sessionId = await redis.get<string>(keys.userSession(userId));
+  if (!sessionId) {
+    await clearPresence(userId);
+    return toView(null, userId);
+  }
+
+  const session = await getSession(sessionId);
+  if (
+    session &&
+    (session.status === "active" || session.status === "matched")
+  ) {
+    const ended = await endSession(session, reason, true);
+    logSessionEnd(ended, userId, reason);
+    return toView(ended, userId);
+  }
+
+  await clearUserSession(userId);
+  await clearPresence(userId);
+  return toView(session, userId);
+}
+
+export async function reportPeerLeft(userId: string): Promise<SessionView> {
+  const session = await getActiveSessionForUser(userId);
+  if (!session) {
+    return toView(null, userId);
+  }
+
+  const ended = await endSession(session, "peer_left", true);
+  logSessionEnd(ended, userId, "peer_left");
+  return enrichView(ended, userId);
+}
+
 export async function joinQueue(userId: string): Promise<SessionView> {
+  await touchPresence(userId);
   const redis = getRedis();
   const existingId = await redis.get<string>(keys.userSession(userId));
   if (existingId) {
-    let session = await getSession(existingId);
+    const session = await getSession(existingId);
+    if (
+      session &&
+      (session.status === "active" || session.status === "matched")
+    ) {
+      return resolveSessionView(userId, session);
+    }
     if (session) {
-      session = await applyRightTimeout(session);
-      if (session.status === "active" || session.status === "matched") {
-        return enrichView(session, userId);
-      }
+      await clearUserSession(userId);
     }
   }
 
@@ -304,10 +424,8 @@ export async function getSessionForUser(userId: string): Promise<SessionView> {
   const sessionId = await redis.get<string>(keys.userSession(userId));
 
   if (!sessionId) {
-    // Still in waiting queue?
     const waiting = await redis.lrange<string>(keys.waiting, 0, -1);
     if (waiting.includes(userId)) {
-      // Attempt pair opportunistically while polling
       const paired = await tryPair(userId);
       if (paired) {
         return enrichView(paired, userId);
@@ -327,8 +445,7 @@ export async function getSessionForUser(userId: string): Promise<SessionView> {
     return toView(null, userId);
   }
 
-  session = await applyRightTimeout(session);
-  return enrichView(session, userId);
+  return resolveSessionView(userId, session);
 }
 
 export async function swipe(
@@ -354,10 +471,10 @@ export async function swipe(
 
   if (direction === "left") {
     session = await endSession(session, "left", true);
+    logSessionEnd(session, userId, "left");
     return toView(session, userId);
   }
 
-  // right
   if (!session.rightStartedAt) {
     session.rightStartedAt = Date.now();
   }
@@ -413,13 +530,13 @@ export async function recall(
     throw new Error("Pas de match avec cet utilisateur");
   }
 
-  // End any current sessions for both users without requeueing into random pool
   for (const uid of [userId, peerId]) {
     const sid = await redis.get<string>(keys.userSession(uid));
     if (sid) {
       const s = await getSession(sid);
       if (s && (s.status === "active" || s.status === "matched")) {
-        await endSession(s, "recall", false);
+        const ended = await endSession(s, "recall", false);
+        logSessionEnd(ended, userId, "recall");
       }
     }
     await removeFromQueue(uid);
@@ -432,6 +549,13 @@ export async function recall(
   await saveSession(session);
 
   return enrichView(session, userId);
+}
+
+export async function leaveSessionByGuestId(
+  guestId: string,
+  reason: SessionEndReason = "disconnect",
+): Promise<void> {
+  await leaveSessionForUser(guestId, reason);
 }
 
 export type { SwipeVote };

@@ -9,6 +9,11 @@ import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
 import { LocalPreview } from "@/components/LocalPreview";
 import { FlashBrand } from "@/components/FlashBrand";
 import { sessionViewChanged } from "@/lib/session-view";
+import {
+  mergeSessionUpdate,
+  sendSessionLeave,
+  usePresenceHeartbeat,
+} from "@/hooks/usePresenceHeartbeat";
 import type { SessionView } from "@/lib/types";
 
 const POLL_MS = 1500;
@@ -19,9 +24,17 @@ export function BrowseClient() {
   const [mediaReady, setMediaReady] = useState(false);
   const [mediaPrompt, setMediaPrompt] = useState(false);
   const [swiping, setSwiping] = useState(false);
+  const [peerLeftNotice, setPeerLeftNotice] = useState<string | null>(null);
   const [previewSeed, setPreviewSeed] = useState(0);
   const joining = useRef(false);
+  const leftSent = useRef(false);
   const roomKey = session?.roomName ?? null;
+
+  const applySession = useCallback((next: SessionView) => {
+    setSession((prev) =>
+      sessionViewChanged(prev, next) ? next : prev,
+    );
+  }, []);
 
   const refresh = useCallback(async () => {
     const res = await fetch("/api/session");
@@ -34,12 +47,8 @@ export function BrowseClient() {
       error?: string;
     };
     if (!res.ok) throw new Error(data.error ?? "Erreur session");
-    if (data.session) {
-      setSession((prev) =>
-        sessionViewChanged(prev, data.session!) ? data.session! : prev,
-      );
-    }
-  }, []);
+    if (data.session) applySession(data.session);
+  }, [applySession]);
 
   const join = useCallback(async () => {
     if (joining.current) return;
@@ -55,15 +64,46 @@ export function BrowseClient() {
         error?: string;
       };
       if (!res.ok) throw new Error(data.error ?? "File d'attente indisponible");
-      if (data.session) {
-        setSession((prev) =>
-          sessionViewChanged(prev, data.session!) ? data.session! : prev,
-        );
-      }
+      if (data.session) applySession(data.session);
     } finally {
       joining.current = false;
     }
+  }, [applySession]);
+
+  const leaveBrowse = useCallback((reason = "disconnect") => {
+    if (leftSent.current) return;
+    leftSent.current = true;
+    sendSessionLeave(reason);
   }, []);
+
+  const handlePeerLeft = useCallback(async () => {
+    const nickname = session?.peerNickname ?? "Ton partenaire";
+    setPeerLeftNotice(`${nickname} a quitté l'appel`);
+    try {
+      const res = await fetch("/api/session/peer-left", { method: "POST" });
+      const data = (await res.json()) as { session?: SessionView };
+      if (data.session) applySession(data.session);
+    } catch {
+      // heartbeat/poll will catch up
+    }
+    window.setTimeout(() => {
+      setPeerLeftNotice(null);
+      join().catch((err) =>
+        setError(err instanceof Error ? err.message : "Erreur"),
+      );
+    }, 1500);
+  }, [session?.peerNickname, applySession, join]);
+
+  const handleLocalDisconnect = useCallback(() => {
+    leaveBrowse("disconnect");
+  }, [leaveBrowse]);
+
+  usePresenceHeartbeat({
+    active: true,
+    onSession: (next) => {
+      setSession((prev) => mergeSessionUpdate(prev, next));
+    },
+  });
 
   useEffect(() => {
     join().catch((err) => setError(err instanceof Error ? err.message : "Erreur"));
@@ -86,6 +126,18 @@ export function BrowseClient() {
     return () => window.clearTimeout(t);
   }, [session, join]);
 
+  useEffect(() => {
+    function onPageHide() {
+      leaveBrowse("disconnect");
+    }
+
+    window.addEventListener("pagehide", onPageHide);
+    return () => {
+      window.removeEventListener("pagehide", onPageHide);
+      leaveBrowse("disconnect");
+    };
+  }, [leaveBrowse]);
+
   async function onSwipe(direction: "left" | "right") {
     setSwiping(true);
     setError(null);
@@ -100,11 +152,7 @@ export function BrowseClient() {
         error?: string;
       };
       if (!res.ok) throw new Error(data.error ?? "Swipe impossible");
-      if (data.session) {
-        setSession((prev) =>
-          sessionViewChanged(prev, data.session!) ? data.session! : prev,
-        );
-      }
+      if (data.session) applySession(data.session);
       if (direction === "left" || data.session?.state === "ended") {
         await join();
       }
@@ -128,6 +176,7 @@ export function BrowseClient() {
         />
         <Link
           href="/matches"
+          onClick={() => leaveBrowse("disconnect")}
           className="pointer-events-auto text-sm text-white/80 underline-offset-4 hover:underline"
         >
           Matches
@@ -157,6 +206,8 @@ export function BrowseClient() {
               key={roomKey}
               roomName={roomKey}
               peerNickname={session?.peerNickname ?? null}
+              onPeerLeft={handlePeerLeft}
+              onDisconnected={handleLocalDisconnect}
             />
           </SwipeSurface>
         ) : null}
@@ -183,6 +234,12 @@ export function BrowseClient() {
               </p>
             </div>
           </LocalPreview>
+        ) : null}
+
+        {peerLeftNotice ? (
+          <div className="pointer-events-none absolute left-1/2 top-24 z-30 -translate-x-1/2 rounded-full bg-black/70 px-4 py-2 text-sm backdrop-blur-sm">
+            {peerLeftNotice}
+          </div>
         ) : null}
 
         {session?.state === "matched" ? (

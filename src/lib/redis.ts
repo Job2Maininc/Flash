@@ -29,4 +29,6 @@ export const keys = {
     return `match:${x}:${y}`;
   },
   pairLock: "lock:pair",
+  lastSeen: (id: string) => `user:${id}:lastSeen`,
+  inBrowse: (id: string) => `user:${id}:inBrowse`,
 } as const;
