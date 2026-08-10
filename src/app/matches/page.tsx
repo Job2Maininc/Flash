@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FlashBrand } from "@/components/FlashBrand";
 import { MatchesList } from "@/components/MatchesList";
 import { getGuestFromCookie } from "@/lib/guest";
 import { listMatches } from "@/lib/matching";
@@ -36,7 +37,7 @@ export default async function MatchesPage() {
         >
           ← Retour
         </Link>
-        <p className="font-[family-name:var(--font-display)] text-2xl">Flash</p>
+        <FlashBrand glow="strong" wordmarkClassName="text-[var(--ink)]" />
       </header>
       <main className="relative z-10 mx-auto w-full max-w-lg px-5 py-10">
         <h1 className="font-[family-name:var(--font-display)] text-4xl tracking-tight">

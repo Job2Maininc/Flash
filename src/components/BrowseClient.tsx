@@ -5,6 +5,7 @@ import Link from "next/link";
 import { VideoStage } from "@/components/VideoStage";
 import { SwipeControls } from "@/components/SwipeControls";
 import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
+import { FlashBrand } from "@/components/FlashBrand";
 import { requestMediaAccess } from "@/lib/media";
 import type { SessionView } from "@/lib/types";
 
@@ -125,9 +126,12 @@ export function BrowseClient() {
   return (
     <div className="relative flex min-h-dvh flex-col bg-[var(--ink)] text-white">
       <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-4">
-        <p className="pointer-events-auto font-[family-name:var(--font-display)] text-2xl tracking-tight">
-          Flash
-        </p>
+        <FlashBrand
+          href="/browse"
+          glow="strong"
+          className="pointer-events-auto"
+          wordmarkClassName="text-white"
+        />
         <Link
           href="/matches"
           className="pointer-events-auto text-sm text-white/80 underline-offset-4 hover:underline"
