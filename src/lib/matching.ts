@@ -2,6 +2,14 @@ import { randomUUID } from "crypto";
 import { getRedis, keys } from "./redis";
 import { ensureCallRoom } from "./livekit";
 import {
+  banNickname,
+  getIdleStrikes,
+  incrementIdleStrike,
+  isNicknameBanned,
+  MAX_IDLE_STRIKES,
+  resetIdleStrikes,
+} from "./bans";
+import {
   clearPresence,
   isUserStale,
   touchPresence,
@@ -15,9 +23,32 @@ import type {
   SwipeVote,
 } from "./types";
 
-const RIGHT_TIMEOUT_MS = 30_000;
+const ROUND_TIMEOUT_MS = 20_000;
+const MATCH_EXTENSION_MS = 5 * 60 * 1000;
 const SESSION_TTL_SEC = 60 * 60 * 6;
 const MATCH_TTL_SEC = 60 * 60 * 24 * 90;
+
+function bannedView(userId: string): SessionView {
+  return {
+    state: "banned",
+    sessionId: null,
+    roomName: null,
+    peerId: null,
+    peerNickname: null,
+    myVote: null,
+    peerVote: null,
+    endReason: null,
+    roundEndsAt: null,
+    extendedUntil: null,
+    idleStrikes: MAX_IDLE_STRIKES,
+  };
+}
+
+async function isUserBanned(userId: string): Promise<boolean> {
+  const guest = await getGuest(userId);
+  if (!guest) return false;
+  return isNicknameBanned(guest.nickname);
+}
 
 function isA(session: Session, userId: string): boolean {
   return session.a === userId;
@@ -126,6 +157,7 @@ async function enrichView(
 ): Promise<SessionView> {
   const view = toView(session, userId);
   view.peerLeft = peerLeft;
+  view.idleStrikes = await getIdleStrikes(userId);
   if (view.peerId) {
     const peer = await getGuest(view.peerId);
     view.peerNickname = peer?.nickname ?? null;
@@ -174,6 +206,8 @@ async function createPairedSession(
     voteB: null,
     status: "active",
     createdAt: Date.now(),
+    roundStartedAt: Date.now(),
+    extendedUntil: null,
     rightStartedAt: null,
     endReason: null,
   };
@@ -301,29 +335,64 @@ async function recordMatch(session: Session): Promise<void> {
   );
 }
 
-async function applyRightTimeout(session: Session): Promise<Session> {
-  if (
-    session.status !== "active" ||
-    !session.rightStartedAt ||
-    (session.voteA === "right" && session.voteB === "right")
-  ) {
+async function requeueUser(userId: string): Promise<void> {
+  if (await isUserStale(userId)) return;
+  await enqueue(userId);
+  await touchPresence(userId);
+}
+
+async function handleRoundTimeout(session: Session): Promise<Session> {
+  session.status = "ended";
+  session.endReason = "round_timeout";
+  await signalPeerLeft(session, null, "round_timeout");
+  await saveSession(session);
+  await clearUserSession(session.a);
+  await clearUserSession(session.b);
+
+  for (const uid of [session.a, session.b]) {
+    const vote = uid === session.a ? session.voteA : session.voteB;
+    if (vote === null) {
+      const strikes = await incrementIdleStrike(uid);
+      if (strikes >= MAX_IDLE_STRIKES) {
+        const guest = await getGuest(uid);
+        if (guest) await banNickname(guest.nickname);
+        await clearPresence(uid);
+        continue;
+      }
+    } else {
+      await resetIdleStrikes(uid);
+    }
+    await requeueUser(uid);
+  }
+
+  logSessionEnd(session, "system", "round_timeout");
+  return session;
+}
+
+async function applyRoundTimeout(session: Session): Promise<Session> {
+  if (session.status !== "active") return session;
+  if (Date.now() - session.roundStartedAt < ROUND_TIMEOUT_MS) return session;
+
+  if (session.voteA === "right" && session.voteB === "right") {
+    session.status = "matched";
+    session.extendedUntil = Date.now() + MATCH_EXTENSION_MS;
+    await recordMatch(session);
+    await resetIdleStrikes(session.a);
+    await resetIdleStrikes(session.b);
+    await saveSession(session);
     return session;
   }
 
-  const oneRight =
-    (session.voteA === "right" && session.voteB !== "right") ||
-    (session.voteB === "right" && session.voteA !== "right");
+  return handleRoundTimeout(session);
+}
 
-  if (
-    oneRight &&
-    Date.now() - session.rightStartedAt >= RIGHT_TIMEOUT_MS
-  ) {
-    const ended = await endSession(session, "timeout", true);
-    logSessionEnd(ended, "system", "timeout");
-    return ended;
-  }
+async function applyMatchExtension(session: Session): Promise<Session> {
+  if (session.status !== "matched" || !session.extendedUntil) return session;
+  if (Date.now() < session.extendedUntil) return session;
 
-  return session;
+  const ended = await endSession(session, "match_expired", true);
+  logSessionEnd(ended, "system", "match_expired");
+  return ended;
 }
 
 function toView(session: Session | null, userId: string): SessionView {
@@ -337,6 +406,9 @@ function toView(session: Session | null, userId: string): SessionView {
       myVote: null,
       peerVote: null,
       endReason: null,
+      roundEndsAt: null,
+      extendedUntil: null,
+      idleStrikes: 0,
     };
   }
 
@@ -348,6 +420,11 @@ function toView(session: Session | null, userId: string): SessionView {
   if (session.status === "active") state = "active";
   else if (session.status === "matched") state = "matched";
   else if (session.status === "ended") state = "ended";
+
+  const roundEndsAt =
+    session.status === "active"
+      ? session.roundStartedAt + ROUND_TIMEOUT_MS
+      : null;
 
   return {
     state,
@@ -361,6 +438,10 @@ function toView(session: Session | null, userId: string): SessionView {
     myVote,
     peerVote,
     endReason: session.endReason,
+    roundEndsAt,
+    extendedUntil:
+      session.status === "matched" ? session.extendedUntil : null,
+    idleStrikes: 0,
   };
 }
 
@@ -368,7 +449,8 @@ async function resolveSessionView(
   userId: string,
   session: Session,
 ): Promise<SessionView> {
-  let current = await applyRightTimeout(session);
+  let current = await applyRoundTimeout(session);
+  current = await applyMatchExtension(current);
   current = await applyStalePeerCheck(current, userId);
   return enrichView(current, userId);
 }
@@ -379,6 +461,10 @@ function withPeerLeft(view: SessionView, peerLeft: boolean): SessionView {
 }
 
 export async function heartbeat(userId: string): Promise<SessionView> {
+  if (await isUserBanned(userId)) {
+    return bannedView(userId);
+  }
+
   await touchPresence(userId);
   return getSessionForUser(userId);
 }
@@ -422,6 +508,10 @@ export async function reportPeerLeft(userId: string): Promise<SessionView> {
 }
 
 export async function joinQueue(userId: string): Promise<SessionView> {
+  if (await isUserBanned(userId)) {
+    return bannedView(userId);
+  }
+
   await touchPresence(userId);
   const redis = getRedis();
   const existingId = await redis.get<string>(keys.userSession(userId));
@@ -453,6 +543,10 @@ export async function joinQueue(userId: string): Promise<SessionView> {
 }
 
 export async function getSessionForUser(userId: string): Promise<SessionView> {
+  if (await isUserBanned(userId)) {
+    return bannedView(userId);
+  }
+
   const peerLeft = await consumePeerSignal(userId);
   const redis = getRedis();
   const sessionId = await redis.get<string>(keys.userSession(userId));
@@ -504,10 +598,13 @@ export async function swipe(
   }
 
   if (direction === "left") {
+    await resetIdleStrikes(userId);
     session = await endSession(session, "left", true, userId);
     logSessionEnd(session, userId, "left");
-    return toView(session, userId);
+    return enrichView(session, userId);
   }
+
+  await resetIdleStrikes(userId);
 
   if (!session.rightStartedAt) {
     session.rightStartedAt = Date.now();
@@ -515,11 +612,13 @@ export async function swipe(
 
   if (session.voteA === "right" && session.voteB === "right") {
     session.status = "matched";
+    session.extendedUntil = Date.now() + MATCH_EXTENSION_MS;
     await recordMatch(session);
+    await resetIdleStrikes(session.a);
+    await resetIdleStrikes(session.b);
     await saveSession(session);
   } else {
     await saveSession(session);
-    session = await applyRightTimeout(session);
   }
 
   return enrichView(session, userId);
@@ -580,6 +679,7 @@ export async function recall(
   session.status = "matched";
   session.voteA = "right";
   session.voteB = "right";
+  session.extendedUntil = Date.now() + MATCH_EXTENSION_MS;
   await saveSession(session);
 
   return enrichView(session, userId);

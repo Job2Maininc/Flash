@@ -5,6 +5,8 @@ export type SessionStatus = "pairing" | "active" | "matched" | "ended";
 export type SessionEndReason =
   | "left"
   | "timeout"
+  | "round_timeout"
+  | "match_expired"
   | "recall"
   | "peer_left"
   | "disconnect"
@@ -25,7 +27,10 @@ export type Session = {
   voteB: SwipeVote;
   status: SessionStatus;
   createdAt: number;
-  /** Timestamp of first "right" vote — used for 30s mutual-match timeout */
+  /** When the current 20s round started */
+  roundStartedAt: number;
+  /** After mutual match, call continues until this timestamp */
+  extendedUntil: number | null;
   rightStartedAt: number | null;
   endReason: SessionEndReason;
 };
@@ -37,7 +42,7 @@ export type MatchEntry = {
 };
 
 export type SessionView = {
-  state: "waiting" | "active" | "matched" | "ended";
+  state: "waiting" | "active" | "matched" | "ended" | "banned";
   sessionId: string | null;
   roomName: string | null;
   peerId: string | null;
@@ -45,6 +50,12 @@ export type SessionView = {
   myVote: SwipeVote;
   peerVote: SwipeVote;
   endReason: SessionEndReason;
+  /** Unix ms — when the current 20s round ends (active state only) */
+  roundEndsAt: number | null;
+  /** Unix ms — when the 5min match extension ends */
+  extendedUntil: number | null;
+  /** Consecutive rounds without swiping (0–3) */
+  idleStrikes: number;
   /** True when the peer just left — consumed once per poll */
   peerLeft?: boolean;
 };

@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
 import type { Guest } from "./types";
 import { getRedis, keys } from "./redis";
+import { isNicknameBanned } from "./bans";
 
 const COOKIE_NAME = "flash_guest";
 const MAX_AGE_SEC = 60 * 60 * 24 * 30;
@@ -19,6 +20,12 @@ export async function createGuest(nickname: string): Promise<Guest> {
   const trimmed = nickname.trim().slice(0, 24);
   if (trimmed.length < 2) {
     throw new Error("Le pseudo doit faire au moins 2 caractères");
+  }
+
+  if (await isNicknameBanned(trimmed)) {
+    throw new Error(
+      "Ce pseudo est temporairement bloqué. Choisis-en un autre.",
+    );
   }
 
   const guest: Guest = {

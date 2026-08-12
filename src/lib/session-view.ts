@@ -14,6 +14,9 @@ export function sessionViewChanged(
     prev.myVote !== next.myVote ||
     prev.peerVote !== next.peerVote ||
     prev.endReason !== next.endReason ||
+    prev.roundEndsAt !== next.roundEndsAt ||
+    prev.extendedUntil !== next.extendedUntil ||
+    prev.idleStrikes !== next.idleStrikes ||
     prev.peerLeft !== next.peerLeft
   );
 }

@@ -32,4 +32,6 @@ export const keys = {
   lastSeen: (id: string) => `user:${id}:lastSeen`,
   inBrowse: (id: string) => `user:${id}:inBrowse`,
   peerSignal: (id: string) => `user:${id}:peerSignal`,
+  idleStrikes: (id: string) => `user:${id}:idleStrikes`,
+  banNickname: (nick: string) => `ban:nickname:${nick}`,
 } as const;
