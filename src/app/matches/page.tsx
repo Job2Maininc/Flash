@@ -44,7 +44,7 @@ export default async function MatchesPage() {
 
       <main className="relative z-10 mx-auto w-full max-w-lg px-5 pb-12 pt-8">
         <h1 className="font-[family-name:var(--font-display)] text-4xl tracking-tight">
-          Matches
+          Tes matches
           {matches.length > 0 ? (
             <span className="ml-2 align-middle text-lg font-normal text-[var(--ink-muted)]">
               ({matches.length})
@@ -52,7 +52,7 @@ export default async function MatchesPage() {
           ) : null}
         </h1>
         <p className="mt-2 text-sm text-[var(--ink-muted)]">
-          Connecté en tant que{" "}
+          Les personnes avec qui le dating a tilté —{" "}
           <span className="font-medium text-[var(--ink)]">{guest.nickname}</span>
         </p>
         <div className="mt-8">

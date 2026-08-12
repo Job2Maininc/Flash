@@ -347,11 +347,11 @@ export function BrowseClient() {
               </div>
               <div className="flash-fade-in space-y-2">
                 <p className="font-[family-name:var(--font-display)] text-2xl text-white">
-                  En attente…
+                  On cherche ton match…
                 </p>
                 <p className="max-w-xs text-sm leading-relaxed text-white/65">
-                  Dès qu&apos;une personne est dispo, l&apos;appel démarre
-                  automatiquement.
+                  File filtrée selon ton sexe et qui tu cherches. Dès qu&apos;une
+                  personne compatible est dispo, l&apos;appel démarre.
                 </p>
               </div>
             </div>

@@ -1,13 +1,13 @@
 # Flash
 
-Dating webapp mobile (Tinder × Omegle) : appel vidéo permanent, swipe gauche/droite, matches rappelables.
+Site de **rencontres en vidéo live** (Tinder × Omegle) : appel permanent, préférences sexe / je cherche, swipe, matches rappelables.
 
 ## Stack
 
 - Next.js (App Router) sur **Vercel**
 - **LiveKit Cloud** pour le WebRTC
 - **Upstash Redis** pour la file d’attente / sessions / matches
-- Auth **invité** (pseudo + cookie signé)
+- Auth **invité** (pseudo + sexe + looking-for + cookie signé)
 
 ## Setup local
 
@@ -37,46 +37,27 @@ npm run dev
 
 Ouvre `http://localhost:3000` sur **deux navigateurs** (ou téléphone + PC en HTTPS via tunnel) pour tester le pairage.
 
+## Parcours produit
+
+1. Landing marketing → pseudo + sexe + « je cherche ».
+2. File filtrée (compatibilité réciproque) → `/browse`.
+3. Appel vidéo · ✕ suivant · ♥ match mutuel → `/matches`.
+4. **Rappeler** recrée une room LiveKit.
+
+Pages : `/about`, `/safety`, `/privacy`.
+
 ## Deploy Vercel
 
 1. Pousse le repo et importe-le dans Vercel (framework Next.js).
 2. Ajoute les mêmes variables d’environnement dans **Project → Settings → Environment Variables**.
 3. Deploy. L’URL HTTPS est requise pour caméra/micro.
 
-```bash
-npx vercel
-```
+### Webhook LiveKit
 
-### Webhook LiveKit (présence / déconnexion rapide)
-
-Dans [LiveKit Cloud](https://cloud.livekit.io) → **Settings → Webhooks**, ajoute :
+Dans LiveKit Cloud → **Settings → Webhooks** :
 
 - **URL** : `https://<ton-domaine-vercel>/api/livekit/webhook`
-- La signature utilise `LIVEKIT_API_KEY` + `LIVEKIT_API_SECRET` (pas de variable supplémentaire).
-
-Événements utiles : `participant_left`, `room_finished`.
-
-## Parcours de test
-
-1. Deux utilisateurs entrent un pseudo → `/browse`.
-2. Ils se retrouvent en appel vidéo.
-3. **✕** (left) → chacun retourne en file / prochain pair.
-4. **♥** des deux côtés → badge match + entrée dans `/matches`.
-5. **Rappeler** recrée une room LiveKit entre les deux.
-
-### Checklist fiabilité présence (2 téléphones + preview Vercel)
-
-| # | Scénario | Résultat attendu |
-|---|----------|------------------|
-| 1 | Pair → vidéo + audio → un peer ferme l'app | Survivant retourne en file en &lt;5 s |
-| 2 | Swipe left | Les deux retournent en file, pas de re-match immédiat |
-| 3 | Match mutual ♥ → peer quitte | Survivant pas bloqué, retour file |
-| 4 | Recall depuis `/matches` | Les deux rejoignent la même room |
-| 5 | Onglet background ~2 min | Pas de faux leave ; vrai leave si app tuée |
-| 6 | PC sans webcam | Audio seul, pas d'écran noir infini pour le peer |
-
-Mécanismes : heartbeat `/api/presence` (9 s), `sendBeacon` sur fermeture, stale peer (~45 s), LiveKit `onDisconnected` + webhook.
 
 ## Hors scope V1
 
-Comptes email, premium, filtres, chat texte, modération.
+Comptes email, premium, orientation détaillée, chat texte, modération avancée.

@@ -15,9 +15,12 @@ const body = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Flash — swipe & call",
+  title: {
+    default: "Flash — dating en vidéo live",
+    template: "%s · Flash",
+  },
   description:
-    "Rencontres en vidéo continue. Swipe à droite pour matcher, à gauche pour le suivant.",
+    "Site de rencontres en appel vidéo continu. Choisis ton sexe et qui tu cherches, swipe pour matcher, rappelle tes coups de cœur.",
 };
 
 export const viewport: Viewport = {

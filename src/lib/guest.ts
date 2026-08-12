@@ -1,12 +1,19 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
-import type { Guest } from "./types";
+import type { Guest, LookingFor, Sex } from "./types";
 import { getRedis, keys } from "./redis";
 import { isNicknameBanned } from "./bans";
+import { isLookingFor, isSex } from "./compatibility";
 
 const COOKIE_NAME = "flash_guest";
 const MAX_AGE_SEC = 60 * 60 * 24 * 30;
+
+export type CreateGuestInput = {
+  nickname: string;
+  sex: Sex;
+  lookingFor: LookingFor;
+};
 
 function secretKey() {
   const secret = process.env.GUEST_COOKIE_SECRET;
@@ -16,10 +23,16 @@ function secretKey() {
   return new TextEncoder().encode(secret);
 }
 
-export async function createGuest(nickname: string): Promise<Guest> {
-  const trimmed = nickname.trim().slice(0, 24);
+export async function createGuest(input: CreateGuestInput): Promise<Guest> {
+  const trimmed = input.nickname.trim().slice(0, 24);
   if (trimmed.length < 2) {
     throw new Error("Le pseudo doit faire au moins 2 caractères");
+  }
+  if (!isSex(input.sex)) {
+    throw new Error("Choisis ton sexe");
+  }
+  if (!isLookingFor(input.lookingFor)) {
+    throw new Error("Indique qui tu cherches");
   }
 
   if (await isNicknameBanned(trimmed)) {
@@ -31,6 +44,8 @@ export async function createGuest(nickname: string): Promise<Guest> {
   const guest: Guest = {
     id: randomUUID(),
     nickname: trimmed,
+    sex: input.sex,
+    lookingFor: input.lookingFor,
     createdAt: Date.now(),
   };
 
@@ -40,6 +55,8 @@ export async function createGuest(nickname: string): Promise<Guest> {
   const token = await new SignJWT({
     sub: guest.id,
     nick: guest.nickname,
+    sex: guest.sex,
+    lookingFor: guest.lookingFor,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -70,13 +87,24 @@ export async function getGuestFromCookie(): Promise<Guest | null> {
 
     const redis = getRedis();
     const guest = await redis.get<Guest>(keys.guest(id));
-    if (guest) return guest;
+    if (guest?.sex && guest?.lookingFor) return guest;
 
     const nick =
       typeof payload.nick === "string" ? payload.nick : "Invité";
+    const sex = isSex(payload.sex) ? payload.sex : null;
+    const lookingFor = isLookingFor(payload.lookingFor)
+      ? payload.lookingFor
+      : null;
+
+    if (!sex || !lookingFor) {
+      return null;
+    }
+
     const restored: Guest = {
       id,
       nickname: nick,
+      sex,
+      lookingFor,
       createdAt: Date.now(),
     };
     await redis.set(keys.guest(id), restored);

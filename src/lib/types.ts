@@ -12,9 +12,15 @@ export type SessionEndReason =
   | "disconnect"
   | null;
 
+export type Sex = "homme" | "femme" | "non_binaire";
+
+export type LookingFor = "hommes" | "femmes" | "tous";
+
 export type Guest = {
   id: string;
   nickname: string;
+  sex: Sex;
+  lookingFor: LookingFor;
   createdAt: number;
 };
 

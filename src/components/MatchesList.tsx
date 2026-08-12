@@ -52,11 +52,11 @@ export function MatchesList({ initialMatches }: Props) {
         <div className="flash-fade-in flash-card relative flex flex-col items-center gap-4 px-6 py-10 text-center">
           <FlashLogo size={48} glow="strong" />
           <p className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
-            Pas encore de match
+            Encore aucun coup de cœur
           </p>
           <p className="max-w-xs text-sm leading-relaxed text-[var(--ink-muted)]">
-            Swipe à droite pendant un appel. Si la personne like aussi, elle
-            apparaîtra ici pour un rappel vidéo.
+            Pendant un appel, swipe à droite. Si la personne like aussi, elle
+            rejoint ta liste — et tu pourras la rappeler en vidéo.
           </p>
         </div>
       </div>

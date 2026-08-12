@@ -14,6 +14,7 @@ import {
   isUserStale,
   touchPresence,
 } from "./presence";
+import { areGuestsCompatible } from "./compatibility";
 import type {
   Guest,
   MatchEntry,
@@ -252,11 +253,18 @@ async function tryPair(userId: string): Promise<Session | null> {
 
     await removeFromQueue(userId);
 
-    for (let i = 0; i < 20; i++) {
+    const me = await getGuest(userId);
+    if (!me?.sex || !me?.lookingFor) {
+      await enqueue(userId);
+      return null;
+    }
+
+    const deferred: string[] = [];
+
+    for (let i = 0; i < 40; i++) {
       const peer = await redis.rpop<string>(keys.waiting);
       if (!peer) {
-        await enqueue(userId);
-        return null;
+        break;
       }
       if (peer === userId) continue;
 
@@ -271,12 +279,25 @@ async function tryPair(userId: string): Promise<Session | null> {
           existing &&
           (existing.status === "active" || existing.status === "matched")
         ) {
-          await redis.lpush(keys.waiting, peer);
+          deferred.push(peer);
           continue;
         }
       }
 
+      const peerGuest = await getGuest(peer);
+      if (!peerGuest || !areGuestsCompatible(me, peerGuest)) {
+        deferred.push(peer);
+        continue;
+      }
+
+      if (deferred.length > 0) {
+        await redis.lpush(keys.waiting, ...deferred);
+      }
       return createPairedSession(userId, peer);
+    }
+
+    if (deferred.length > 0) {
+      await redis.lpush(keys.waiting, ...deferred);
     }
 
     await enqueue(userId);
