@@ -1,8 +1,21 @@
-import { BrowseClient } from "@/components/BrowseClient";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { BrowseClient } from "@/components/BrowseClient";
 import { Spinner } from "@/components/Spinner";
+import { getGuestFromCookie } from "@/lib/guest";
 
-export default function BrowsePage() {
+export default async function BrowsePage() {
+  let guest = null;
+  try {
+    guest = await getGuestFromCookie();
+  } catch {
+    guest = null;
+  }
+
+  if (!guest) {
+    redirect("/");
+  }
+
   return (
     <Suspense
       fallback={

@@ -93,3 +93,9 @@ export async function requireGuest(): Promise<Guest> {
   }
   return guest;
 }
+
+/** Clears the guest cookie so the landing page always asks for a nickname. */
+export async function clearGuestCookie(): Promise<void> {
+  const jar = await cookies();
+  jar.delete(COOKIE_NAME);
+}

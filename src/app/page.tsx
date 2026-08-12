@@ -4,19 +4,14 @@ import { FlashBrand } from "@/components/FlashBrand";
 import { FlashLogo } from "@/components/FlashLogo";
 import { AmbientOrbs } from "@/components/AmbientOrbs";
 import { FeatureChips } from "@/components/FeatureChips";
-import { getGuestFromCookie } from "@/lib/guest";
-import { redirect } from "next/navigation";
+import { clearGuestCookie } from "@/lib/guest";
 
 export default async function HomePage() {
-  let guest = null;
+  // Always start fresh: no auto-login from a previous session cookie.
   try {
-    guest = await getGuestFromCookie();
+    await clearGuestCookie();
   } catch {
-    guest = null;
-  }
-
-  if (guest) {
-    redirect("/browse");
+    // Ignore cookie errors so the landing form still renders.
   }
 
   return (
