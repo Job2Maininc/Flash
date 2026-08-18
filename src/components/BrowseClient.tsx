@@ -153,10 +153,10 @@ export function BrowseClient() {
     if (searchParams.get("recall") === "1") {
       setRecallNotice(t.browse.recallNotice);
       window.history.replaceState({}, "", "/browse");
-      const t = window.setTimeout(() => setRecallNotice(null), 3500);
-      return () => window.clearTimeout(t);
+      const timeoutId = window.setTimeout(() => setRecallNotice(null), 3500);
+      return () => window.clearTimeout(timeoutId);
     }
-  }, [searchParams]);
+  }, [searchParams, t.browse.recallNotice]);
 
   useEffect(() => {
     if (
@@ -173,8 +173,8 @@ export function BrowseClient() {
     if (inCall && roomKey) {
       setCallReady(false);
       setConnecting(true);
-      const t = window.setTimeout(() => setConnecting(false), 900);
-      return () => window.clearTimeout(t);
+      const timeoutId = window.setTimeout(() => setConnecting(false), 900);
+      return () => window.clearTimeout(timeoutId);
     }
     setCallReady(false);
     setConnecting(false);
