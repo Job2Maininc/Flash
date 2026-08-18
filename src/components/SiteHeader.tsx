@@ -1,24 +1,26 @@
+"use client";
+
 import Link from "next/link";
 import { FlashBrand } from "@/components/FlashBrand";
-
-const links = [
-  { href: "/#comment-ca-marche", label: "Comment ça marche" },
-  { href: "/about", label: "À propos" },
-  { href: "/safety", label: "Sécurité" },
-  { href: "/privacy", label: "Confidentialité" },
-];
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useI18n } from "@/components/LocaleProvider";
 
 type Props = {
   ctaHref?: string;
   ctaLabel?: string;
 };
 
-export function SiteHeader({
-  ctaHref = "/#entrer",
-  ctaLabel = "Commencer",
-}: Props) {
+export function SiteHeader({ ctaHref = "/#enter", ctaLabel }: Props) {
+  const { t } = useI18n();
+  const links = [
+    { href: "/#how-it-works", label: t.nav.howItWorks },
+    { href: "/about", label: t.nav.about },
+    { href: "/safety", label: t.nav.safety },
+    { href: "/privacy", label: t.nav.privacy },
+  ];
+
   return (
-    <header className="relative z-20 flex items-center justify-between gap-4 px-5 safe-top">
+    <header className="relative z-20 flex items-center justify-between gap-3 px-5 safe-top">
       <FlashBrand
         href="/"
         wordmarkClassName="text-2xl text-[var(--ink)] sm:text-3xl"
@@ -35,12 +37,15 @@ export function SiteHeader({
           </Link>
         ))}
       </nav>
-      <Link
-        href={ctaHref}
-        className="flash-btn flash-btn-primary rounded-full px-4 py-2 text-sm"
-      >
-        {ctaLabel}
-      </Link>
+      <div className="flex items-center gap-2">
+        <LanguageSwitcher />
+        <Link
+          href={ctaHref}
+          className="flash-btn flash-btn-primary rounded-full px-4 py-2 text-sm"
+        >
+          {ctaLabel ?? t.nav.start}
+        </Link>
+      </div>
     </header>
   );
 }

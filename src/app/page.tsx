@@ -7,43 +7,9 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AmbientOrbs } from "@/components/AmbientOrbs";
 import { clearGuestCookie } from "@/lib/guest";
-import { stockImages } from "@/lib/stock-images";
-
-const steps = [
-  {
-    title: "Dis qui tu es",
-    body: "Pseudo, sexe, et qui tu cherches. On filtre pour des rencontres qui ont du sens.",
-  },
-  {
-    title: "Parle en live",
-    body: "Appel vidéo immédiat. La chimie, ça se voit — pas sur une bio de 2019.",
-  },
-  {
-    title: "Swipe & rappelle",
-    body: "Droite pour matcher, gauche pour le suivant. Un match ? Tu le rappelles quand tu veux.",
-  },
-];
-
-const testimonials = [
-  {
-    quote:
-      "Enfin un dating où on arrête de scroller des photos. En deux flashes j’avais une vraie conversation.",
-    name: "Camille",
-    detail: "Paris · cherche hommes",
-  },
-  {
-    quote:
-      "Le filtre ‘je cherche’ change tout. Moins de galères, plus de gens alignés avec ce que je veux.",
-    name: "Noah",
-    detail: "Lyon · cherche femmes",
-  },
-  {
-    quote:
-      "Match + rappel vidéo = le combo. On a reprend un café virtuel le lendemain sans perdre le fil.",
-    name: "Inès",
-    detail: "Bordeaux · cherche tout le monde",
-  },
-];
+import { getLocale } from "@/lib/i18n/get-locale";
+import { getDictionary } from "@/lib/i18n";
+import { localizedStockImages } from "@/lib/stock-images";
 
 export default async function HomePage() {
   try {
@@ -51,6 +17,9 @@ export default async function HomePage() {
   } catch {
     // Ignore cookie errors so the landing form still renders.
   }
+
+  const t = getDictionary(await getLocale());
+  const images = localizedStockImages(t);
 
   return (
     <div className="relative min-h-dvh overflow-x-hidden bg-[var(--paper)] text-[var(--ink)]">
@@ -64,8 +33,8 @@ export default async function HomePage() {
 
       <section className="relative mt-4 min-h-[min(88dvh,920px)] overflow-hidden">
         <Image
-          src={stockImages.hero.src}
-          alt={stockImages.hero.alt}
+          src={images.hero.src}
+          alt={images.hero.alt}
           fill
           priority
           sizes="100vw"
@@ -81,25 +50,24 @@ export default async function HomePage() {
               Flash
             </p>
             <h1 className="mt-4 max-w-xl font-[family-name:var(--font-display)] text-3xl leading-tight tracking-tight text-[var(--ink)] sm:text-4xl">
-              Le dating en vidéo live, pas en galerie de portraits.
+              {t.home.headline}
             </h1>
             <p className="mt-4 max-w-md text-base leading-relaxed text-[var(--ink-muted)] sm:text-lg">
-              Rencontres consenties, matching selon ton sexe et qui tu
-              cherches, swipe pour le spark — ou le suivant.
+              {t.home.lead}
             </p>
             <FeatureChips />
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href="/#entrer"
+                href="/#enter"
                 className="flash-btn flash-btn-primary px-6 py-3.5 text-base"
               >
-                Commencer gratuitement
+                {t.home.startFree}
               </Link>
               <Link
                 href="/about"
                 className="flash-btn rounded-full border border-[var(--ink)]/15 bg-white/55 px-6 py-3.5 text-base text-[var(--ink)] backdrop-blur-sm hover:bg-white/80"
               >
-                Pourquoi Flash
+                {t.home.whyFlash}
               </Link>
             </div>
           </div>
@@ -107,14 +75,14 @@ export default async function HomePage() {
       </section>
 
       <MarketingSection
-        id="comment-ca-marche"
-        eyebrow="Comment ça marche"
-        title="Trois gestes. Une vraie rencontre."
-        lead="Flash mélange l’énergie d’un appel spontané et la précision d’un dating moderne."
-        image={stockImages.videoDate}
+        id="how-it-works"
+        eyebrow={t.home.howEyebrow}
+        title={t.home.howTitle}
+        lead={t.home.howLead}
+        image={images.videoDate}
       >
         <ol className="mt-8 space-y-5">
-          {steps.map((step, index) => (
+          {t.home.steps.map((step, index) => (
             <li key={step.title} className="flex gap-4">
               <span className="font-[family-name:var(--font-display)] text-2xl text-[var(--ink-faint)]">
                 0{index + 1}
@@ -131,42 +99,29 @@ export default async function HomePage() {
       </MarketingSection>
 
       <MarketingSection
-        eyebrow="Pourquoi Flash"
-        title="Moins de swipe de photos. Plus de présence."
-        lead="On te vend du vrai : des visages qui bougent, des voix qui hésitent, des rires qui ne se retouchent pas."
-        image={stockImages.chemistry}
+        eyebrow={t.home.whyEyebrow}
+        title={t.home.whyTitle}
+        lead={t.home.whyLead}
+        image={images.chemistry}
         reverse
       >
         <ul className="mt-8 space-y-3 text-sm leading-relaxed text-[var(--ink-muted)]">
-          <li>
-            Matching intelligent selon ton sexe et qui tu cherches — pour
-            éviter les malentendus.
-          </li>
-          <li>
-            Appel vidéo permanent : tu ne « likes » pas un profil, tu sens
-            une chimie.
-          </li>
-          <li>
-            Matches rappelables : garde le fil avec les personnes qui t’ont
-            fait tilt.
-          </li>
-          <li>
-            Approche inclusive : hommes, femmes, personnes non-binaires —
-            tout le monde a sa place.
-          </li>
+          {t.home.whyPoints.map((point) => (
+            <li key={point}>{point}</li>
+          ))}
         </ul>
       </MarketingSection>
 
       <section className="relative px-5 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl">
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--ink-faint)]">
-            Ils ont flashé
+            {t.home.socialEyebrow}
           </p>
           <h2 className="mt-2 font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
-            Des rencontres qui commencent vraiment.
+            {t.home.socialTitle}
           </h2>
           <div className="mt-10 grid gap-8 md:grid-cols-3">
-            {testimonials.map((item) => (
+            {t.home.testimonials.map((item) => (
               <blockquote key={item.name} className="space-y-4">
                 <p className="text-base leading-relaxed text-[var(--ink-muted)]">
                   “{item.quote}”
@@ -186,25 +141,24 @@ export default async function HomePage() {
       </section>
 
       <section
-        id="entrer"
+        id="enter"
         className="relative border-t border-[var(--ink)]/10 px-5 py-16 sm:py-20"
       >
         <div className="mx-auto grid max-w-5xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--ink-faint)]">
-              Entrer sur Flash
+              {t.home.enterEyebrow}
             </p>
             <h2 className="mt-2 font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
-              Prêt·e pour ton prochain flash ?
+              {t.home.enterTitle}
             </h2>
             <p className="mt-4 max-w-md text-base leading-relaxed text-[var(--ink-muted)]">
-              Gratuit pour commencer. Caméra + micro requis. Respect,
-              consentement, et zéro ghosting forcé : swipe et on avance.
+              {t.home.enterLead}
             </p>
             <div className="relative mt-8 hidden aspect-[5/4] overflow-hidden lg:block">
               <Image
-                src={stockImages.community.src}
-                alt={stockImages.community.alt}
+                src={images.community.src}
+                alt={images.community.alt}
                 fill
                 sizes="40vw"
                 className="object-cover"

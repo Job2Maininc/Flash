@@ -13,6 +13,9 @@ import { AmbientOrbs } from "@/components/AmbientOrbs";
 import { MatchCelebration } from "@/components/MatchCelebration";
 import { Spinner } from "@/components/Spinner";
 import { StatusPill } from "@/components/StatusPill";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useI18n } from "@/components/LocaleProvider";
+import { interpolate } from "@/lib/i18n";
 import { hapticSuccess } from "@/lib/haptics";
 import { sessionViewChanged } from "@/lib/session-view";
 import {
@@ -28,6 +31,7 @@ const REJOIN_MS = 400;
 
 export function BrowseClient() {
   const searchParams = useSearchParams();
+  const { t } = useI18n();
   const [session, setSession] = useState<SessionView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [mediaReady, setMediaReady] = useState(false);
@@ -76,12 +80,12 @@ export function BrowseClient() {
         session?: SessionView;
         error?: string;
       };
-      if (!res.ok) throw new Error(data.error ?? "File d'attente indisponible");
+      if (!res.ok) throw new Error(data.error ?? t.browse.queueError);
       if (data.session) applySession(data.session);
     } finally {
       joining.current = false;
     }
-  }, [applySession]);
+  }, [applySession, t.browse.queueError]);
 
   const processPeerLeft = useCallback(
     (nickname?: string | null) => {
@@ -90,8 +94,8 @@ export function BrowseClient() {
       setForceOutOfCall(true);
 
       const label =
-        nickname ?? lastPeerNickname.current ?? "Ton partenaire";
-      setPeerLeftNotice(`${label} a quitté l'appel`);
+        nickname ?? lastPeerNickname.current ?? t.browse.peerLeftFallback;
+      setPeerLeftNotice(interpolate(t.browse.peerLeft, { name: label }));
 
       fetch("/api/session/peer-left", { method: "POST" })
         .then(async (res) => {
@@ -105,11 +109,11 @@ export function BrowseClient() {
         setForceOutOfCall(false);
         peerLeftHandled.current = false;
         join().catch((err) =>
-          setError(err instanceof Error ? err.message : "Erreur"),
+          setError(err instanceof Error ? err.message : t.browse.genericError),
         );
       }, REJOIN_MS);
     },
-    [applySession, join],
+    [applySession, join, t.browse.peerLeft, t.browse.peerLeftFallback, t.browse.genericError],
   );
 
   const refresh = useCallback(async () => {
@@ -122,14 +126,14 @@ export function BrowseClient() {
       session?: SessionView;
       error?: string;
     };
-    if (!res.ok) throw new Error(data.error ?? "Erreur session");
+    if (!res.ok) throw new Error(data.error ?? t.browse.sessionError);
     if (data.session) {
       if (data.session.peerLeft) {
         processPeerLeft(data.session.peerNickname);
       }
       applySession(data.session);
     }
-  }, [applySession, processPeerLeft]);
+  }, [applySession, processPeerLeft, t.browse.sessionError]);
 
   const handlePeerLeft = useCallback(() => {
     processPeerLeft(session?.peerNickname);
@@ -147,7 +151,7 @@ export function BrowseClient() {
 
   useEffect(() => {
     if (searchParams.get("recall") === "1") {
-      setRecallNotice("Rappel en cours — connexion à l'appel…");
+      setRecallNotice(t.browse.recallNotice);
       window.history.replaceState({}, "", "/browse");
       const t = window.setTimeout(() => setRecallNotice(null), 3500);
       return () => window.clearTimeout(t);
@@ -188,8 +192,8 @@ export function BrowseClient() {
   });
 
   useEffect(() => {
-    join().catch((err) => setError(err instanceof Error ? err.message : "Erreur"));
-  }, [join]);
+    join().catch((err) => setError(err instanceof Error ? err.message : t.browse.genericError));
+  }, [join, t.browse.genericError]);
 
   useEffect(() => {
     const ms = inCallSession ? POLL_IN_CALL_MS : POLL_MS;
@@ -203,13 +207,13 @@ export function BrowseClient() {
 
   useEffect(() => {
     if (!session || session.state !== "ended") return;
-    const t = window.setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       join().catch((err) =>
-        setError(err instanceof Error ? err.message : "Erreur"),
+        setError(err instanceof Error ? err.message : t.browse.genericError),
       );
     }, 400);
-    return () => window.clearTimeout(t);
-  }, [session, join]);
+    return () => window.clearTimeout(timeoutId);
+  }, [session, join, t.browse.genericError]);
 
   useEffect(() => {
     const inCallNow =
@@ -251,13 +255,13 @@ export function BrowseClient() {
         session?: SessionView;
         error?: string;
       };
-      if (!res.ok) throw new Error(data.error ?? "Swipe impossible");
+      if (!res.ok) throw new Error(data.error ?? t.browse.swipeError);
       if (data.session) applySession(data.session);
       if (direction === "left" || data.session?.state === "ended") {
         await join();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+          setError(err instanceof Error ? err.message : t.browse.genericError);
     } finally {
       setSwiping(false);
     }
@@ -281,13 +285,16 @@ export function BrowseClient() {
           className="pointer-events-auto"
           wordmarkClassName="text-white"
         />
-        <Link
-          href="/matches"
-          onClick={() => leaveBrowse("disconnect")}
-          className="flash-btn pointer-events-auto rounded-full border border-white/15 bg-black/35 px-3.5 py-1.5 text-sm text-white/85 backdrop-blur-md hover:bg-black/50"
-        >
-          Matches
-        </Link>
+        <div className="pointer-events-auto flex items-center gap-2">
+          <LanguageSwitcher variant="dark" />
+          <Link
+            href="/matches"
+            onClick={() => leaveBrowse("disconnect")}
+            className="flash-btn rounded-full border border-white/15 bg-black/35 px-3.5 py-1.5 text-sm text-white/85 backdrop-blur-md hover:bg-black/50"
+          >
+            {t.browse.matches}
+          </Link>
+        </div>
       </header>
 
       <main className="relative flex-1 min-h-0">
@@ -321,11 +328,10 @@ export function BrowseClient() {
                   </div>
                   <div className="flash-fade-in space-y-2">
                     <p className="font-[family-name:var(--font-display)] text-2xl text-white">
-                      On cherche ton match…
+                      {t.browse.searchingTitle}
                     </p>
                     <p className="max-w-xs text-sm leading-relaxed text-white/65">
-                      File filtrée selon ton sexe et qui tu cherches. Dès qu&apos;une
-                      personne compatible est dispo, l&apos;appel démarre.
+                      {t.browse.searchingBody}
                     </p>
                   </div>
                 </div>
@@ -359,7 +365,7 @@ export function BrowseClient() {
                   <div className="h-1 w-full rounded-full bg-[var(--accent)] flash-connect-bar" />
                 </div>
                 <p className="mt-2 text-center text-xs font-medium uppercase tracking-widest text-white/45">
-                  Connexion…
+                  {t.browse.connecting}
                 </p>
               </div>
             ) : null}
@@ -380,13 +386,13 @@ export function BrowseClient() {
 
         {session?.state === "matched" && !showMatchCelebration ? (
           <div className="pointer-events-none absolute left-1/2 top-24 z-10 -translate-x-1/2">
-            <StatusPill variant="accent">C&apos;est un match ♥</StatusPill>
+            <StatusPill variant="accent">{t.browse.itsAMatch}</StatusPill>
           </div>
         ) : null}
 
         {session?.myVote === "right" && session.state === "active" ? (
           <div className="pointer-events-none absolute left-1/2 top-24 z-10 -translate-x-1/2">
-            <StatusPill variant="muted">En attente de son like…</StatusPill>
+            <StatusPill variant="muted">{t.browse.waitingLike}</StatusPill>
           </div>
         ) : null}
       </main>
@@ -410,7 +416,7 @@ export function BrowseClient() {
         />
         {inCall ? (
           <p className="pb-3 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-white/35 safe-bottom">
-            Glisse sur l&apos;écran
+            {t.browse.swipeHint}
           </p>
         ) : null}
       </div>

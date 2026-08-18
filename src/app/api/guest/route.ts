@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createGuest, getGuestFromCookie } from "@/lib/guest";
+import { GUEST_ERROR } from "@/lib/guest-errors";
 import { isLookingFor, isSex } from "@/lib/compatibility";
 
 export async function GET() {
@@ -25,13 +26,13 @@ export async function POST(request: Request) {
     const nickname = body.nickname ?? "";
     if (!isSex(body.sex)) {
       return NextResponse.json(
-        { error: "Choisis ton sexe" },
+        { error: GUEST_ERROR.SEX_REQUIRED },
         { status: 400 },
       );
     }
     if (!isLookingFor(body.lookingFor)) {
       return NextResponse.json(
-        { error: "Indique qui tu cherches" },
+        { error: GUEST_ERROR.LOOKING_FOR_REQUIRED },
         { status: 400 },
       );
     }
@@ -44,9 +45,10 @@ export async function POST(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Erreur";
     const status =
-      message.includes("pseudo") ||
-      message.includes("sexe") ||
-      message.includes("cherches")
+      message === GUEST_ERROR.NICKNAME_TOO_SHORT ||
+      message === GUEST_ERROR.SEX_REQUIRED ||
+      message === GUEST_ERROR.LOOKING_FOR_REQUIRED ||
+      message === GUEST_ERROR.NICKNAME_BANNED
         ? 400
         : 500;
     return NextResponse.json({ error: message }, { status });

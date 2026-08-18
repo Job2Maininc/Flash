@@ -1,3 +1,5 @@
+import type { Dictionary } from "@/lib/i18n";
+
 export const PREVIEW_VIDEO_CONSTRAINTS: MediaTrackConstraints = {
   facingMode: { ideal: "user" },
   width: { ideal: 1280, max: 1920 },
@@ -14,24 +16,44 @@ export type MediaAccess = {
   audio: boolean;
 };
 
-export function humanizeMediaError(error: unknown): string {
+type MediaErrorCopy = Pick<
+  Dictionary["media"],
+  "denied" | "notFound" | "inUse" | "overconstrained" | "https" | "generic"
+>;
+
+const DEFAULT_MEDIA_ERRORS: MediaErrorCopy = {
+  denied:
+    "Access denied. Tap “Enable camera” or allow the site in your browser (icon left of the URL).",
+  notFound: "No camera or microphone detected on this device.",
+  inUse: "Camera or microphone is already used by another app.",
+  overconstrained: "Couldn’t use camera/mic with the requested settings.",
+  https: "HTTPS is required for camera and microphone.",
+  generic: "Couldn’t access the camera or microphone.",
+};
+
+export function humanizeMediaError(
+  error: unknown,
+  copy?: MediaErrorCopy,
+): string {
+  const messages = copy ?? DEFAULT_MEDIA_ERRORS;
+
   if (error instanceof DOMException) {
     switch (error.name) {
       case "NotAllowedError":
       case "PermissionDeniedError":
-        return "Accès refusé. Clique sur « Activer caméra » ou autorise le site dans Chrome (icône à gauche de l’URL).";
+        return messages.denied;
       case "NotFoundError":
       case "DevicesNotFoundError":
-        return "Aucune caméra ou micro détecté sur cet appareil.";
+        return messages.notFound;
       case "NotReadableError":
       case "TrackStartError":
-        return "Caméra ou micro déjà utilisé par une autre application.";
+        return messages.inUse;
       case "OverconstrainedError":
-        return "Impossible d’utiliser la caméra/micro avec les paramètres demandés.";
+        return messages.overconstrained;
       case "SecurityError":
-        return "HTTPS requis pour la caméra et le micro.";
+        return messages.https;
       default:
-        return error.message || "Impossible d’accéder à la caméra ou au micro.";
+        return error.message || messages.generic;
     }
   }
 
@@ -39,13 +61,13 @@ export function humanizeMediaError(error: unknown): string {
     return error.message;
   }
 
-  return "Impossible d’accéder à la caméra ou au micro.";
+  return messages.generic;
 }
 
 /** Opens camera/mic for permission check — prefer LocalPreview stream on browse. */
 export async function requestMediaAccess(): Promise<MediaAccess> {
   if (!navigator.mediaDevices?.getUserMedia) {
-    throw new DOMException("HTTPS requis", "SecurityError");
+    throw new DOMException("HTTPS required", "SecurityError");
   }
 
   const attempts: MediaStreamConstraints[] = [

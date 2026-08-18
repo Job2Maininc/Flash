@@ -36,7 +36,9 @@ export function useLocalMediaStream(active: boolean, options?: Options) {
 
     async function start() {
       if (!navigator.mediaDevices?.getUserMedia) {
-        const message = "HTTPS requis pour la caméra.";
+        const message = humanizeMediaError(
+          new DOMException("HTTPS required", "SecurityError"),
+        );
         setError(message);
         onErrorRef.current?.(message);
         return;

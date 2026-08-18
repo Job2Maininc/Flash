@@ -25,6 +25,8 @@ import { AttachedVideo } from "@/components/AttachedVideo";
 import { MediaControls } from "@/components/MediaControls";
 import { Spinner } from "@/components/Spinner";
 import { StatusPill } from "@/components/StatusPill";
+import { useI18n } from "@/components/LocaleProvider";
+import { interpolate } from "@/lib/i18n";
 
 const PeerNicknameContext = createContext<string | null>(null);
 
@@ -116,6 +118,7 @@ function isCameraTrack(track: TrackReference): boolean {
 }
 
 function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
+  const { t } = useI18n();
   const peerNickname = useContext(PeerNicknameContext);
   const remoteParticipants = useRemoteParticipants();
   const { localParticipant } = useLocalParticipant();
@@ -192,7 +195,7 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
       {waitingForPeer ? (
         <div className="absolute left-1/2 top-24 z-20 -translate-x-1/2">
           <StatusPill variant="muted">
-            {peerNickname} rejoint l&apos;appel…
+            {interpolate(t.call.joining, { name: peerNickname ?? "" })}
           </StatusPill>
         </div>
       ) : null}
@@ -227,6 +230,7 @@ export function VideoStage({
   onDisconnected,
   onConnected,
 }: Props) {
+  const { t } = useI18n();
   const [creds, setCreds] = useState<{ token: string; url: string } | null>(
     null,
   );
@@ -250,12 +254,12 @@ export function VideoStage({
           error?: string;
         };
         if (!res.ok || !data.token || !data.url) {
-          throw new Error(data.error ?? "Token LiveKit indisponible");
+          throw new Error(data.error ?? t.call.livekitUnavailable);
         }
         if (!cancelled) setCreds({ token: data.token, url: data.url });
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Erreur vidéo");
+          setError(err instanceof Error ? err.message : t.call.videoError);
         }
       }
     })();
@@ -263,7 +267,7 @@ export function VideoStage({
     return () => {
       cancelled = true;
     };
-  }, [roomName]);
+  }, [roomName, t.call.livekitUnavailable, t.call.videoError]);
 
   if (error) {
     return (
@@ -279,7 +283,7 @@ export function VideoStage({
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/28 text-white/85 backdrop-blur-[2px]">
           <Spinner size="lg" />
           <p className="font-[family-name:var(--font-display)] text-lg">
-            Connexion à l&apos;appel…
+            {t.browse.connectingCall}
           </p>
         </div>
       </div>

@@ -5,6 +5,7 @@ import type { Guest, LookingFor, Sex } from "./types";
 import { getRedis, keys } from "./redis";
 import { isNicknameBanned } from "./bans";
 import { isLookingFor, isSex } from "./compatibility";
+import { GUEST_ERROR } from "./guest-errors";
 
 const COOKIE_NAME = "flash_guest";
 const MAX_AGE_SEC = 60 * 60 * 24 * 30;
@@ -26,19 +27,17 @@ function secretKey() {
 export async function createGuest(input: CreateGuestInput): Promise<Guest> {
   const trimmed = input.nickname.trim().slice(0, 24);
   if (trimmed.length < 2) {
-    throw new Error("Le pseudo doit faire au moins 2 caractères");
+    throw new Error(GUEST_ERROR.NICKNAME_TOO_SHORT);
   }
   if (!isSex(input.sex)) {
-    throw new Error("Choisis ton sexe");
+    throw new Error(GUEST_ERROR.SEX_REQUIRED);
   }
   if (!isLookingFor(input.lookingFor)) {
-    throw new Error("Indique qui tu cherches");
+    throw new Error(GUEST_ERROR.LOOKING_FOR_REQUIRED);
   }
 
   if (await isNicknameBanned(trimmed)) {
-    throw new Error(
-      "Ce pseudo est temporairement bloqué. Choisis-en un autre.",
-    );
+    throw new Error(GUEST_ERROR.NICKNAME_BANNED);
   }
 
   const guest: Guest = {
@@ -90,7 +89,7 @@ export async function getGuestFromCookie(): Promise<Guest | null> {
     if (guest?.sex && guest?.lookingFor) return guest;
 
     const nick =
-      typeof payload.nick === "string" ? payload.nick : "Invité";
+      typeof payload.nick === "string" ? payload.nick : "Guest";
     const sex = isSex(payload.sex) ? payload.sex : null;
     const lookingFor = isLookingFor(payload.lookingFor)
       ? payload.lookingFor

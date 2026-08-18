@@ -2,11 +2,14 @@
 
 import { TrackToggle } from "@livekit/components-react";
 import { Track } from "livekit-client";
+import { useI18n } from "@/components/LocaleProvider";
 
 const baseBtn =
   "flash-btn flash-btn-ghost-dark flex h-11 w-11 items-center justify-center sm:h-12 sm:w-12 [&_svg]:h-5 [&_svg]:w-5";
 
 export function MediaControls() {
+  const { t } = useI18n();
+
   return (
     <div
       className="pointer-events-auto flex items-center gap-2.5"
@@ -16,13 +19,13 @@ export function MediaControls() {
       <TrackToggle
         source={Track.Source.Microphone}
         showIcon
-        aria-label="Activer ou couper le micro"
+        aria-label={t.call.mic}
         className={baseBtn}
       />
       <TrackToggle
         source={Track.Source.Camera}
         showIcon
-        aria-label="Activer ou couper la caméra"
+        aria-label={t.call.camera}
         className={baseBtn}
       />
     </div>

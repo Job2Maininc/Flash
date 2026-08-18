@@ -3,19 +3,40 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/Spinner";
+import { useI18n } from "@/components/LocaleProvider";
 import {
   LOOKING_FOR_OPTIONS,
   SEX_OPTIONS,
 } from "@/lib/compatibility";
+import { GUEST_ERROR, type GuestErrorCode } from "@/lib/guest-errors";
 import type { LookingFor, Sex } from "@/lib/types";
 
 export function GuestForm() {
   const router = useRouter();
+  const { t } = useI18n();
   const [nickname, setNickname] = useState("");
   const [sex, setSex] = useState<Sex | "">("");
   const [lookingFor, setLookingFor] = useState<LookingFor | "">("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const sexLabels: Record<Sex, string> = {
+    homme: t.form.sexHomme,
+    femme: t.form.sexFemme,
+    non_binaire: t.form.sexNonBinaire,
+  };
+  const lookingLabels: Record<LookingFor, string> = {
+    hommes: t.form.lookingHommes,
+    femmes: t.form.lookingFemmes,
+    tous: t.form.lookingTous,
+  };
+
+  function translateError(code: string | undefined, fallback: string): string {
+    if (code && code in GUEST_ERROR) {
+      return t.errors[code as GuestErrorCode];
+    }
+    return fallback;
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -29,11 +50,11 @@ export function GuestForm() {
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
-        throw new Error(data.error ?? "Impossible de continuer");
+        throw new Error(translateError(data.error, t.form.continueError));
       }
       router.push("/browse");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : t.form.genericError);
       setLoading(false);
     }
   }
@@ -45,7 +66,7 @@ export function GuestForm() {
     >
       <label className="flex flex-col gap-2">
         <span className="flex items-center justify-between font-[family-name:var(--font-display)] text-sm tracking-wide text-[var(--ink-muted)]">
-          <span>Ton pseudo</span>
+          <span>{t.form.nickname}</span>
           <span className="text-xs tabular-nums text-[var(--ink-faint)]">
             {nickname.length}/24
           </span>
@@ -55,7 +76,7 @@ export function GuestForm() {
           onChange={(e) => setNickname(e.target.value)}
           maxLength={24}
           autoComplete="nickname"
-          placeholder="ex. Léa"
+          placeholder={t.form.placeholder}
           className="flash-input px-4 py-3.5 text-xl text-[var(--ink)] placeholder:text-[var(--ink-faint)]"
           required
           minLength={2}
@@ -64,7 +85,7 @@ export function GuestForm() {
 
       <fieldset className="flex flex-col gap-2">
         <legend className="font-[family-name:var(--font-display)] text-sm tracking-wide text-[var(--ink-muted)]">
-          Je suis
+          {t.form.iAm}
         </legend>
         <div className="grid grid-cols-3 gap-2">
           {SEX_OPTIONS.map((option) => {
@@ -81,7 +102,7 @@ export function GuestForm() {
                 }`}
                 aria-pressed={selected}
               >
-                {option.label}
+                {sexLabels[option.value]}
               </button>
             );
           })}
@@ -90,7 +111,7 @@ export function GuestForm() {
 
       <fieldset className="flex flex-col gap-2">
         <legend className="font-[family-name:var(--font-display)] text-sm tracking-wide text-[var(--ink-muted)]">
-          Je cherche
+          {t.form.lookingFor}
         </legend>
         <div className="grid grid-cols-3 gap-2">
           {LOOKING_FOR_OPTIONS.map((option) => {
@@ -107,7 +128,7 @@ export function GuestForm() {
                 }`}
                 aria-pressed={selected}
               >
-                {option.label}
+                {lookingLabels[option.value]}
               </button>
             );
           })}
@@ -130,15 +151,14 @@ export function GuestForm() {
               size="sm"
               className="border-[var(--paper)]/30 border-t-[var(--paper)]"
             />
-            Entrée…
+            {t.form.submitting}
           </>
         ) : (
-          "Lancer mon premier flash"
+          t.form.submit
         )}
       </button>
       <p className="text-center text-xs leading-relaxed text-[var(--ink-faint)]">
-        En continuant, tu confirmes avoir 18 ans ou plus et accepter nos
-        règles de rencontre respectueuse.
+        {t.form.legal}
       </p>
     </form>
   );

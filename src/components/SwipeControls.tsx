@@ -1,6 +1,7 @@
 "use client";
 
 import { hapticTap } from "@/lib/haptics";
+import { useI18n } from "@/components/LocaleProvider";
 
 type Props = {
   disabled?: boolean;
@@ -9,6 +10,8 @@ type Props = {
 };
 
 export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
+  const { t } = useI18n();
+
   function swipeLeft() {
     hapticTap();
     onSwipe("left");
@@ -34,7 +37,7 @@ export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
               ? "border-white/15 bg-white/10 text-white/40"
               : "border-white/25 bg-black/50 text-white enabled:hover:border-white/50 enabled:hover:bg-black/65"
           }`}
-          aria-label="Passer"
+          aria-label={t.call.pass}
         >
           ✕
           {leftVoted ? (
@@ -47,7 +50,7 @@ export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
           ) : null}
         </button>
         <span className="text-[10px] font-medium uppercase tracking-widest text-white/45">
-          Passer
+          {t.call.pass}
         </span>
       </div>
       <div className="flex flex-col items-center gap-2">
@@ -60,7 +63,7 @@ export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
               ? "border-[var(--accent)]/50 bg-[var(--accent)]/25 text-[var(--accent)]/60 shadow-none"
               : "border-[var(--accent)] bg-[var(--accent)] text-[var(--ink)] shadow-[0_0_28px_rgba(232,255,74,0.4)] enabled:hover:brightness-105"
           }`}
-          aria-label="Matcher"
+          aria-label={t.call.match}
         >
           ♥
           {rightVoted ? (
@@ -77,7 +80,7 @@ export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
             rightVoted ? "text-[var(--accent)]/50" : "text-[var(--accent)]/70"
           }`}
         >
-          Like
+          {t.call.like}
         </span>
       </div>
     </div>

@@ -5,27 +5,29 @@ import { useRouter } from "next/navigation";
 import { FlashLogo } from "@/components/FlashLogo";
 import { Spinner } from "@/components/Spinner";
 import { AmbientOrbs } from "@/components/AmbientOrbs";
+import { useI18n } from "@/components/LocaleProvider";
 import type { MatchEntry } from "@/lib/types";
 
 type Props = {
   initialMatches: MatchEntry[];
 };
 
-function formatMatchDate(ms: number): string {
-  if (!ms) return "";
-  return new Date(ms).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 export function MatchesList({ initialMatches }: Props) {
   const router = useRouter();
+  const { locale, t } = useI18n();
   const [matches] = useState(initialMatches);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  function formatMatchDate(ms: number): string {
+    if (!ms) return "";
+    return new Date(ms).toLocaleDateString(locale === "de" ? "de-DE" : "en-US", {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
   async function recall(peerId: string) {
     setError(null);
@@ -37,10 +39,10 @@ export function MatchesList({ initialMatches }: Props) {
         body: JSON.stringify({ peerId }),
       });
       const data = (await res.json()) as { error?: string };
-      if (!res.ok) throw new Error(data.error ?? "Rappel impossible");
+      if (!res.ok) throw new Error(data.error ?? t.matches.recallError);
       router.push("/browse?recall=1");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : t.matches.genericError);
       setLoadingId(null);
     }
   }
@@ -52,11 +54,10 @@ export function MatchesList({ initialMatches }: Props) {
         <div className="flash-fade-in flash-card relative flex flex-col items-center gap-4 px-6 py-10 text-center">
           <FlashLogo size={48} glow="strong" />
           <p className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
-            Encore aucun coup de cœur
+            {t.matches.emptyTitle}
           </p>
           <p className="max-w-xs text-sm leading-relaxed text-[var(--ink-muted)]">
-            Pendant un appel, swipe à droite. Si la personne like aussi, elle
-            rejoint ta liste — et tu pourras la rappeler en vidéo.
+            {t.matches.emptyBody}
           </p>
         </div>
       </div>
@@ -94,7 +95,7 @@ export function MatchesList({ initialMatches }: Props) {
               {loadingId === m.peerId ? (
                 <Spinner size="sm" className="border-[var(--paper)]/30 border-t-[var(--paper)]" />
               ) : (
-                "Rappeler"
+                t.matches.recall
               )}
             </button>
           </li>

@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FlashBrand } from "@/components/FlashBrand";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MatchesList } from "@/components/MatchesList";
 import { getGuestFromCookie } from "@/lib/guest";
 import { listMatches } from "@/lib/matching";
+import { getLocale } from "@/lib/i18n/get-locale";
+import { getDictionary } from "@/lib/i18n";
 
 export default async function MatchesPage() {
+  const t = getDictionary(await getLocale());
   let guest = null;
   try {
     guest = await getGuestFromCookie();
@@ -37,14 +41,15 @@ export default async function MatchesPage() {
           href="/browse"
           className="flash-btn rounded-full border border-[var(--ink)]/10 bg-white/40 px-3.5 py-1.5 text-sm text-[var(--ink-muted)] backdrop-blur-sm hover:bg-white/70 hover:text-[var(--ink)]"
         >
-          ← Appel
+          {t.nav.backToCall}
         </Link>
         <FlashBrand glow="strong" wordmarkClassName="text-[var(--ink)]" />
+        <LanguageSwitcher />
       </header>
 
       <main className="relative z-10 mx-auto w-full max-w-lg px-5 pb-12 pt-8">
         <h1 className="font-[family-name:var(--font-display)] text-4xl tracking-tight">
-          Tes matches
+          {t.matches.title}
           {matches.length > 0 ? (
             <span className="ml-2 align-middle text-lg font-normal text-[var(--ink-muted)]">
               ({matches.length})
@@ -52,7 +57,7 @@ export default async function MatchesPage() {
           ) : null}
         </h1>
         <p className="mt-2 text-sm text-[var(--ink-muted)]">
-          Les personnes avec qui le dating a tilté —{" "}
+          {t.matches.subtitlePrefix}{" "}
           <span className="font-medium text-[var(--ink)]">{guest.nickname}</span>
         </p>
         <div className="mt-8">

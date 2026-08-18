@@ -349,8 +349,8 @@ async function recordMatch(session: Session): Promise<void> {
       matchedAt: now,
       a: session.a,
       b: session.b,
-      nickA: guestA?.nickname ?? "Invité",
-      nickB: guestB?.nickname ?? "Invité",
+      nickA: guestA?.nickname ?? "Guest",
+      nickB: guestB?.nickname ?? "Guest",
     },
     { ex: MATCH_TTL_SEC },
   );
@@ -666,7 +666,7 @@ export async function listMatches(userId: string): Promise<MatchEntry[]> {
 
     entries.push({
       peerId,
-      nickname: nickname ?? "Invité",
+      nickname: nickname ?? "Guest",
       matchedAt: meta?.matchedAt ?? 0,
     });
   }
@@ -681,7 +681,7 @@ export async function recall(
   const redis = getRedis();
   const isMatch = await redis.sismember(keys.userMatches(userId), peerId);
   if (!isMatch) {
-    throw new Error("Pas de match avec cet utilisateur");
+    throw new Error("No match with this user");
   }
 
   for (const uid of [userId, peerId]) {

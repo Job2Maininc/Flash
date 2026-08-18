@@ -1,10 +1,15 @@
-const features = [
-  { label: "Dating vidéo", icon: "◎" },
-  { label: "Matchs filtrés", icon: "♡" },
-  { label: "Rappel en un tap", icon: "⚡" },
-];
+"use client";
+
+import { useI18n } from "@/components/LocaleProvider";
 
 export function FeatureChips() {
+  const { t } = useI18n();
+  const features = [
+    { label: t.chips.videoDating, icon: "◎" },
+    { label: t.chips.filteredMatches, icon: "♡" },
+    { label: t.chips.tapRecall, icon: "⚡" },
+  ];
+
   return (
     <ul className="flex flex-wrap gap-2 pt-2">
       {features.map((f, i) => (

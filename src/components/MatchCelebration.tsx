@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import type { CSSProperties } from "react";
 import { FlashLogo } from "@/components/FlashLogo";
+import { useI18n } from "@/components/LocaleProvider";
 
 type Props = {
   peerNickname: string | null;
@@ -12,6 +13,7 @@ type Props = {
 const BURSTS = Array.from({ length: 12 }, (_, i) => i);
 
 export function MatchCelebration({ peerNickname, onComplete }: Props) {
+  const { t } = useI18n();
   useEffect(() => {
     const timer = window.setTimeout(onComplete, 2600);
     return () => window.clearTimeout(timer);
@@ -45,13 +47,13 @@ export function MatchCelebration({ peerNickname, onComplete }: Props) {
         </p>
         {peerNickname ? (
           <p className="text-lg text-white/90">
-            avec{" "}
+            {t.celebration.with}{" "}
             <span className="font-[family-name:var(--font-display)] text-2xl text-white">
               {peerNickname}
             </span>
           </p>
         ) : null}
-        <p className="text-sm text-white/55">Retrouve-les dans Matches</p>
+        <p className="text-sm text-white/55">{t.celebration.findInMatches}</p>
       </div>
     </div>
   );
