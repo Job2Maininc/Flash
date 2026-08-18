@@ -3,10 +3,7 @@ import { DEFAULT_LOCALE } from "./config";
 import { de } from "./de";
 import { en, type Dictionary } from "./en";
 
-const dictionaries: Record<Locale, Dictionary> = {
-  en: en as Dictionary,
-  de,
-};
+const dictionaries: Record<Locale, Dictionary> = { en, de };
 
 export function getDictionary(locale: Locale | null | undefined): Dictionary {
   return dictionaries[locale ?? DEFAULT_LOCALE] ?? dictionaries[DEFAULT_LOCALE];
