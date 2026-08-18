@@ -26,11 +26,16 @@ export function FlashIntro({ targetRef, onComplete }: Props) {
     const target = targetRef.current;
     if (!flying || !veil || !bloom || !target) return;
 
+    const flyingEl = flying;
+    const veilEl = veil;
+    const bloomEl = bloom;
+    const targetEl = target;
+
     const animations: Animation[] = [];
     let cancelled = false;
 
     function place(x: number, y: number, scale: number) {
-      flying!.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+      flyingEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     }
 
     async function run() {
@@ -39,16 +44,16 @@ export function FlashIntro({ targetRef, onComplete }: Props) {
       } catch {
         // Continue with fallback metrics if font loading fails.
       }
-      if (cancelled || !flyingRef.current) return;
+      if (cancelled) return;
 
-      const width = flying.offsetWidth;
-      const height = flying.offsetHeight;
+      const width = flyingEl.offsetWidth;
+      const height = flyingEl.offsetHeight;
       const startX = (window.innerWidth - width) / 2;
       const startY = (window.innerHeight - height) / 2;
       place(startX, startY, 0.72);
-      flying.style.opacity = "0";
+      flyingEl.style.opacity = "0";
 
-      const lightUp = flying.animate(
+      const lightUp = flyingEl.animate(
         [
           {
             opacity: 0,
@@ -80,8 +85,8 @@ export function FlashIntro({ targetRef, onComplete }: Props) {
       await wait(80);
       if (cancelled) return;
 
-      const from = flying.getBoundingClientRect();
-      const to = target.getBoundingClientRect();
+      const from = flyingEl.getBoundingClientRect();
+      const to = targetEl.getBoundingClientRect();
       if (!from.width || !to.width) {
         onComplete();
         return;
@@ -90,7 +95,7 @@ export function FlashIntro({ targetRef, onComplete }: Props) {
       const endX = to.left;
       const endY = to.top;
 
-      const dock = flying.animate(
+      const dock = flyingEl.animate(
         [
           {
             opacity: 1,
@@ -117,7 +122,7 @@ export function FlashIntro({ targetRef, onComplete }: Props) {
           fill: "forwards",
         },
       );
-      const veilOut = veil.animate(
+      const veilOut = veilEl.animate(
         [
           { opacity: 1 },
           { opacity: 0, offset: 0.5 },
@@ -129,7 +134,7 @@ export function FlashIntro({ targetRef, onComplete }: Props) {
           fill: "forwards",
         },
       );
-      const bloomOut = bloom.animate([{ opacity: 1 }, { opacity: 0 }], {
+      const bloomOut = bloomEl.animate([{ opacity: 1 }, { opacity: 0 }], {
         duration: 280,
         easing: "ease-out",
         fill: "forwards",
