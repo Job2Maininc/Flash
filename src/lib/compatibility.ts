@@ -1,3 +1,4 @@
+import { areGuestsGeoCompatible } from "./geo";
 import type { Guest, LookingFor, Sex } from "./types";
 
 export const SEX_OPTIONS: { value: Sex; label: string }[] = [
@@ -35,6 +36,7 @@ export function areGuestsCompatible(a: Guest, b: Guest): boolean {
   }
   return (
     sexMatchesLookingFor(b.sex, a.lookingFor) &&
-    sexMatchesLookingFor(a.sex, b.lookingFor)
+    sexMatchesLookingFor(a.sex, b.lookingFor) &&
+    areGuestsGeoCompatible(a, b)
   );
 }

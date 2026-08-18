@@ -11,6 +11,7 @@ export const en = {
     privacy: "Privacy",
     matches: "Matches",
     start: "Get started",
+    joinVideoChat: "Join video chat",
     language: "Language",
     backToCall: "← Call",
   },
@@ -102,6 +103,21 @@ export const en = {
     SEX_REQUIRED: "Choose your gender.",
     LOOKING_FOR_REQUIRED: "Tell us who you’re looking for.",
     NICKNAME_BANNED: "This nickname is temporarily blocked. Pick another one.",
+    SCOPE_REQUIRED: "Choose where you want to meet people.",
+  },
+  join: {
+    metaTitle: "Join video chat",
+    metaDescription:
+      "Join a Flash video chat. See who’s online, pick your vibe, and start a live call.",
+    peopleOnline: "people online",
+    scopeLabel: "Where to meet",
+    scopeLocal: "Locally",
+    scopeGlobal: "Globally",
+    scopeAllCountries: "All countries",
+    scopeGlobalRandom: "Random",
+    scopeRandom: "Random",
+    startChat: "Start video chat",
+    starting: "Starting…",
   },
   footer: {
     blurb:

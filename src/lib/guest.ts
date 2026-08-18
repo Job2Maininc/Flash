@@ -1,10 +1,11 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
-import type { Guest, LookingFor, Sex } from "./types";
+import type { GlobalMode, Guest, LookingFor, MeetScope, Sex } from "./types";
 import { getRedis, keys } from "./redis";
 import { isNicknameBanned } from "./bans";
 import { isLookingFor, isSex } from "./compatibility";
+import { isGlobalMode, isMeetScope } from "./geo";
 import { GUEST_ERROR } from "./guest-errors";
 
 const COOKIE_NAME = "flash_guest";
@@ -14,6 +15,9 @@ export type CreateGuestInput = {
   nickname: string;
   sex: Sex;
   lookingFor: LookingFor;
+  meetScope: MeetScope;
+  globalMode?: GlobalMode | null;
+  country?: string | null;
 };
 
 function secretKey() {
@@ -35,6 +39,12 @@ export async function createGuest(input: CreateGuestInput): Promise<Guest> {
   if (!isLookingFor(input.lookingFor)) {
     throw new Error(GUEST_ERROR.LOOKING_FOR_REQUIRED);
   }
+  if (!isMeetScope(input.meetScope)) {
+    throw new Error(GUEST_ERROR.SCOPE_REQUIRED);
+  }
+  if (input.meetScope === "global" && !isGlobalMode(input.globalMode)) {
+    throw new Error(GUEST_ERROR.SCOPE_REQUIRED);
+  }
 
   if (await isNicknameBanned(trimmed)) {
     throw new Error(GUEST_ERROR.NICKNAME_BANNED);
@@ -46,6 +56,9 @@ export async function createGuest(input: CreateGuestInput): Promise<Guest> {
     sex: input.sex,
     lookingFor: input.lookingFor,
     createdAt: Date.now(),
+    meetScope: input.meetScope,
+    globalMode: input.meetScope === "global" ? input.globalMode ?? "all" : null,
+    country: input.country ?? null,
   };
 
   const redis = getRedis();
@@ -56,6 +69,9 @@ export async function createGuest(input: CreateGuestInput): Promise<Guest> {
     nick: guest.nickname,
     sex: guest.sex,
     lookingFor: guest.lookingFor,
+    meetScope: guest.meetScope,
+    ...(guest.globalMode ? { globalMode: guest.globalMode } : {}),
+    ...(guest.country ? { country: guest.country } : {}),
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -105,6 +121,9 @@ export async function getGuestFromCookie(): Promise<Guest | null> {
       sex,
       lookingFor,
       createdAt: Date.now(),
+      meetScope: isMeetScope(payload.meetScope) ? payload.meetScope : "random",
+      globalMode: isGlobalMode(payload.globalMode) ? payload.globalMode : null,
+      country: typeof payload.country === "string" ? payload.country : null,
     };
     await redis.set(keys.guest(id), restored);
     return restored;

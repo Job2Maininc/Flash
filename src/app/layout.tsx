@@ -8,7 +8,7 @@ import { getDictionary } from "@/lib/i18n";
 const display = Fraunces({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["500", "700"],
+  weight: ["500", "600", "700"],
 });
 
 const body = DM_Sans({

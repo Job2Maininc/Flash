@@ -16,12 +16,19 @@ export type Sex = "homme" | "femme" | "non_binaire";
 
 export type LookingFor = "hommes" | "femmes" | "tous";
 
+export type MeetScope = "local" | "global" | "random";
+
+export type GlobalMode = "all" | "random";
+
 export type Guest = {
   id: string;
   nickname: string;
   sex: Sex;
   lookingFor: LookingFor;
   createdAt: number;
+  meetScope?: MeetScope;
+  globalMode?: GlobalMode | null;
+  country?: string | null;
 };
 
 export type Session = {

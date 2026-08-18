@@ -64,7 +64,7 @@ export default async function SafetyPage() {
         </p>
 
         <Link
-          href="/#enter"
+          href="/join"
           className="flash-btn flash-btn-primary mt-10 inline-flex px-6 py-3.5"
         >
           {t.safety.cta}

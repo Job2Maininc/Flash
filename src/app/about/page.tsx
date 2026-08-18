@@ -68,10 +68,10 @@ export default async function AboutPage() {
         </div>
 
         <Link
-          href="/#enter"
+          href="/join"
           className="flash-btn flash-btn-primary mt-12 inline-flex px-6 py-3.5"
         >
-          {t.about.join}
+          {t.nav.joinVideoChat}
         </Link>
       </main>
       <SiteFooter />

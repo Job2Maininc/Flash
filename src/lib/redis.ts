@@ -34,4 +34,5 @@ export const keys = {
   peerSignal: (id: string) => `user:${id}:peerSignal`,
   idleStrikes: (id: string) => `user:${id}:idleStrikes`,
   banNickname: (nick: string) => `ban:nickname:${nick}`,
+  online: "stats:online",
 } as const;

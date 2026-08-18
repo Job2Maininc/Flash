@@ -1,3 +1,4 @@
+import { pingOnline } from "./online";
 import { getRedis, keys } from "./redis";
 
 export const PRESENCE_TTL_SEC = 30;
@@ -8,6 +9,11 @@ export async function touchPresence(userId: string): Promise<void> {
   const now = Date.now();
   await redis.set(keys.lastSeen(userId), now, { ex: PRESENCE_TTL_SEC });
   await redis.set(keys.inBrowse(userId), "1", { ex: PRESENCE_TTL_SEC });
+  try {
+    await pingOnline(userId);
+  } catch {
+    // Online count is best-effort and must not block matching.
+  }
 }
 
 export async function clearPresence(userId: string): Promise<void> {

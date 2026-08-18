@@ -13,6 +13,7 @@ export const de = {
     privacy: "Datenschutz",
     matches: "Matches",
     start: "Loslegen",
+    joinVideoChat: "Videochat beitreten",
     language: "Sprache",
     backToCall: "← Anruf",
   },
@@ -105,6 +106,21 @@ export const de = {
     LOOKING_FOR_REQUIRED: "Sag uns, wen du suchst.",
     NICKNAME_BANNED:
       "Dieser Spitzname ist vorübergehend gesperrt. Wähle einen anderen.",
+    SCOPE_REQUIRED: "Sag uns, wo du Leute treffen willst.",
+  },
+  join: {
+    metaTitle: "Videochat beitreten",
+    metaDescription:
+      "Tritt einem Flash-Videochat bei. Sieh, wer online ist, wähle dein Setup und starte den Live-Anruf.",
+    peopleOnline: "Personen online",
+    scopeLabel: "Wo treffen",
+    scopeLocal: "Lokal",
+    scopeGlobal: "Global",
+    scopeAllCountries: "Alle Länder",
+    scopeGlobalRandom: "Zufällig",
+    scopeRandom: "Zufällig",
+    startChat: "Videochat starten",
+    starting: "Wird gestartet…",
   },
   footer: {
     blurb:

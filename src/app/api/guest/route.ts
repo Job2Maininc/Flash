@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createGuest, getGuestFromCookie } from "@/lib/guest";
 import { GUEST_ERROR } from "@/lib/guest-errors";
 import { isLookingFor, isSex } from "@/lib/compatibility";
+import { isGlobalMode, isMeetScope, readCountryFromHeaders } from "@/lib/geo";
 
 export async function GET() {
   try {
@@ -22,6 +23,8 @@ export async function POST(request: Request) {
       nickname?: string;
       sex?: string;
       lookingFor?: string;
+      meetScope?: string;
+      globalMode?: string | null;
     };
     const nickname = body.nickname ?? "";
     if (!isSex(body.sex)) {
@@ -36,10 +39,20 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
+    const meetScope = isMeetScope(body.meetScope) ? body.meetScope : "random";
+    if (meetScope === "global" && !isGlobalMode(body.globalMode)) {
+      return NextResponse.json(
+        { error: GUEST_ERROR.SCOPE_REQUIRED },
+        { status: 400 },
+      );
+    }
     const guest = await createGuest({
       nickname,
       sex: body.sex,
       lookingFor: body.lookingFor,
+      meetScope,
+      globalMode: isGlobalMode(body.globalMode) ? body.globalMode : null,
+      country: readCountryFromHeaders(request.headers),
     });
     return NextResponse.json({ guest });
   } catch (error) {
@@ -48,7 +61,8 @@ export async function POST(request: Request) {
       message === GUEST_ERROR.NICKNAME_TOO_SHORT ||
       message === GUEST_ERROR.SEX_REQUIRED ||
       message === GUEST_ERROR.LOOKING_FOR_REQUIRED ||
-      message === GUEST_ERROR.NICKNAME_BANNED
+      message === GUEST_ERROR.NICKNAME_BANNED ||
+      message === GUEST_ERROR.SCOPE_REQUIRED
         ? 400
         : 500;
     return NextResponse.json({ error: message }, { status });

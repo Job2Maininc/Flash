@@ -13,7 +13,7 @@ export default async function BrowsePage() {
   }
 
   if (!guest) {
-    redirect("/");
+    redirect("/join");
   }
 
   return (

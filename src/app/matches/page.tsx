@@ -18,7 +18,7 @@ export default async function MatchesPage() {
   }
 
   if (!guest) {
-    redirect("/");
+    redirect("/join");
   }
 
   let matches: Awaited<ReturnType<typeof listMatches>> = [];

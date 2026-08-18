@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { GuestForm } from "@/components/GuestForm";
 import { FeatureChips } from "@/components/FeatureChips";
 import { MarketingSection } from "@/components/MarketingSection";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -58,7 +57,7 @@ export default async function HomePage() {
             <FeatureChips />
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href="/#enter"
+                href="/join"
                 className="flash-btn flash-btn-primary px-6 py-3.5 text-base"
               >
                 {t.home.startFree}
@@ -147,7 +146,7 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-5xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--ink-faint)]">
-              {t.home.enterEyebrow}
+              {t.nav.joinVideoChat}
             </p>
             <h2 className="mt-2 font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
               {t.home.enterTitle}
@@ -155,17 +154,22 @@ export default async function HomePage() {
             <p className="mt-4 max-w-md text-base leading-relaxed text-[var(--ink-muted)]">
               {t.home.enterLead}
             </p>
-            <div className="relative mt-8 hidden aspect-[5/4] overflow-hidden lg:block">
-              <Image
-                src={images.community.src}
-                alt={images.community.alt}
-                fill
-                sizes="40vw"
-                className="object-cover"
-              />
-            </div>
+            <Link
+              href="/join"
+              className="flash-btn flash-btn-primary mt-8 inline-flex px-6 py-3.5 text-base"
+            >
+              {t.nav.joinVideoChat}
+            </Link>
           </div>
-          <GuestForm />
+          <div className="relative aspect-[5/4] overflow-hidden">
+            <Image
+              src={images.community.src}
+              alt={images.community.alt}
+              fill
+              sizes="40vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </section>
 
