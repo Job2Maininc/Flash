@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 type Props = {
   size?: number;
   className?: string;
@@ -7,6 +9,9 @@ type Props = {
 
 export function FlashLogo({ size = 32, className = "", glow = "soft" }: Props) {
   const glowOpacity = glow === "strong" ? 0.85 : 0.45;
+  const uid = useId().replace(/:/g, "");
+  const glowId = `flash-neon-glow-${uid}`;
+  const fillId = `flash-neon-fill-${uid}`;
 
   return (
     <svg
@@ -19,7 +24,7 @@ export function FlashLogo({ size = 32, className = "", glow = "soft" }: Props) {
     >
       <defs>
         <filter
-          id="flash-neon-glow"
+          id={glowId}
           x="-40%"
           y="-40%"
           width="180%"
@@ -32,7 +37,7 @@ export function FlashLogo({ size = 32, className = "", glow = "soft" }: Props) {
           </feMerge>
         </filter>
         <linearGradient
-          id="flash-neon-fill"
+          id={fillId}
           x1="24"
           y1="4"
           x2="24"
@@ -49,14 +54,14 @@ export function FlashLogo({ size = 32, className = "", glow = "soft" }: Props) {
         d="M27.5 3.5L11.5 26.5H22L17.5 44.5L36.5 21.5H26L31.5 3.5Z"
         fill="#e8ff4a"
         opacity={glowOpacity}
-        filter="url(#flash-neon-glow)"
+        filter={`url(#${glowId})`}
       />
 
       {/* Core bolt */}
       <path
         d="M27.5 3.5L11.5 26.5H22L17.5 44.5L36.5 21.5H26L31.5 3.5Z"
-        fill="url(#flash-neon-fill)"
-        filter="url(#flash-neon-glow)"
+        fill={`url(#${fillId})`}
+        filter={`url(#${glowId})`}
       />
     </svg>
   );

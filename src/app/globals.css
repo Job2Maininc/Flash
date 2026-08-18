@@ -309,3 +309,38 @@ body {
   background: rgba(232, 255, 74, 0.45);
   color: var(--ink);
 }
+
+@keyframes flash-intro-bloom {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(1.55);
+  }
+}
+
+.flash-intro-bloom {
+  width: min(52vmin, 28rem);
+  height: min(52vmin, 28rem);
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(244, 255, 122, 0.95) 0%,
+    rgba(232, 255, 74, 0.45) 38%,
+    rgba(232, 255, 74, 0) 70%
+  );
+  animation: flash-intro-bloom 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-intro-bloom {
+    animation: none;
+    opacity: 0;
+  }
+}

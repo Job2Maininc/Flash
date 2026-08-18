@@ -2,15 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { RefObject } from "react";
 import { FlashBrand } from "@/components/FlashBrand";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/components/LocaleProvider";
 
 type Props = {
   variant?: "light" | "dark";
+  brandRef?: RefObject<HTMLDivElement | null>;
+  brandHidden?: boolean;
 };
 
-export function SiteHeader({ variant = "light" }: Props) {
+export function SiteHeader({
+  variant = "light",
+  brandRef,
+  brandHidden = false,
+}: Props) {
   const { t } = useI18n();
   const pathname = usePathname();
   const dark = variant === "dark";
@@ -24,15 +31,20 @@ export function SiteHeader({ variant = "light" }: Props) {
 
   return (
     <header className="relative z-20 flex items-center justify-between gap-3 px-5 safe-top">
-      <FlashBrand
-        href="/"
-        wordmarkClassName={
-          dark
-            ? "text-2xl text-white sm:text-3xl"
-            : "text-2xl text-[var(--ink)] sm:text-3xl"
-        }
-        glow="strong"
-      />
+      <div
+        ref={brandRef}
+        className={`inline-flex ${brandHidden ? "opacity-0" : "opacity-100"}`}
+      >
+        <FlashBrand
+          href="/"
+          wordmarkClassName={
+            dark
+              ? "text-2xl text-white sm:text-3xl"
+              : "text-2xl text-[var(--ink)] sm:text-3xl"
+          }
+          glow="strong"
+        />
+      </div>
       <nav className="flex min-w-0 flex-1 items-center justify-end gap-3 overflow-x-auto sm:gap-5 lg:justify-center lg:gap-7">
         {links.map((link) => {
           const active = link.href === pathname;
