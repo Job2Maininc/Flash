@@ -14,44 +14,59 @@ function wait(ms: number) {
   });
 }
 
+function nextFrame() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
+  });
+}
+
+async function waitForFonts() {
+  try {
+    await Promise.race([document.fonts.ready, wait(280)]);
+  } catch {
+    // Use fallback metrics if font loading is slow or unavailable.
+  }
+}
+
 export function FlashIntro({ targetRef, onComplete }: Props) {
   const flyingRef = useRef<HTMLDivElement>(null);
   const veilRef = useRef<HTMLDivElement>(null);
   const bloomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const flying = flyingRef.current;
-    const veil = veilRef.current;
-    const bloom = bloomRef.current;
-    const target = targetRef.current;
-    if (!flying || !veil || !bloom || !target) return;
-
-    const flyingEl = flying;
-    const veilEl = veil;
-    const bloomEl = bloom;
-    const targetEl = target;
-
     const animations: Animation[] = [];
     let cancelled = false;
 
-    function place(x: number, y: number, scale: number) {
-      flyingEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-    }
-
     async function run() {
-      try {
-        await document.fonts.ready;
-      } catch {
-        // Continue with fallback metrics if font loading fails.
-      }
+      await waitForFonts();
+      await nextFrame();
       if (cancelled) return;
+
+      const flyingEl = flyingRef.current;
+      const veilEl = veilRef.current;
+      const bloomEl = bloomRef.current;
+      if (!flyingEl || !veilEl || !bloomEl) {
+        onComplete();
+        return;
+      }
+
+      let targetEl = targetRef.current;
+      for (let i = 0; i < 24; i += 1) {
+        if (targetEl && targetEl.getBoundingClientRect().width > 0) break;
+        await nextFrame();
+        if (cancelled) return;
+        targetEl = targetRef.current;
+      }
+      if (!targetEl || targetEl.getBoundingClientRect().width === 0) {
+        onComplete();
+        return;
+      }
 
       const width = flyingEl.offsetWidth;
       const height = flyingEl.offsetHeight;
       const startX = (window.innerWidth - width) / 2;
       const startY = (window.innerHeight - height) / 2;
-      place(startX, startY, 0.72);
-      flyingEl.style.opacity = "0";
+      flyingEl.style.transform = `translate(${startX}px, ${startY}px) scale(0.72)`;
 
       const lightUp = flyingEl.animate(
         [
@@ -123,11 +138,7 @@ export function FlashIntro({ targetRef, onComplete }: Props) {
         },
       );
       const veilOut = veilEl.animate(
-        [
-          { opacity: 1 },
-          { opacity: 0, offset: 0.5 },
-          { opacity: 0 },
-        ],
+        [{ opacity: 1 }, { opacity: 0, offset: 0.5 }, { opacity: 0 }],
         {
           duration: 620,
           easing: "cubic-bezier(0.22, 1, 0.36, 1)",
@@ -165,7 +176,8 @@ export function FlashIntro({ targetRef, onComplete }: Props) {
       />
       <div
         ref={flyingRef}
-        className="fixed left-0 top-0 origin-top-left opacity-0 will-change-transform"
+        className="fixed left-0 top-0 origin-top-left will-change-transform"
+        style={{ opacity: 0 }}
       >
         <FlashBrand
           size={120}

@@ -337,10 +337,3 @@ body {
   );
   animation: flash-intro-bloom 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .flash-intro-bloom {
-    animation: none;
-    opacity: 0;
-  }
-}

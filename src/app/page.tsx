@@ -3,13 +3,11 @@ import Link from "next/link";
 import { FeatureChips } from "@/components/FeatureChips";
 import { MarketingSection } from "@/components/MarketingSection";
 import { SiteFooter } from "@/components/SiteFooter";
-import { cookies } from "next/headers";
 import { HomeIntroHeader } from "@/components/HomeIntroHeader";
 import { AmbientOrbs } from "@/components/AmbientOrbs";
 import { clearGuestCookie } from "@/lib/guest";
 import { getLocale } from "@/lib/i18n/get-locale";
 import { getDictionary } from "@/lib/i18n";
-import { INTRO_COOKIE } from "@/lib/intro";
 import { localizedStockImages } from "@/lib/stock-images";
 
 export default async function HomePage() {
@@ -21,7 +19,6 @@ export default async function HomePage() {
 
   const t = getDictionary(await getLocale());
   const images = localizedStockImages(t);
-  const skipIntro = (await cookies()).get(INTRO_COOKIE)?.value === "1";
 
   return (
     <div className="relative min-h-dvh overflow-x-hidden bg-[var(--paper)] text-[var(--ink)]">
@@ -31,7 +28,7 @@ export default async function HomePage() {
         className="pointer-events-none absolute inset-0 opacity-[0.1] flash-grain"
       />
 
-      <HomeIntroHeader skipIntro={skipIntro} />
+      <HomeIntroHeader />
 
       <section className="relative mt-4 min-h-[min(88dvh,920px)] overflow-hidden">
         <Image
