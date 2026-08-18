@@ -118,6 +118,10 @@ export const en = {
     scopeRandom: "Random",
     startChat: "Start video chat",
     starting: "Starting…",
+    controlGender: "Gender",
+    controlName: "Name",
+    controlCountry: "Country",
+    controlLooking: "Looking for",
   },
   footer: {
     blurb:

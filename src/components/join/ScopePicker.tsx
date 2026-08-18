@@ -28,13 +28,13 @@ export function ScopePicker({
     <div className="relative">
       <JoinIconButton
         label={t.join.scopeLabel}
+        caption={t.join.controlCountry}
+        emoji={scope === "local" ? "📍" : "🌍"}
         active
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={onToggle}
-      >
-        {scope === "local" ? "📍" : "🌍"}
-      </JoinIconButton>
+      />
       <JoinMenu open={open}>
         <JoinMenuItem
           active={scope === "local"}

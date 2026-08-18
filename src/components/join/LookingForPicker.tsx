@@ -23,13 +23,13 @@ export function LookingForPicker({ value, open, onToggle, onChange }: Props) {
     <div className="relative">
       <JoinIconButton
         label={t.form.lookingFor}
+        caption={t.join.controlLooking}
+        emoji="👨👩"
         active={Boolean(value)}
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={onToggle}
-      >
-        👨👩
-      </JoinIconButton>
+      />
       <JoinMenu open={open} align="right">
         {options.map((option) => (
           <JoinMenuItem

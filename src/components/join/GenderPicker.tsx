@@ -34,13 +34,13 @@ export function GenderPicker({ value, open, onToggle, onChange }: Props) {
     <div className="relative">
       <JoinIconButton
         label={t.form.iAm}
+        caption={t.join.controlGender}
+        emoji={value ? SEX_EMOJI[value] : "👤"}
         active={Boolean(value)}
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={onToggle}
-      >
-        {value ? SEX_EMOJI[value] : "👤"}
-      </JoinIconButton>
+      />
       <JoinMenu open={open}>
         {options.map((option) => (
           <JoinMenuItem

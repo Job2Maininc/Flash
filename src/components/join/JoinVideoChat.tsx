@@ -108,7 +108,7 @@ export function JoinVideoChat() {
       <JoinStage onlineCount={onlineCount} />
 
       <div className="flex flex-col gap-2.5">
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           <GenderPicker
             value={sex}
             open={openPanel === "gender"}
@@ -118,7 +118,7 @@ export function JoinVideoChat() {
               setOpenPanel(null);
             }}
           />
-          <div className="hidden min-w-0 flex-1 sm:block">
+          <div className="hidden min-w-[12rem] flex-1 sm:block">
             <JoinNameField value={nickname} onChange={setNickname} />
           </div>
           <ScopePicker
@@ -129,17 +129,15 @@ export function JoinVideoChat() {
             onScope={selectScope}
             onGlobalMode={selectGlobalMode}
           />
-          <div className="ml-auto">
-            <LookingForPicker
-              value={lookingFor}
-              open={openPanel === "looking"}
-              onToggle={() => toggle("looking")}
-              onChange={(next) => {
-                setLookingFor(next);
-                setOpenPanel(null);
-              }}
-            />
-          </div>
+          <LookingForPicker
+            value={lookingFor}
+            open={openPanel === "looking"}
+            onToggle={() => toggle("looking")}
+            onChange={(next) => {
+              setLookingFor(next);
+              setOpenPanel(null);
+            }}
+          />
         </div>
         <div className="sm:hidden">
           <JoinNameField value={nickname} onChange={setNickname} />

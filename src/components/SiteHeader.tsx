@@ -15,11 +15,11 @@ export function SiteHeader({ variant = "light" }: Props) {
   const pathname = usePathname();
   const dark = variant === "dark";
   const links = [
-    { href: "/join", label: t.nav.joinVideoChat, strong: true },
-    { href: "/#how-it-works", label: t.nav.howItWorks, strong: false },
-    { href: "/about", label: t.nav.about, strong: false },
-    { href: "/safety", label: t.nav.safety, strong: false },
-    { href: "/privacy", label: t.nav.privacy, strong: false },
+    { href: "/join", label: t.nav.joinVideoChat },
+    { href: "/#how-it-works", label: t.nav.howItWorks },
+    { href: "/about", label: t.nav.about },
+    { href: "/safety", label: t.nav.safety },
+    { href: "/privacy", label: t.nav.privacy },
   ];
 
   return (
@@ -40,11 +40,7 @@ export function SiteHeader({ variant = "light" }: Props) {
             <Link
               key={link.href}
               href={link.href}
-              className={`shrink-0 font-[family-name:var(--font-display)] tracking-tight transition ${
-                link.strong
-                  ? "text-lg font-bold sm:text-xl lg:text-2xl"
-                  : "hidden text-base font-semibold md:inline lg:text-lg"
-              } ${
+              className={`shrink-0 font-[family-name:var(--font-display)] text-lg font-bold tracking-tight transition sm:text-xl lg:text-2xl ${
                 active
                   ? dark
                     ? "text-[var(--accent)]"
