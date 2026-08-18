@@ -23,7 +23,6 @@ import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
 import { AttachedVideo } from "@/components/AttachedVideo";
 import { MediaControls } from "@/components/MediaControls";
-import { LocalPreview } from "@/components/LocalPreview";
 import { Spinner } from "@/components/Spinner";
 import { StatusPill } from "@/components/StatusPill";
 
@@ -34,6 +33,7 @@ type RoomShellProps = {
   url: string;
   onPeerLeft?: () => void;
   onDisconnected?: () => void;
+  onConnected?: () => void;
 };
 
 const LiveKitRoomShell = memo(function LiveKitRoomShell({
@@ -41,6 +41,7 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
   url,
   onPeerLeft,
   onDisconnected,
+  onConnected,
 }: RoomShellProps) {
   return (
     <LiveKitRoom
@@ -55,6 +56,7 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
         disconnectOnPageLeave: true,
         videoCaptureDefaults: { facingMode: "user" },
       }}
+      onConnected={() => onConnected?.()}
       onDisconnected={() => onDisconnected?.()}
     >
       <PeerDisconnectListener onPeerLeft={onPeerLeft} />
@@ -215,6 +217,7 @@ type Props = {
   peerNickname: string | null;
   onPeerLeft?: () => void;
   onDisconnected?: () => void;
+  onConnected?: () => void;
 };
 
 export function VideoStage({
@@ -222,6 +225,7 @@ export function VideoStage({
   peerNickname,
   onPeerLeft,
   onDisconnected,
+  onConnected,
 }: Props) {
   const [creds, setCreds] = useState<{ token: string; url: string } | null>(
     null,
@@ -271,14 +275,14 @@ export function VideoStage({
 
   if (!creds) {
     return (
-      <LocalPreview className="absolute inset-0 h-full w-full">
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/50 text-white/85 backdrop-blur-[2px]">
+      <div className="absolute inset-0 h-full w-full">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/28 text-white/85 backdrop-blur-[2px]">
           <Spinner size="lg" />
           <p className="font-[family-name:var(--font-display)] text-lg">
             Connexion à l&apos;appel…
           </p>
         </div>
-      </LocalPreview>
+      </div>
     );
   }
 
@@ -289,6 +293,7 @@ export function VideoStage({
         url={creds.url}
         onPeerLeft={onPeerLeft}
         onDisconnected={onDisconnected}
+        onConnected={onConnected}
       />
     </PeerNicknameContext.Provider>
   );

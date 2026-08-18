@@ -43,6 +43,7 @@ export function BrowseClient() {
   const [forceOutOfCall, setForceOutOfCall] = useState(false);
   const [showMatchCelebration, setShowMatchCelebration] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [callReady, setCallReady] = useState(false);
   const [recallNotice, setRecallNotice] = useState<string | null>(null);
   const prevSessionState = useRef<SessionView["state"] | null>(null);
   const roomKey = session?.roomName ?? null;
@@ -50,6 +51,7 @@ export function BrowseClient() {
   const inCallSession =
     session?.state === "active" || session?.state === "matched";
   const inCall = inCallSession && !forceOutOfCall;
+  const showStablePreview = !mediaPrompt && (!inCall || !callReady);
 
   if (session?.peerNickname) {
     lastPeerNickname.current = session.peerNickname;
@@ -165,10 +167,12 @@ export function BrowseClient() {
 
   useEffect(() => {
     if (inCall && roomKey) {
+      setCallReady(false);
       setConnecting(true);
       const t = window.setTimeout(() => setConnecting(false), 900);
       return () => window.clearTimeout(t);
     }
+    setCallReady(false);
     setConnecting(false);
   }, [inCall, roomKey]);
 
@@ -297,6 +301,39 @@ export function BrowseClient() {
           />
         ) : null}
 
+        {showStablePreview ? (
+          <div className="absolute inset-0 h-full w-full flash-view-in">
+            <LocalPreview
+              key={previewSeed}
+              active
+              className="absolute inset-0 h-full w-full"
+              onReady={() => {
+                setMediaReady(true);
+                setMediaPrompt(false);
+              }}
+              onError={() => setMediaPrompt(true)}
+            >
+              {!inCall ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-black/55 px-6 text-center backdrop-blur-[3px]">
+                  <div className="relative flex items-center justify-center">
+                    <div className="absolute h-16 w-16 rounded-full bg-[var(--accent)]/20 flash-pulse-ring" />
+                    <Spinner size="lg" />
+                  </div>
+                  <div className="flash-fade-in space-y-2">
+                    <p className="font-[family-name:var(--font-display)] text-2xl text-white">
+                      On cherche ton match…
+                    </p>
+                    <p className="max-w-xs text-sm leading-relaxed text-white/65">
+                      File filtrée selon ton sexe et qui tu cherches. Dès qu&apos;une
+                      personne compatible est dispo, l&apos;appel démarre.
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+            </LocalPreview>
+          </div>
+        ) : null}
+
         {inCall && roomKey ? (
           <div className="absolute inset-0 h-full w-full flash-view-in">
             <SwipeSurface
@@ -312,6 +349,7 @@ export function BrowseClient() {
                 peerNickname={session?.peerNickname ?? null}
                 onPeerLeft={handlePeerLeft}
                 onDisconnected={handleLocalDisconnect}
+                onConnected={() => setCallReady(true)}
               />
             </SwipeSurface>
 
@@ -325,37 +363,6 @@ export function BrowseClient() {
                 </p>
               </div>
             ) : null}
-          </div>
-        ) : null}
-
-        {!inCall ? (
-          <div className="absolute inset-0 h-full w-full flash-view-in">
-            <LocalPreview
-            key={previewSeed}
-            active
-            className="absolute inset-0 h-full w-full"
-            onReady={() => {
-              setMediaReady(true);
-              setMediaPrompt(false);
-            }}
-            onError={() => setMediaPrompt(true)}
-          >
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-black/55 px-6 text-center backdrop-blur-[3px]">
-              <div className="relative flex items-center justify-center">
-                <div className="absolute h-16 w-16 rounded-full bg-[var(--accent)]/20 flash-pulse-ring" />
-                <Spinner size="lg" />
-              </div>
-              <div className="flash-fade-in space-y-2">
-                <p className="font-[family-name:var(--font-display)] text-2xl text-white">
-                  On cherche ton match…
-                </p>
-                <p className="max-w-xs text-sm leading-relaxed text-white/65">
-                  File filtrée selon ton sexe et qui tu cherches. Dès qu&apos;une
-                  personne compatible est dispo, l&apos;appel démarre.
-                </p>
-              </div>
-            </div>
-          </LocalPreview>
           </div>
         ) : null}
 
