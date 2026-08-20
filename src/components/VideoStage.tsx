@@ -5,6 +5,7 @@ import {
   memo,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -17,7 +18,7 @@ import {
   useRoomContext,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
-import type { RemoteParticipant, RemoteTrackPublication } from "livekit-client";
+import type { RemoteParticipant } from "livekit-client";
 import { RoomEvent } from "livekit-client";
 import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
@@ -30,6 +31,11 @@ import { useI18n } from "@/components/LocaleProvider";
 import { interpolate } from "@/lib/i18n";
 
 const PeerNicknameContext = createContext<string | null>(null);
+
+const LIVEKIT_ROOM_OPTIONS = {
+  disconnectOnPageLeave: true,
+  videoCaptureDefaults: { facingMode: "user" as const },
+};
 
 type RoomShellProps = {
   token: string;
@@ -55,12 +61,9 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
       audio
       className="absolute inset-0 h-full w-full"
       style={{ width: "100%", height: "100%" }}
-      options={{
-        disconnectOnPageLeave: true,
-        videoCaptureDefaults: { facingMode: "user" },
-      }}
-      onConnected={() => onConnected?.()}
-      onDisconnected={() => onDisconnected?.()}
+      options={LIVEKIT_ROOM_OPTIONS}
+      onConnected={onConnected}
+      onDisconnected={onDisconnected}
     >
       <PeerDisconnectListener onPeerLeft={onPeerLeft} />
       <StageInner onPeerLeft={onPeerLeft} />
@@ -81,40 +84,28 @@ function PeerDisconnectListener({
     if (!room) return;
     handled.current = false;
 
+    // Only treat a real participant leave as peer-left.
+    // TrackUnsubscribed fires on transient renegotiation / layer switches and
+    // must not end the call.
     const onParticipantDisconnected = (participant: RemoteParticipant) => {
       if (participant.isLocal || handled.current) return;
       handled.current = true;
       onPeerLeft?.();
     };
 
-    const onTrackUnsubscribed = (
-      _track: unknown,
-      publication: RemoteTrackPublication,
-      participant: RemoteParticipant,
-    ) => {
-      if (participant.isLocal || handled.current) return;
-      if (publication.source === Track.Source.Camera) {
-        handled.current = true;
-        onPeerLeft?.();
-      }
-    };
-
     room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
-    room.on(RoomEvent.TrackUnsubscribed, onTrackUnsubscribed);
     return () => {
       room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
-      room.off(RoomEvent.TrackUnsubscribed, onTrackUnsubscribed);
     };
   }, [room, onPeerLeft]);
 
   return null;
 }
 
+/** Camera publication with an attachable track — keep mounted even when muted. */
 function isCameraTrack(track: TrackReference): boolean {
   return Boolean(
-    track.source === Track.Source.Camera &&
-      track.publication?.track &&
-      !track.publication.isMuted,
+    track.source === Track.Source.Camera && track.publication?.track,
   );
 }
 
@@ -131,17 +122,24 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
     { onlySubscribed: true },
   );
 
-  const remote = cameraTracks.find(
-    (t) => !t.participant.isLocal && isCameraTrack(t as TrackReference),
-  ) as TrackReference | undefined;
-  const local = cameraTracks.find(
-    (t) => t.participant.isLocal && isCameraTrack(t as TrackReference),
-  ) as TrackReference | undefined;
+  const { remote, local } = useMemo(() => {
+    const remoteTrack = cameraTracks.find(
+      (t) => !t.participant.isLocal && isCameraTrack(t as TrackReference),
+    ) as TrackReference | undefined;
+    const localTrack = cameraTracks.find(
+      (t) => t.participant.isLocal && isCameraTrack(t as TrackReference),
+    ) as TrackReference | undefined;
+    return { remote: remoteTrack, local: localTrack };
+  }, [cameraTracks]);
 
+  const remoteSid = remote?.publication?.trackSid ?? null;
+  const localSid = local?.publication?.trackSid ?? null;
   const hasRemoteVideo = Boolean(remote);
-  const hasLocalVideo = Boolean(local);
   const waitingForPeer =
     !hasRemoteVideo && remoteParticipants.length === 0 && peerNickname;
+  const cameraOff = Boolean(
+    localParticipant && !localParticipant.isCameraEnabled,
+  );
 
   useEffect(() => {
     const count = remoteParticipants.length;
@@ -160,17 +158,28 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
   }, [remoteParticipants.length, onPeerLeft]);
 
   return (
-    <div className="absolute inset-0 h-full w-full flash-video-bg">
-      <div className="absolute inset-0 flex h-full w-full items-center justify-center">
-        {hasRemoteVideo && remote ? (
-          <AttachedVideo trackRef={remote} className="h-full w-full" />
-        ) : hasLocalVideo && local ? (
-          <AttachedVideo trackRef={local} className="h-full w-full" mirror />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-white/60">
+    <div className="call-surface absolute inset-0 h-full w-full flash-video-bg">
+      {/* Main stage: video stays mounted; placeholder overlays when empty */}
+      <div className="call-video absolute inset-0 flex h-full w-full items-center justify-center">
+        {hasRemoteVideo && remote && remoteSid ? (
+          <AttachedVideo
+            key={remoteSid}
+            trackRef={remote}
+            className="h-full w-full"
+          />
+        ) : local && localSid ? (
+          <AttachedVideo
+            key={localSid}
+            trackRef={local}
+            className="h-full w-full"
+            mirror
+          />
+        ) : null}
+        {!hasRemoteVideo && !local ? (
+          <div className="absolute inset-0 flex items-center justify-center text-white/60">
             <div className="h-10 w-10 animate-pulse rounded-full bg-white/20" />
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Top vignette for header legibility */}
@@ -179,13 +188,18 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
         aria-hidden
       />
 
-      {hasRemoteVideo && hasLocalVideo && local ? (
+      {hasRemoteVideo && local && localSid ? (
         <div className="absolute bottom-28 right-4 z-20 flex h-36 w-28 items-center justify-center overflow-hidden rounded-[1.25rem] border border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-2)] ring-1 ring-[var(--key-500)]/25 sm:bottom-32 sm:h-40 sm:w-32">
-          <AttachedVideo trackRef={local} className="h-full w-full" mirror />
+          <AttachedVideo
+            key={`pip-${localSid}`}
+            trackRef={local}
+            className="h-full w-full"
+            mirror
+          />
         </div>
-      ) : localParticipant && !localParticipant.isCameraEnabled ? (
+      ) : cameraOff ? (
         <div
-          className="absolute bottom-28 right-4 z-20 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-[1.25rem] border border-[var(--ink-600)] bg-[var(--ink-900)]/80 text-[var(--cam-paper)]/70 shadow-[var(--elev-1)] sm:bottom-32 sm:h-40 sm:w-32"
+          className="absolute bottom-28 right-4 z-20 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-[1.25rem] border border-[var(--ink-600)] bg-[var(--ink-900)]/90 text-[var(--cam-paper)]/70 shadow-[var(--elev-1)] sm:bottom-32 sm:h-40 sm:w-32"
           aria-hidden
         >
           <span className="text-2xl">📷</span>

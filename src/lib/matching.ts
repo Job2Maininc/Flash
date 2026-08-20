@@ -12,6 +12,7 @@ import {
 import {
   clearPresence,
   isUserStale,
+  STALE_IN_CALL_MS,
   touchPresence,
 } from "./presence";
 import { areGuestsCompatible } from "./compatibility";
@@ -175,7 +176,7 @@ async function applyStalePeerCheck(
   }
 
   const peerId = peerIdOf(session, userId);
-  if (!(await isUserStale(peerId))) {
+  if (!(await isUserStale(peerId, STALE_IN_CALL_MS))) {
     return session;
   }
 
