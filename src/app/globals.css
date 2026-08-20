@@ -376,7 +376,19 @@
 }
 
 .flash-video-bg {
-  background: var(--surface-dark);
+  background: var(--ink-900, var(--surface-dark));
+}
+
+/* Call surface: isolate video from page blend modes; own compositor layer */
+.call-surface {
+  isolation: isolate;
+}
+
+.call-video {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: paint;
+  background: var(--ink-900);
 }
 
 .flash-intro-bloom {

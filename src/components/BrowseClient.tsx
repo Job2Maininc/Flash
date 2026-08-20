@@ -150,6 +150,10 @@ export function BrowseClient() {
     leaveBrowse("disconnect");
   }, [leaveBrowse]);
 
+  const handleCallConnected = useCallback(() => {
+    setCallReady(true);
+  }, []);
+
   useEffect(() => {
     if (searchParams.get("recall") === "1") {
       setRecallNotice(t.browse.recallNotice);
@@ -270,7 +274,7 @@ export function BrowseClient() {
 
   return (
     <div className="relative flex min-h-dvh flex-col bg-[var(--ink-900)] text-[var(--cam-paper)]">
-      <NoiseOverlay className="opacity-[0.03]" />
+      {!inCall ? <NoiseOverlay className="opacity-[0.03]" /> : null}
 
       {showMatchCelebration ? (
         <MatchCelebration
@@ -329,7 +333,7 @@ export function BrowseClient() {
         ) : null}
 
         {inCall && roomKey ? (
-          <div className="absolute inset-0 h-full w-full flash-view-in">
+          <div className="absolute inset-0 h-full w-full">
             <SwipeSurface
               enabled={!swiping}
               canSwipeLeft={session?.myVote !== "left"}
@@ -343,7 +347,7 @@ export function BrowseClient() {
                 peerNickname={session?.peerNickname ?? null}
                 onPeerLeft={handlePeerLeft}
                 onDisconnected={handleLocalDisconnect}
-                onConnected={() => setCallReady(true)}
+                onConnected={handleCallConnected}
               />
             </SwipeSurface>
 
