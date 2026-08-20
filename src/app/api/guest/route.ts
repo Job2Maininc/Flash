@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { createGuest, getGuestFromCookie } from "@/lib/guest";
 import { GUEST_ERROR } from "@/lib/guest-errors";
 import { isLookingFor, isSex } from "@/lib/compatibility";
-import { isGlobalMode, isMeetScope, readCountryFromHeaders } from "@/lib/geo";
+import { isMeetScope, readCountryFromHeaders } from "@/lib/geo";
+import { normalizeCountryCode } from "@/lib/countries";
 
 export async function GET() {
   try {
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
       sex?: string;
       lookingFor?: string;
       meetScope?: string;
-      globalMode?: string | null;
+      preferredCountry?: string | null;
     };
     const nickname = body.nickname ?? "";
     if (!isSex(body.sex)) {
@@ -40,7 +41,11 @@ export async function POST(request: Request) {
       );
     }
     const meetScope = isMeetScope(body.meetScope) ? body.meetScope : "random";
-    if (meetScope === "global" && !isGlobalMode(body.globalMode)) {
+    const preferredCountry =
+      meetScope === "global"
+        ? normalizeCountryCode(body.preferredCountry ?? "")
+        : null;
+    if (meetScope === "global" && !preferredCountry) {
       return NextResponse.json(
         { error: GUEST_ERROR.SCOPE_REQUIRED },
         { status: 400 },
@@ -51,7 +56,7 @@ export async function POST(request: Request) {
       sex: body.sex,
       lookingFor: body.lookingFor,
       meetScope,
-      globalMode: isGlobalMode(body.globalMode) ? body.globalMode : null,
+      preferredCountry,
       country: readCountryFromHeaders(request.headers),
     });
     return NextResponse.json({ guest });

@@ -28,7 +28,10 @@ export type Guest = {
   createdAt: number;
   meetScope?: MeetScope;
   globalMode?: GlobalMode | null;
+  /** IP / detected geo country (ISO alpha-2) */
   country?: string | null;
+  /** Preferred country to meet when meetScope is global (ISO alpha-2) */
+  preferredCountry?: string | null;
 };
 
 export type Session = {
