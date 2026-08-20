@@ -263,9 +263,18 @@ export const de = {
     starting: "Wird gestartet…",
     safetyReminder:
       "Kamera an. Sei respektvoll. Jederzeit auflegen — ohne Erklärung.",
+    previewTitle: "Sieh dich selbst, bevor es live geht",
+    previewBody:
+      "Kamera und Mikrofon werden auf dem nächsten Screen freigegeben — nachdem du sagst, wer du bist und wen du suchst.",
+    selectGender: "Auswählen…",
+    selectLooking: "Auswählen…",
+    missingName: "Spitzname fehlt (mindestens 2 Zeichen).",
+    missingGender: "Wähle dein Geschlecht.",
+    missingLooking: "Sag, wen du suchst.",
+    missingScope: "Wähle, wo du Leute treffen willst.",
     controlGender: "Geschlecht",
     controlName: "Name",
-    controlCountry: "Land",
+    controlCountry: "Wo treffen",
     controlLooking: "Suche",
   },
   footer: {
