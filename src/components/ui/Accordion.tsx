@@ -61,13 +61,13 @@ function AccordionRow({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={onToggle}
-          className="flex w-full items-center justify-between gap-4 py-5 text-left font-[family-name:var(--font-camera-display)] text-xl font-semibold tracking-tight text-[var(--cam-paper)] sm:text-[1.35rem]"
+          className="flex min-h-11 w-full items-center justify-between gap-4 py-4 text-left font-[family-name:var(--font-camera-display)] text-[1.125rem] font-semibold tracking-tight text-[var(--cam-paper)] sm:text-[1.35rem] active:opacity-90"
         >
           {item.question}
           <span
             aria-hidden
             className={cn(
-              "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--ink-600)] text-[var(--faint)] transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)]",
+              "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--ink-600)] text-[var(--faint)] transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)]",
               open && "rotate-180",
             )}
           >
@@ -132,7 +132,9 @@ export function ScrollReveal({ className, children, ...props }: RevealProps) {
       ref={ref}
       className={cn(
         "transition-[opacity,transform] duration-[var(--dur-base)] ease-[var(--ease-out)]",
-        visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+        visible
+          ? "translate-y-0 opacity-100"
+          : "translate-y-2 opacity-0 lg:translate-y-4",
         className,
       )}
       {...props}

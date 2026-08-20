@@ -6,7 +6,7 @@ import { useI18n } from "@/components/LocaleProvider";
 import { cn } from "@/lib/cn";
 
 const baseBtn = cn(
-  "flex h-11 w-11 items-center justify-center rounded-full sm:h-11 sm:w-11",
+  "flex h-14 w-14 items-center justify-center rounded-full sm:h-12 sm:w-12",
   "border border-[var(--ink-600)] bg-[var(--ink-800)] text-[var(--cam-paper)]",
   "transition-[background-color,border-color,transform] duration-[var(--dur-fast)]",
   "hover:border-[var(--ink-700)] hover:bg-[var(--ink-700)] active:scale-[.97]",

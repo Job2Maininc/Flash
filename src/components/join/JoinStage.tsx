@@ -20,7 +20,7 @@ export function JoinStage({ onlineCount }: Props) {
     count === 1 ? t.join.personOnline : t.join.peopleOnline;
 
   return (
-    <div className="relative min-h-[min(42dvh,420px)] w-full overflow-hidden rounded-[var(--radius-xl)] border border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-2)] sm:min-h-[min(46dvh,480px)]">
+    <div className="relative min-h-[min(45dvh,420px)] w-full overflow-hidden rounded-[var(--radius-xl)] border border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-2)] sm:min-h-[min(46dvh,480px)]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"

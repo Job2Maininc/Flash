@@ -24,6 +24,7 @@ import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
 import { AttachedVideo } from "@/components/AttachedVideo";
 import { CallControlBar } from "@/components/browse/CallControlBar";
+import { DraggablePip } from "@/components/browse/DraggablePip";
 import { MediaControls } from "@/components/MediaControls";
 import { Spinner } from "@/components/Spinner";
 import { StatusPill } from "@/components/StatusPill";
@@ -116,6 +117,7 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
   const { localParticipant } = useLocalParticipant();
   const prevRemoteCount = useRef(0);
   const peerLeftHandled = useRef(false);
+  const [landscapePhone, setLandscapePhone] = useState(false);
 
   const cameraTracks = useTracks(
     [{ source: Track.Source.Camera, withPlaceholder: false }],
@@ -142,6 +144,16 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
   );
 
   useEffect(() => {
+    const mq = window.matchMedia(
+      "(orientation: landscape) and (max-height: 500px)",
+    );
+    const sync = () => setLandscapePhone(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
     const count = remoteParticipants.length;
     if (
       prevRemoteCount.current > 0 &&
@@ -159,8 +171,7 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
 
   return (
     <div className="call-surface absolute inset-0 h-full w-full flash-video-bg">
-      {/* Main stage: video stays mounted; placeholder overlays when empty */}
-      <div className="call-video absolute inset-0 flex h-full w-full items-center justify-center">
+      <div className="call-video absolute inset-0 h-full w-full">
         {hasRemoteVideo && remote && remoteSid ? (
           <AttachedVideo
             key={remoteSid}
@@ -182,24 +193,23 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
         ) : null}
       </div>
 
-      {/* Top vignette for header legibility */}
       <div
         className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28 bg-gradient-to-b from-black/55 to-transparent"
         aria-hidden
       />
 
       {hasRemoteVideo && local && localSid ? (
-        <div className="absolute bottom-28 right-4 z-20 flex h-36 w-28 items-center justify-center overflow-hidden rounded-[1.25rem] border border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-2)] ring-1 ring-[var(--key-500)]/25 sm:bottom-32 sm:h-40 sm:w-32">
+        <DraggablePip>
           <AttachedVideo
             key={`pip-${localSid}`}
             trackRef={local}
             className="h-full w-full"
             mirror
           />
-        </div>
+        </DraggablePip>
       ) : cameraOff ? (
         <div
-          className="absolute bottom-28 right-4 z-20 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-[1.25rem] border border-[var(--ink-600)] bg-[var(--ink-900)]/90 text-[var(--cam-paper)]/70 shadow-[var(--elev-1)] sm:bottom-32 sm:h-40 sm:w-32"
+          className="absolute bottom-[max(7rem,env(safe-area-inset-bottom))] right-4 z-20 flex h-32 w-24 flex-col items-center justify-center gap-1 rounded-[1.25rem] border border-[var(--ink-600)] bg-[var(--ink-900)]/90 text-[var(--cam-paper)]/70 shadow-[var(--elev-1)] sm:bottom-32 sm:h-40 sm:w-32"
           aria-hidden
         >
           <span className="text-2xl">📷</span>
@@ -217,7 +227,13 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
         </div>
       ) : null}
 
-      <CallControlBar className="absolute bottom-28 left-4 z-30 safe-bottom sm:bottom-32">
+      <CallControlBar
+        className={
+          landscapePhone
+            ? "absolute right-4 top-1/2 z-30 -translate-y-1/2"
+            : "absolute bottom-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] left-1/2 z-30 -translate-x-1/2 sm:bottom-32 sm:left-4 sm:translate-x-0"
+        }
+      >
         <MediaControls />
       </CallControlBar>
 
@@ -226,10 +242,18 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
           <StatusPill
             variant="glass"
             animate={false}
-            className="font-[family-name:var(--font-camera-display)] text-base"
+            className="font-[family-name:var(--font-camera-display)] text-base !bg-[rgba(22,18,28,0.92)] !backdrop-blur-none"
           >
             {peerNickname}
           </StatusPill>
+        </div>
+      ) : null}
+
+      {landscapePhone ? (
+        <div className="pointer-events-none absolute inset-x-0 top-[max(0.75rem,env(safe-area-inset-top))] z-40 flex justify-center px-4 md:hidden">
+          <p className="rounded-[var(--radius-pill)] bg-[rgba(22,18,28,0.92)] px-4 py-2 text-center font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--cam-paper)]">
+            {t.home.rotatePrompt}
+          </p>
         </div>
       ) : null}
     </div>
@@ -303,7 +327,7 @@ export function VideoStage({
   if (!creds) {
     return (
       <div className="absolute inset-0 h-full w-full">
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[var(--ink-900)]/40 text-[var(--cam-paper)]/85 backdrop-blur-[2px]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[rgba(22,18,28,0.92)] text-[var(--cam-paper)]/85">
           <div className="relative flex h-16 w-16 items-center justify-center">
             <span
               aria-hidden

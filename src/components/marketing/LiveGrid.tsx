@@ -65,8 +65,8 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
   const rows = cols === 3 ? 3 : 3;
   const visibleCount = cols * rows;
   const tiles = useMemo(
-    () => portraits.slice(0, Math.max(visibleCount, 9)),
-    [portraits, visibleCount],
+    () => portraits.slice(0, cols === 3 ? 9 : Math.max(visibleCount, 9)),
+    [portraits, visibleCount, cols],
   );
   const order = useMemo(() => centerOutOrder(cols, rows), [cols, rows]);
 
@@ -79,13 +79,17 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
   }, []);
 
   useEffect(() => {
-    const saveData =
-      "connection" in navigator &&
-      Boolean(
-        (navigator as Navigator & { connection?: { saveData?: boolean } })
-          .connection?.saveData,
-      );
-    setStaticMode(reduced || saveData);
+    const conn = (
+      navigator as Navigator & {
+        connection?: { saveData?: boolean; effectiveType?: string };
+      }
+    ).connection;
+    const saveData = Boolean(conn?.saveData);
+    const slow =
+      conn?.effectiveType === "2g" ||
+      conn?.effectiveType === "slow-2g" ||
+      conn?.effectiveType === "3g";
+    setStaticMode(reduced || saveData || Boolean(slow));
   }, [reduced]);
 
   useEffect(() => {
@@ -133,9 +137,29 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
     function pair() {
       const n = Math.min(tiles.length, visibleCount);
       if (n < 2) return;
-      let a = Math.floor(Math.random() * n);
-      let b = Math.floor(Math.random() * n);
-      while (b === a) b = Math.floor(Math.random() * n);
+      // Prefer adjacent tiles so the line never spans the whole grid.
+      const a = Math.floor(Math.random() * n);
+      const neighbors: number[] = [];
+      const col = a % cols;
+      const row = Math.floor(a / cols);
+      const candidates = [
+        a - 1,
+        a + 1,
+        a - cols,
+        a + cols,
+      ];
+      for (const c of candidates) {
+        if (c < 0 || c >= n) continue;
+        const cCol = c % cols;
+        const cRow = Math.floor(c / cols);
+        if (Math.abs(cCol - col) + Math.abs(cRow - row) === 1) {
+          neighbors.push(c);
+        }
+      }
+      const b =
+        neighbors.length > 0
+          ? neighbors[Math.floor(Math.random() * neighbors.length)]
+          : (a + 1) % n;
       setConnected([a, b]);
       setLine(measureLine(a, b));
       hold = window.setTimeout(() => {
@@ -150,7 +174,7 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
       window.clearTimeout(timeout);
       window.clearTimeout(hold);
     };
-  }, [staticMode, inView, entered, tiles.length, visibleCount, measureLine]);
+  }, [staticMode, inView, entered, tiles.length, visibleCount, measureLine, cols]);
 
   useEffect(() => {
     if (!connected) return;
@@ -165,7 +189,12 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
   return (
     <div
       ref={rootRef}
-      className={cn("relative origin-top scale-[0.85] sm:scale-90 lg:scale-[0.85]", className)}
+      className={cn(
+        "relative origin-top scale-[0.85] sm:scale-90 lg:scale-[0.85]",
+        // Crop the third row on mobile so the fold shows “there’s more”.
+        "max-md:max-h-[min(52vw,280px)] max-md:overflow-hidden",
+        className,
+      )}
       data-static={staticMode ? "true" : undefined}
     >
       <div className="absolute left-3 top-3 z-10 sm:left-4 sm:top-4">

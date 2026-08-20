@@ -44,6 +44,8 @@ export const en = {
       "18+",
     ],
     startFree: "Start video chat",
+    stickyCtaHint: "Free · no signup",
+    rotatePrompt: "Rotate your phone for a better call",
     whyFlash: "Why Flash",
     howEyebrow: "How it works",
     howTitle: "Three moves. A real meeting.",

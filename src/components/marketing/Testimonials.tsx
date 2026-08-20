@@ -38,14 +38,14 @@ export function Testimonials({ eyebrow, title, quotes }: Props) {
         ))}
       </div>
 
-      <div className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:hidden">
+      <div className="mt-8 -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 scroll-px-5 md:hidden">
         {quotes.map((item, index) => (
           <QuoteCard
             key={`m-${item.name}-${index}`}
             item={item}
             highlight={index === 1}
             inverted
-            className="w-[min(82vw,22rem)] shrink-0 snap-start"
+            className="w-[calc(100vw-3.5rem-24px)] max-w-[22rem] shrink-0 snap-start"
           />
         ))}
       </div>

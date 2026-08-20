@@ -49,7 +49,7 @@ export function LanguageSwitcher({ variant = "light" }: Props) {
             disabled={pending}
             onClick={() => select(code)}
             className={cn(
-              "px-2.5 py-1.5 transition-colors duration-[var(--dur-fast)]",
+              "px-3 py-2.5 transition-colors duration-[var(--dur-fast)] active:opacity-80",
               active
                 ? isDark
                   ? "bg-[var(--ink-700)] text-[var(--cam-paper)]"
