@@ -92,11 +92,107 @@ export const de = {
         name: "Inès",
         detail: "Bordeaux · sucht alle",
       },
+      {
+        quote:
+          "Gut, dass ich vorher sagen kann, wen ich suche. Ab der ersten Sekunde fühlte es sich respektvoll an.",
+        name: "Jules",
+        detail: "Berlin · sucht Frauen",
+      },
+      {
+        quote:
+          "Kein endloses Chatten. Kamera an, echte Stimmung, dann swipen. Genau das wollte ich.",
+        name: "Mara",
+        detail: "Wien · sucht Männer",
+      },
+      {
+        quote:
+          "Die Rückrufliste zählt. Dienstags gematcht, donnerstags weitergesprochen — ohne irgendwo einen Handle zu suchen.",
+        name: "Sam",
+        detail: "Zürich · sucht alle",
+      },
     ],
     enterEyebrow: "Bei Flash einsteigen",
     enterTitle: "Bereit für deinen nächsten Flash?",
     enterLead:
       "Kostenlos starten. Kamera + Mikro nötig. Respekt, Consent und kein erzwungenes Ghosting: swipen und weiter.",
+    howFrameLabels: ["Warteschlange", "Verbunden", "Dein Zug"],
+    features: [
+      {
+        eyebrow: "Matching",
+        title: "Triff jemanden, der zu dem passt, was du willst",
+        body: "Wir paaren nach Geschlecht und Vorliebe, dann geht’s live. Weniger Rauschen, mehr Chemie.",
+        linkLabel: "Matching starten",
+        href: "/join",
+        demo: "match",
+      },
+      {
+        eyebrow: "Sicherheit",
+        title: "Du behältst die Kontrolle über jeden Anruf",
+        body: "Melden, blockieren, jederzeit auflegen. Consent ist die Basis — kein Nice-to-have.",
+        linkLabel: "Sicherheitsregeln lesen",
+        href: "/safety",
+        demo: "safety",
+      },
+      {
+        eyebrow: "Präsenz",
+        title: "Echte Gesichter, keine polierten Profile",
+        body: "Du erscheinst per Kamera. Matches, die sitzen, bleiben auf deiner Liste zum Zurückrufen.",
+        linkLabel: "So funktioniert’s",
+        href: "/#how-it-works",
+        demo: "verified",
+      },
+    ],
+    trustEyebrow: "Vertrauen & Sicherheit",
+    trustTitle: "Für Erwachsene, die das Echte wollen",
+    trustLead:
+      "Video-Dating braucht klare Regeln. Das ist der Flash-Rahmen — ruhig, ohne Marketing-Sprech.",
+    trustBullets: [
+      {
+        title: "Nur 18+",
+        body: "Flash ist für Erwachsene. Wenn du unsicher beim Alter bist, leg auf.",
+      },
+      {
+        title: "Consent zuerst",
+        body: "Ein Nein, Stille oder Unwohlsein beendet es. Links swipen und weiter — ohne Erklärung.",
+      },
+      {
+        title: "Melden & blockieren",
+        body: "Missbrauch kann gemeldet werden. Konten, die die Linie überschreiten, können gesperrt werden.",
+      },
+      {
+        title: "Daten bleiben schlank",
+        body: "Gastmodus, signiertes Session-Cookie, kein E-Mail-Konto. Streams über LiveKit; Aufnahmen speichern wir nicht.",
+      },
+    ],
+    faqEyebrow: "FAQ",
+    faqTitle: "Klare Antworten",
+    faq: [
+      {
+        id: "camera",
+        question: "Brauche ich Kamera und Mikrofon?",
+        answer:
+          "Ja. Flash ist Live-Video. Dein Browser fragt vor dem Anruf nach Zugriff.",
+      },
+      {
+        id: "free",
+        question: "Ist der Start kostenlos?",
+        answer:
+          "Ja. Spitzname wählen, sagen wer du bist und wen du suchst, dann in die Warteschlange.",
+      },
+      {
+        id: "match",
+        question: "Was passiert bei einem gegenseitigen Like?",
+        answer:
+          "Es wird ein Match. Die Person landet auf deiner Match-Liste zum späteren Video-Rückruf.",
+      },
+      {
+        id: "safe",
+        question: "Wie beende ich einen schlechten Anruf?",
+        answer:
+          "Jederzeit auflegen oder nach links swipen. Du schuldest keine Erklärung. Details stehen auf der Sicherheitsseite.",
+      },
+    ],
+    closingTitle: "Dein nächstes Gespräch ist einen Tipp entfernt",
   },
   chips: {
     videoDating: "Video-Dating",
@@ -151,6 +247,11 @@ export const de = {
     blurb:
       "Flash ist eine Live-Video-Dating-Seite. Weniger starre Profile, mehr echte Gespräche — swipen, matchen, zurückrufen.",
     age: "18+ · Einvernehmliches Dating",
+    colProduct: "Produkt",
+    colCompany: "Unternehmen",
+    colLegal: "Rechtliches",
+    impressum: "Impressum",
+    terms: "AGB",
   },
   about: {
     metaTitle: "Über uns",

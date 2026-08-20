@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { SiteFooter } from "@/components/SiteFooter";
-import { SiteHeader } from "@/components/SiteHeader";
-import { AmbientOrbs } from "@/components/AmbientOrbs";
+import { CameraFooter } from "@/components/marketing/CameraFooter";
+import { CameraHeader } from "@/components/marketing/CameraHeader";
+import { Button } from "@/components/ui/Button";
+import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 import { getLocale } from "@/lib/i18n/get-locale";
 import { getDictionary } from "@/lib/i18n";
 import { localizedStockImages } from "@/lib/stock-images";
@@ -21,21 +22,16 @@ export default async function SafetyPage() {
   const images = localizedStockImages(t);
 
   return (
-    <div className="relative min-h-dvh bg-[var(--paper)] text-[var(--ink)]">
-      <AmbientOrbs variant="warm" className="opacity-50" />
-      <SiteHeader />
+    <div className="relative min-h-dvh bg-[var(--ink-900)] text-[var(--cam-paper)]">
+      <NoiseOverlay />
+      <div className="h-16 pt-[env(safe-area-inset-top)]" />
+      <CameraHeader />
       <main className="relative z-10 mx-auto max-w-3xl px-5 pb-20 pt-10">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--ink-faint)]">
-          {t.safety.eyebrow}
-        </p>
-        <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl tracking-tight sm:text-5xl">
-          {t.safety.title}
-        </h1>
-        <p className="mt-5 text-lg leading-relaxed text-[var(--ink-muted)]">
-          {t.safety.lead}
-        </p>
+        <p className="cam-eyebrow text-[var(--key-400)]">{t.safety.eyebrow}</p>
+        <h1 className="cam-display-l mt-3">{t.safety.title}</h1>
+        <p className="cam-body-l mt-5 text-[var(--muted)]">{t.safety.lead}</p>
 
-        <div className="relative mt-10 aspect-[16/10] overflow-hidden">
+        <div className="relative mt-10 aspect-[16/10] overflow-hidden rounded-[var(--radius-xl)]">
           <Image
             src={images.safety.src}
             alt={images.safety.alt}
@@ -48,29 +44,27 @@ export default async function SafetyPage() {
 
         <ul className="mt-12 space-y-8">
           {t.safety.tips.map((tip) => (
-            <li key={tip.title}>
-              <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--ink)]">
-                {tip.title}
-              </h2>
-              <p className="mt-2 text-base leading-relaxed text-[var(--ink-muted)]">
+            <li
+              key={tip.title}
+              className="border-t border-[var(--ink-700)] pt-6"
+            >
+              <h2 className="cam-h2 text-[var(--cam-paper)]">{tip.title}</h2>
+              <p className="mt-2 text-base leading-relaxed text-[var(--muted)]">
                 {tip.body}
               </p>
             </li>
           ))}
         </ul>
 
-        <p className="mt-12 text-sm leading-relaxed text-[var(--ink-faint)]">
+        <p className="mt-12 text-sm leading-relaxed text-[var(--faint)]">
           {t.safety.emergency}
         </p>
 
-        <Link
-          href="/join"
-          className="flash-btn flash-btn-primary mt-10 inline-flex px-6 py-3.5"
-        >
-          {t.safety.cta}
+        <Link href="/join" className="mt-10 inline-flex">
+          <Button size="lg">{t.safety.cta}</Button>
         </Link>
       </main>
-      <SiteFooter />
+      <CameraFooter />
     </div>
   );
 }

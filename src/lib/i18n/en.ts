@@ -90,11 +90,107 @@ export const en = {
         name: "Inès",
         detail: "Bordeaux · looking for everyone",
       },
+      {
+        quote:
+          "I liked that I could say who I am looking for before the call. It felt respectful from the first second.",
+        name: "Jules",
+        detail: "Berlin · looking for women",
+      },
+      {
+        quote:
+          "No endless chat. Camera on, real vibe, then swipe. That is the product I wanted.",
+        name: "Mara",
+        detail: "Vienna · looking for men",
+      },
+      {
+        quote:
+          "The recall list matters. We matched on Tuesday and talked again on Thursday without hunting for a handle.",
+        name: "Sam",
+        detail: "Zurich · looking for everyone",
+      },
     ],
     enterEyebrow: "Join Flash",
     enterTitle: "Ready for your next flash?",
     enterLead:
       "Free to start. Camera + mic required. Respect, consent, and no forced ghosting: swipe and move on.",
+    howFrameLabels: ["Queue", "Connected", "Your move"],
+    features: [
+      {
+        eyebrow: "Matching",
+        title: "Meet someone who fits what you asked for",
+        body: "We pair by gender and preference first, then put you on live video. Less noise, more chemistry.",
+        linkLabel: "Start matching",
+        href: "/join",
+        demo: "match",
+      },
+      {
+        eyebrow: "Safety",
+        title: "You stay in control of every call",
+        body: "Report, block, hang up anytime. Consent is the floor — not a nice-to-have.",
+        linkLabel: "Read safety rules",
+        href: "/safety",
+        demo: "safety",
+      },
+      {
+        eyebrow: "Presence",
+        title: "Real faces, not polished profiles",
+        body: "You show up on camera. Matches you like stay on your list so you can call them back.",
+        linkLabel: "See how it works",
+        href: "/#how-it-works",
+        demo: "verified",
+      },
+    ],
+    trustEyebrow: "Trust & safety",
+    trustTitle: "Built for adults who want the real thing",
+    trustLead:
+      "Video dating needs clear rules. Here is what Flash commits to — calmly, without marketing spin.",
+    trustBullets: [
+      {
+        title: "18+ only",
+        body: "Flash is for adults. If you are unsure about someone’s age, leave the call.",
+      },
+      {
+        title: "Consent first",
+        body: "A no, silence, or discomfort ends it. Swipe left and move on — no explanation owed.",
+      },
+      {
+        title: "Reporting & blocks",
+        body: "Abusive behaviour can be reported. Accounts that cross the line can be blocked.",
+      },
+      {
+        title: "Data stays lean",
+        body: "Guest mode, signed session cookie, no email account required. Streams go through LiveKit; we do not keep your call recordings.",
+      },
+    ],
+    faqEyebrow: "FAQ",
+    faqTitle: "Straight answers",
+    faq: [
+      {
+        id: "camera",
+        question: "Do I need a camera and microphone?",
+        answer:
+          "Yes. Flash is live video. Your browser will ask for access before a call starts.",
+      },
+      {
+        id: "free",
+        question: "Is it free to start?",
+        answer:
+          "Yes. Create a nickname, set who you are and who you want to meet, then join the queue.",
+      },
+      {
+        id: "match",
+        question: "What happens if we both swipe right?",
+        answer:
+          "It becomes a match. They appear on your Matches list so you can call them back later.",
+      },
+      {
+        id: "safe",
+        question: "How do I leave a bad call?",
+        answer:
+          "Hang up or swipe left anytime. You do not owe an explanation. Read the safety page for the full frame.",
+      },
+    ],
+    closingTitle: "Your next conversation is one tap away",
   },
   chips: {
     videoDating: "Video dating",
@@ -148,6 +244,11 @@ export const en = {
     blurb:
       "Flash is a live video dating site. Fewer frozen profiles, more real conversations — swipe, match, call back.",
     age: "18+ · Consensual dating",
+    colProduct: "Product",
+    colCompany: "Company",
+    colLegal: "Legal",
+    impressum: "Imprint",
+    terms: "Terms",
   },
   about: {
     metaTitle: "About",

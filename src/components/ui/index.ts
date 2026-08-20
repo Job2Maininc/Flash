@@ -1,3 +1,5 @@
+export { Accordion, ScrollReveal } from "./Accordion";
+export { DeviceFrame } from "./DeviceFrame";
 export { Button } from "./Button";
 export { Card } from "./Card";
 export { Badge, LiveBadge } from "./Badge";
