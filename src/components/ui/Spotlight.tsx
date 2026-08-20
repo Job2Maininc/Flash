@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/cn";
 
@@ -9,17 +9,30 @@ type Props = {
   size?: number;
 };
 
-/** Cursor-following spotlight. Disabled on touch / reduced motion. */
+const FINE_DESKTOP = "(pointer: fine) and (min-width: 1024px)";
+
+/** Cursor-following spotlight. Mounted only on fine pointers ≥1024px. */
 export function Spotlight({ className, size = 420 }: Props) {
   const reduced = useReducedMotion();
+  const [enabled, setEnabled] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const pos = useRef({ x: 0, y: 0, tx: 0, ty: 0 });
   const raf = useRef(0);
 
   useEffect(() => {
-    if (reduced) return;
-    if (window.matchMedia("(hover: none)").matches) return;
+    if (reduced) {
+      setEnabled(false);
+      return;
+    }
+    const mq = window.matchMedia(FINE_DESKTOP);
+    const sync = () => setEnabled(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, [reduced]);
 
+  useEffect(() => {
+    if (!enabled) return;
     const el = ref.current;
     if (!el) return;
 
@@ -45,9 +58,9 @@ export function Spotlight({ className, size = 420 }: Props) {
       window.removeEventListener("pointermove", onMove);
       cancelAnimationFrame(raf.current);
     };
-  }, [reduced, size]);
+  }, [enabled, size]);
 
-  if (reduced) return null;
+  if (reduced || !enabled) return null;
 
   return (
     <div

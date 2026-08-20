@@ -27,12 +27,20 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const menuId = useId();
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const scrollYRef = useRef(0);
 
   const links = [
     { href: "/#how-it-works", label: t.nav.howItWorks },
     { href: "/about", label: t.nav.about },
     { href: "/safety", label: t.nav.safety },
+  ];
+
+  const legalLinks = [
+    { href: "/privacy", label: t.nav.privacy },
+    { href: "/safety", label: t.footer.impressum },
+    { href: "/privacy", label: t.footer.terms },
   ];
 
   useEffect(() => {
@@ -42,19 +50,69 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Close menu on route change.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Body scroll lock (position:fixed — required on iOS).
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    closeRef.current?.focus();
+    scrollYRef.current = window.scrollY;
+    const { body, documentElement } = document;
+    const prev = {
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    };
+    body.style.position = "fixed";
+    body.style.top = `-${scrollYRef.current}px`;
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+    documentElement.style.overflow = "hidden";
+
+    return () => {
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.width = prev.width;
+      body.style.overflow = prev.overflow;
+      documentElement.style.overflow = "";
+      window.scrollTo(0, scrollYRef.current);
+    };
+  }, [open]);
+
+  // Focus trap + Esc.
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    const focusables = panel?.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    focusables?.[0]?.focus();
 
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab" || !focusables?.length) return;
+      const list = Array.from(focusables);
+      const first = list[0];
+      const last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
+
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
+      hamburgerRef.current?.focus();
     };
   }, [open]);
 
@@ -62,14 +120,14 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
     <>
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-200 ease-[var(--ease-out)]",
+          "fixed inset-x-0 top-0 z-40 transition-[background-color,border-color] duration-200 ease-[var(--ease-out)]",
           "pt-[env(safe-area-inset-top)]",
           scrolled
-            ? "border-b border-[var(--ink-700)] bg-[rgba(14,11,18,.72)] backdrop-blur-[16px] backdrop-saturate-[140%]"
+            ? "border-b border-[var(--ink-700)] bg-[rgba(14,11,18,0.92)] md:bg-[rgba(14,11,18,.72)] md:backdrop-blur-[16px] md:backdrop-saturate-[140%]"
             : "border-b border-transparent bg-transparent",
         )}
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-5">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-5 md:h-16">
           <div
             ref={brandRef}
             className={cn(
@@ -105,19 +163,25 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
           </nav>
 
           <div className="flex items-center gap-2">
-            <LanguageSwitcher variant="dark" />
-            <Link href="/join" className="hidden sm:inline-flex">
-              <Button size="sm">{t.join.startChat}</Button>
+            <div className="hidden md:block">
+              <LanguageSwitcher variant="dark" />
+            </div>
+            <Link href="/join" className="hidden min-[390px]:inline-flex md:inline-flex">
+              <Button size="sm">{t.nav.start}</Button>
             </Link>
             <button
+              ref={hamburgerRef}
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-pill)] border border-[var(--ink-600)] text-[var(--cam-paper)] md:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-pill)] border border-[var(--ink-600)] text-[var(--cam-paper)] active:scale-[.97] md:hidden"
               aria-expanded={open}
               aria-controls={menuId}
               aria-label={open ? "Close menu" : "Open menu"}
               onClick={() => setOpen((v) => !v)}
             >
-              <span aria-hidden className="font-[family-name:var(--font-mono)] text-lg">
+              <span
+                aria-hidden
+                className="font-[family-name:var(--font-mono)] text-lg"
+              >
                 {open ? "✕" : "☰"}
               </span>
             </button>
@@ -127,21 +191,25 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
 
       {open ? (
         <div
+          ref={panelRef}
           id={menuId}
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex flex-col bg-[var(--ink-900)] px-5 pb-10 pt-20 md:hidden"
+          className="fixed inset-0 z-50 flex flex-col bg-[var(--ink-900)] px-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(5rem,calc(env(safe-area-inset-top)+4rem))] md:hidden"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setOpen(false);
+          }}
         >
           <button
-            ref={closeRef}
             type="button"
-            className="absolute right-5 top-5 inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-pill)] border border-[var(--ink-600)] text-[var(--cam-paper)]"
+            className="absolute right-5 top-[max(1.25rem,env(safe-area-inset-top))] inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-pill)] border border-[var(--ink-600)] text-[var(--cam-paper)] active:scale-[.97]"
             aria-label="Close menu"
             onClick={() => setOpen(false)}
           >
             ✕
           </button>
-          <nav className="mt-6 flex flex-col gap-2">
+
+          <nav className="mt-2 flex flex-col gap-1">
             {links.map((link, i) => (
               <MenuLink
                 key={link.href}
@@ -153,11 +221,33 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
               </MenuLink>
             ))}
           </nav>
-          <Link href="/join" className="mt-10" onClick={() => setOpen(false)}>
+
+          <Link
+            href="/join"
+            className="mt-8"
+            onClick={() => setOpen(false)}
+          >
             <Button size="lg" className="w-full">
               {t.join.startChat}
             </Button>
           </Link>
+
+          <div className="mt-auto flex flex-col gap-6 pt-10">
+            <LanguageSwitcher variant="dark" />
+            <ul className="flex flex-wrap gap-x-5 gap-y-3">
+              {legalLinks.map((link) => (
+                <li key={`${link.href}-${link.label}`}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.12em] text-[var(--faint)] active:text-[var(--cam-paper)]"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       ) : null}
     </>
@@ -179,7 +269,7 @@ function MenuLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className="cam-menu-item border-b border-[var(--ink-700)] py-4 font-[family-name:var(--font-camera-display)] text-3xl font-bold tracking-tight text-[var(--cam-paper)]"
+      className="cam-menu-item border-b border-[var(--ink-700)] py-4 font-[family-name:var(--font-camera-display)] text-[length:var(--type-display-l)] font-bold tracking-tight text-[var(--cam-paper)] active:opacity-80"
       style={{ animationDelay: `${delay}ms` }}
     >
       {children}
