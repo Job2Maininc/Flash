@@ -129,9 +129,9 @@ function ScreenSetup({ active }: { active: boolean }) {
       </div>
 
       <div className="mt-1 flex-1 space-y-2.5">
-        <Field label="Name" value="Alex" />
-        <Field label="Gender" value="Non-binary" />
-        <Field label="Looking for" value="Everyone" />
+        <Field label="Name" value="····" />
+        <Field label="Gender" value="—" />
+        <Field label="Looking for" value="—" />
         <Field label="Where" value="Nearby" />
       </div>
 
