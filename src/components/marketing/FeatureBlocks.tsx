@@ -27,7 +27,11 @@ export function FeatureBlocks({ features }: Props) {
       {features.map((feature, index) => {
         const flip = index % 2 === 1;
         return (
-          <Section key={feature.title} className="!py-[clamp(3rem,8vw,6rem)]">
+          <Section
+            key={feature.title}
+            alt={index % 2 === 1}
+            seam={index === 0}
+          >
             <ScrollReveal>
               <div
                 className={cn(

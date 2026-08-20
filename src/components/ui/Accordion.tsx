@@ -67,11 +67,19 @@ function AccordionRow({
           <span
             aria-hidden
             className={cn(
-              "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--ink-600)] text-sm transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)]",
+              "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--ink-600)] text-[var(--faint)] transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)]",
               open && "rotate-180",
             )}
           >
-            ↓
+            <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M4 6l4 4 4-4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </span>
         </button>
       </h3>
@@ -85,7 +93,9 @@ function AccordionRow({
         )}
       >
         <div className="overflow-hidden">
-          <p className="cam-body pb-5 text-[var(--muted)]">{item.answer}</p>
+          <p className="cam-body pb-5 text-[var(--muted)] text-pretty">
+            {item.answer}
+          </p>
         </div>
       </div>
     </div>

@@ -48,7 +48,7 @@ export function HowItWorks({ eyebrow, title, lead, steps }: Props) {
   }, []);
 
   return (
-    <Section id="how-it-works">
+    <Section id="how-it-works" seam>
       <ScrollReveal>
         <p className="cam-eyebrow text-[var(--faint)]">{eyebrow}</p>
         <h2 className="cam-h2 mt-3 max-w-[18ch] text-balance">{title}</h2>

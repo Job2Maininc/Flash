@@ -62,6 +62,7 @@ Review surface: `/styleguide` (noindex).
 3. **No hero cards** / floating promo badges on media.
 4. **One job per section** — eyebrow, title, short lead.
 5. Motion supports hierarchy (reveal, tile enter, connect line) — never noise.
+6. **One rail:** `Section` → `px-5` + `max-w-6xl` (FAQ `max-w-[800px]`). Padding `clamp(72px, 10vw, 160px)`. Alternate `alt` / `inverted` + `seam` hairlines.
 
 ## Product surfaces
 

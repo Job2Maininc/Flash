@@ -23,7 +23,7 @@ export function ClosingCta({ title, cta, talkingSuffix }: Props) {
   const echoes = HERO_PORTRAITS.slice(0, 4);
 
   return (
-    <section className="relative flex min-h-[min(88dvh,860px)] items-center justify-center overflow-hidden px-5 py-24">
+    <section className="relative flex min-h-[min(88dvh,860px)] items-center justify-center overflow-hidden border-t border-[var(--ink-700)] px-5 py-[clamp(72px,10vw,160px)]">
       <div aria-hidden className="cam-spill pointer-events-none absolute inset-0" />
       {echoes.map((tile, i) => (
         <div

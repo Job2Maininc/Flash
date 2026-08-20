@@ -419,6 +419,7 @@
   letter-spacing: -0.03em;
   font-weight: 700;
   max-width: 24ch;
+  text-wrap: balance;
 }
 
 .cam-h2 {
@@ -427,6 +428,7 @@
   line-height: 1.05;
   letter-spacing: -0.03em;
   font-weight: 700;
+  text-wrap: balance;
 }
 
 .cam-eyebrow {
@@ -443,6 +445,7 @@
   font-size: var(--type-body);
   line-height: 1.6;
   max-width: 62ch;
+  text-wrap: pretty;
 }
 
 .cam-body-l {
@@ -450,6 +453,7 @@
   font-size: var(--type-body-l);
   line-height: 1.55;
   max-width: 52ch;
+  text-wrap: pretty;
 }
 
 .cam-spill {
