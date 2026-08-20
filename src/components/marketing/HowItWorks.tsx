@@ -129,10 +129,10 @@ function ScreenSetup({ active }: { active: boolean }) {
       </div>
 
       <div className="mt-1 flex-1 space-y-2.5">
-        <Field label="Name" value="····" />
-        <Field label="Gender" value="—" />
-        <Field label="Looking for" value="—" />
-        <Field label="Where" value="Nearby" />
+        <Field label="Name" value="Jordan" />
+        <Field label="Gender" value="Woman" />
+        <Field label="Looking for" value="Men" />
+        <Field label="Where" value="Germany" />
       </div>
 
       <div className="rounded-[var(--radius-pill)] bg-[var(--key-500)] py-2.5 text-center text-sm font-medium text-[var(--paper)] shadow-[var(--glow-key)]">

@@ -6,6 +6,7 @@ import { getRedis, keys } from "./redis";
 import { isNicknameBanned } from "./bans";
 import { isLookingFor, isSex } from "./compatibility";
 import { isGlobalMode, isMeetScope } from "./geo";
+import { normalizeCountryCode } from "./countries";
 import { GUEST_ERROR } from "./guest-errors";
 
 const COOKIE_NAME = "flash_guest";
@@ -18,6 +19,7 @@ export type CreateGuestInput = {
   meetScope: MeetScope;
   globalMode?: GlobalMode | null;
   country?: string | null;
+  preferredCountry?: string | null;
 };
 
 function secretKey() {
@@ -42,7 +44,11 @@ export async function createGuest(input: CreateGuestInput): Promise<Guest> {
   if (!isMeetScope(input.meetScope)) {
     throw new Error(GUEST_ERROR.SCOPE_REQUIRED);
   }
-  if (input.meetScope === "global" && !isGlobalMode(input.globalMode)) {
+  const preferredCountry =
+    input.meetScope === "global"
+      ? normalizeCountryCode(input.preferredCountry ?? "")
+      : null;
+  if (input.meetScope === "global" && !preferredCountry) {
     throw new Error(GUEST_ERROR.SCOPE_REQUIRED);
   }
 
@@ -57,8 +63,9 @@ export async function createGuest(input: CreateGuestInput): Promise<Guest> {
     lookingFor: input.lookingFor,
     createdAt: Date.now(),
     meetScope: input.meetScope,
-    globalMode: input.meetScope === "global" ? input.globalMode ?? "all" : null,
+    globalMode: input.meetScope === "global" ? "all" : null,
     country: input.country ?? null,
+    preferredCountry,
   };
 
   const redis = getRedis();
@@ -72,6 +79,9 @@ export async function createGuest(input: CreateGuestInput): Promise<Guest> {
     meetScope: guest.meetScope,
     ...(guest.globalMode ? { globalMode: guest.globalMode } : {}),
     ...(guest.country ? { country: guest.country } : {}),
+    ...(guest.preferredCountry
+      ? { preferredCountry: guest.preferredCountry }
+      : {}),
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -124,6 +134,10 @@ export async function getGuestFromCookie(): Promise<Guest | null> {
       meetScope: isMeetScope(payload.meetScope) ? payload.meetScope : "random",
       globalMode: isGlobalMode(payload.globalMode) ? payload.globalMode : null,
       country: typeof payload.country === "string" ? payload.country : null,
+      preferredCountry:
+        typeof payload.preferredCountry === "string"
+          ? normalizeCountryCode(payload.preferredCountry)
+          : null,
     };
     await redis.set(keys.guest(id), restored);
     return restored;

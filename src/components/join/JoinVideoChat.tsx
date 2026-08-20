@@ -1,14 +1,15 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { JoinField, JoinFieldIcon } from "@/components/join/JoinField";
 import { JoinStage } from "@/components/join/JoinStage";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/components/LocaleProvider";
 import { useOnlineCount } from "@/hooks/useOnlineCount";
+import { COUNTRIES } from "@/lib/countries";
 import { GUEST_ERROR, type GuestErrorCode } from "@/lib/guest-errors";
-import type { GlobalMode, LookingFor, MeetScope, Sex } from "@/lib/types";
+import type { LookingFor, MeetScope, Sex } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 const selectClass =
@@ -16,15 +17,22 @@ const selectClass =
 
 export function JoinVideoChat() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const onlineCount = useOnlineCount();
   const [nickname, setNickname] = useState("");
   const [sex, setSex] = useState<Sex | "">("");
   const [lookingFor, setLookingFor] = useState<LookingFor | "">("");
   const [meetScope, setMeetScope] = useState<MeetScope>("random");
-  const [globalMode, setGlobalMode] = useState<GlobalMode | null>(null);
+  const [preferredCountry, setPreferredCountry] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const sortedCountries = useMemo(() => {
+    const key = locale === "de" ? "de" : "en";
+    return [...COUNTRIES].sort((a, b) =>
+      a[key].localeCompare(b[key], locale, { sensitivity: "base" }),
+    );
+  }, [locale]);
 
   function translateError(code: string | undefined, fallback: string): string {
     if (code && code in GUEST_ERROR) {
@@ -46,7 +54,8 @@ export function JoinVideoChat() {
           sex,
           lookingFor,
           meetScope,
-          globalMode: meetScope === "global" ? globalMode : null,
+          preferredCountry:
+            meetScope === "global" ? preferredCountry || null : null,
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -64,19 +73,29 @@ export function JoinVideoChat() {
     if (nickname.trim().length < 2) return t.join.missingName;
     if (!sex) return t.join.missingGender;
     if (!lookingFor) return t.join.missingLooking;
-    if (meetScope === "global" && !globalMode) return t.join.missingScope;
+    if (meetScope === "global" && !preferredCountry) {
+      return t.join.missingCountry;
+    }
     return null;
   })();
 
   const ready = missingHint === null;
 
-  function onScopeChange(next: MeetScope) {
-    setMeetScope(next);
-    if (next === "global") {
-      setGlobalMode((current) => current ?? "all");
+  const locationValue =
+    meetScope === "global" && preferredCountry
+      ? `country:${preferredCountry}`
+      : meetScope;
+
+  function onLocationChange(value: string) {
+    if (value === "local" || value === "random") {
+      setMeetScope(value);
+      setPreferredCountry("");
       return;
     }
-    setGlobalMode(null);
+    if (value.startsWith("country:")) {
+      setMeetScope("global");
+      setPreferredCountry(value.slice("country:".length));
+    }
   }
 
   return (
@@ -219,31 +238,20 @@ export function JoinVideoChat() {
           }
         >
           <select
-            value={
-              meetScope === "global"
-                ? `global:${globalMode ?? "all"}`
-                : meetScope
-            }
-            onChange={(e) => {
-              const v = e.target.value;
-              if (v === "local" || v === "random") {
-                onScopeChange(v);
-                return;
-              }
-              if (v.startsWith("global:")) {
-                onScopeChange("global");
-                setGlobalMode(v.split(":")[1] as GlobalMode);
-              }
-            }}
+            value={locationValue}
+            onChange={(e) => onLocationChange(e.target.value)}
             aria-label={t.join.scopeLabel}
             className={selectClass}
           >
             <option value="random">{t.join.scopeRandom}</option>
             <option value="local">{t.join.scopeLocal}</option>
-            <option value="global:all">{t.join.scopeGlobal} — {t.join.scopeAllCountries}</option>
-            <option value="global:random">
-              {t.join.scopeGlobal} — {t.join.scopeGlobalRandom}
-            </option>
+            <optgroup label={t.join.scopeAllCountries}>
+              {sortedCountries.map((country) => (
+                <option key={country.code} value={`country:${country.code}`}>
+                  {locale === "de" ? country.de : country.en}
+                </option>
+              ))}
+            </optgroup>
           </select>
         </JoinField>
       </div>

@@ -1,4 +1,5 @@
 import type { Guest, GlobalMode, MeetScope } from "./types";
+import { normalizeCountryCode } from "./countries";
 
 export const MEET_SCOPES = ["local", "global", "random"] as const;
 
@@ -18,28 +19,35 @@ export function readCountryFromHeaders(headers: Headers): string | null {
     headers.get("cf-ipcountry") ??
     headers.get("x-country-code");
   if (!raw) return null;
-  const code = raw.trim().toUpperCase();
-  if (!code || code === "XX" || code === "T1" || code === "ZZ") return null;
-  return code.slice(0, 2);
+  return normalizeCountryCode(raw);
 }
 
 function effectiveScope(guest: Guest): MeetScope {
   return guest.meetScope ?? "random";
 }
 
-function isWorldwide(guest: Guest): boolean {
+/**
+ * Country this guest wants to meet people from:
+ * - local → their IP country
+ * - global → preferredCountry (chosen from the full list)
+ * - random → none (worldwide)
+ */
+export function targetCountry(guest: Guest): string | null {
   const scope = effectiveScope(guest);
-  return scope === "random" || scope === "global";
+  if (scope === "local") return guest.country ?? null;
+  if (scope === "global") return guest.preferredCountry ?? null;
+  return null;
 }
 
-/** Reciprocal location preference. Local-only guests stay in-country. */
+/** Reciprocal location preference. */
 export function areGuestsGeoCompatible(a: Guest, b: Guest): boolean {
-  if (isWorldwide(a) && isWorldwide(b)) return true;
+  const wantA = targetCountry(a);
+  const wantB = targetCountry(b);
 
-  if (effectiveScope(a) === "local" && effectiveScope(b) === "local") {
-    if (!a.country || !b.country) return true;
-    return a.country === b.country;
-  }
+  // A asks for a country → B must be there (if we know B's geo).
+  if (wantA && b.country && b.country !== wantA) return false;
+  // B asks for a country → A must be there (if we know A's geo).
+  if (wantB && a.country && a.country !== wantB) return false;
 
-  return false;
+  return true;
 }
