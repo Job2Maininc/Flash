@@ -45,6 +45,7 @@ export function BrowseClient() {
   const wasInCall = useRef(false);
   const peerLeftHandled = useRef(false);
   const lastPeerNickname = useRef<string | null>(null);
+  const leaveTimerRef = useRef<number | null>(null);
   const [forceOutOfCall, setForceOutOfCall] = useState(false);
   const [showMatchCelebration, setShowMatchCelebration] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -234,6 +235,12 @@ export function BrowseClient() {
   }, [session, processPeerLeft]);
 
   useEffect(() => {
+    // Cancel a deferred leave from a StrictMode remount cleanup.
+    if (leaveTimerRef.current != null) {
+      window.clearTimeout(leaveTimerRef.current);
+      leaveTimerRef.current = null;
+    }
+
     function onLeave() {
       leaveBrowse("disconnect");
     }
@@ -243,7 +250,11 @@ export function BrowseClient() {
     return () => {
       window.removeEventListener("pagehide", onLeave);
       window.removeEventListener("beforeunload", onLeave);
-      leaveBrowse("disconnect");
+      // Defer so React StrictMode remount can cancel before presence is cleared.
+      leaveTimerRef.current = window.setTimeout(() => {
+        leaveBrowse("disconnect");
+        leaveTimerRef.current = null;
+      }, 150);
     };
   }, [leaveBrowse]);
 

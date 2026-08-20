@@ -18,7 +18,7 @@ import {
   useRoomContext,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
-import type { RemoteParticipant, RemoteTrackPublication } from "livekit-client";
+import type { RemoteParticipant } from "livekit-client";
 import { RoomEvent } from "livekit-client";
 import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
@@ -84,29 +84,18 @@ function PeerDisconnectListener({
     if (!room) return;
     handled.current = false;
 
+    // Only treat a real participant leave as peer-left.
+    // TrackUnsubscribed fires on transient renegotiation / layer switches and
+    // must not end the call.
     const onParticipantDisconnected = (participant: RemoteParticipant) => {
       if (participant.isLocal || handled.current) return;
       handled.current = true;
       onPeerLeft?.();
     };
 
-    const onTrackUnsubscribed = (
-      _track: unknown,
-      publication: RemoteTrackPublication,
-      participant: RemoteParticipant,
-    ) => {
-      if (participant.isLocal || handled.current) return;
-      if (publication.source === Track.Source.Camera) {
-        handled.current = true;
-        onPeerLeft?.();
-      }
-    };
-
     room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
-    room.on(RoomEvent.TrackUnsubscribed, onTrackUnsubscribed);
     return () => {
       room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
-      room.off(RoomEvent.TrackUnsubscribed, onTrackUnsubscribed);
     };
   }, [room, onPeerLeft]);
 
