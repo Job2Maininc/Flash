@@ -1,5 +1,6 @@
 "use client";
 
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/cn";
 
 type Props = {
@@ -7,9 +8,10 @@ type Props = {
   className?: string;
 };
 
-/** Infinite CSS marquee — pauses on hover. */
+/** Infinite CSS marquee — static when reduced motion is preferred. */
 export function Marquee({ items, className }: Props) {
-  const row = [...items, ...items];
+  const reduced = useReducedMotion();
+  const row = reduced ? items : [...items, ...items];
 
   return (
     <div
@@ -17,8 +19,14 @@ export function Marquee({ items, className }: Props) {
         "cam-marquee relative overflow-hidden border-y border-[var(--ink-700)] bg-[var(--ink-900)] py-3.5",
         className,
       )}
+      data-static={reduced ? "true" : undefined}
     >
-      <div className="cam-marquee-track flex w-max gap-10 whitespace-nowrap will-change-transform">
+      <div
+        className={cn(
+          "flex gap-10 whitespace-nowrap",
+          reduced ? "w-full flex-wrap justify-center px-5" : "cam-marquee-track w-max will-change-transform",
+        )}
+      >
         {row.map((item, i) => (
           <span
             key={`${item}-${i}`}

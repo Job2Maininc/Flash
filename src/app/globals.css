@@ -714,18 +714,43 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+.cam-skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-pill);
+  background: var(--key-500);
+  color: var(--paper);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-weight: 500;
+  box-shadow: var(--glow-key);
+}
+
+.cam-skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  outline: none;
+}
+
+.cam-skip-link:focus-visible {
+  outline: 2px solid var(--cam-paper);
+  outline-offset: 3px;
+}
+
 * {
   box-sizing: border-box;
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--key-500);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: rgba(232, 255, 74, 0.45);
-  color: var(--ink);
+  background: rgba(255, 122, 69, 0.4);
+  color: var(--cam-paper);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -736,5 +761,23 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .cam-marquee-track,
+  .cam-tile-float,
+  .cam-tile-media,
+  .cam-search-ring,
+  .cam-search-ring-delay,
+  .cam-count-in,
+  .cam-demo-bar,
+  .cam-demo-avatar,
+  .cam-echo-tile,
+  .flash-pulse-ring,
+  .flash-connect-bar {
+    animation: none !important;
+  }
+
+  .cam-marquee-track {
+    transform: none !important;
   }
 }

@@ -26,7 +26,7 @@ export default function JoinPage() {
       />
       <NoiseOverlay className="opacity-[0.04]" />
       <CameraHeader />
-      <main className="relative z-10 pt-20">
+      <main id="main" className="relative z-10 pt-20">
         <JoinVideoChat />
       </main>
     </div>

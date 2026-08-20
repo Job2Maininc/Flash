@@ -298,7 +298,7 @@ export function BrowseClient() {
         </div>
       </header>
 
-      <main className="relative flex-1 min-h-0">
+      <main id="main" className="relative flex-1 min-h-0">
         {!mediaReady && mediaPrompt ? (
           <MediaPermissionPrompt
             onGranted={() => {

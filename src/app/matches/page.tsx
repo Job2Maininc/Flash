@@ -52,7 +52,7 @@ export default async function MatchesPage() {
         <LanguageSwitcher variant="dark" />
       </header>
 
-      <main className="relative z-10 mx-auto w-full max-w-lg px-5 pb-12 pt-8">
+      <main id="main" className="relative z-10 mx-auto w-full max-w-lg px-5 pb-12 pt-8">
         <h1 className="font-[family-name:var(--font-camera-display)] text-4xl tracking-tight">
           {t.matches.title}
           {matches.length > 0 ? (

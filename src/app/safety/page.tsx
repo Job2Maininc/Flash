@@ -26,7 +26,7 @@ export default async function SafetyPage() {
       <NoiseOverlay />
       <div className="h-16 pt-[env(safe-area-inset-top)]" />
       <CameraHeader />
-      <main className="relative z-10 mx-auto max-w-3xl px-5 pb-20 pt-10">
+      <main id="main" className="relative z-10 mx-auto max-w-3xl px-5 pb-20 pt-10">
         <p className="cam-eyebrow text-[var(--key-400)]">{t.safety.eyebrow}</p>
         <h1 className="cam-display-l mt-3">{t.safety.title}</h1>
         <p className="cam-body-l mt-5 text-[var(--muted)]">{t.safety.lead}</p>

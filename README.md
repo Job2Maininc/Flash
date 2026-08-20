@@ -46,6 +46,8 @@ Ouvre `http://localhost:3000` sur **deux navigateurs** (ou téléphone + PC en H
 
 Pages : `/about`, `/safety`, `/privacy`.
 
+Design system notes: see [`DESIGN.md`](./DESIGN.md) (Camera Light tokens, primitives, a11y checklist).
+
 ## Deploy Vercel
 
 1. Pousse le repo et importe-le dans Vercel (framework Next.js).

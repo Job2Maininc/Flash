@@ -6,6 +6,9 @@ export const de = {
     description:
       "Dating per Live-Video. Sag, wer du bist und wen du suchst, swipen zum Matchen, Favoriten später zurückrufen.",
   },
+  a11y: {
+    skipToContent: "Zum Inhalt springen",
+  },
   nav: {
     howItWorks: "So funktioniert’s",
     about: "Über uns",

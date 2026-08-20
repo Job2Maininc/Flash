@@ -41,7 +41,7 @@ export default function StyleguidePage() {
       <div aria-hidden className="cam-spill pointer-events-none absolute inset-x-0 top-0 h-[42vh]" />
 
       <header className="relative z-10 flex items-center justify-between px-5 py-5 safe-top">
-        <p className="cam-eyebrow">Camera Light · Phase 1</p>
+        <p className="cam-eyebrow">Camera Light · Design system</p>
         <Link
           href="/"
           className="text-sm text-[var(--muted)] underline-offset-4 transition hover:text-[var(--cam-paper)] hover:underline"
@@ -50,15 +50,16 @@ export default function StyleguidePage() {
         </Link>
       </header>
 
-      <main className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-16 px-5 pb-24 pt-6">
+      <main id="main" className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-16 px-5 pb-24 pt-6">
         <Reveal>
           <p className="cam-eyebrow">Design system</p>
           <h1 className="cam-display-xl mt-3 text-[var(--cam-paper)]">
             Flash tokens &amp; primitives
           </h1>
           <p className="cam-body-l mt-5 text-[var(--muted)]">
-            Foundations only. Marketing and product surfaces are untouched until
-            you approve this language.
+            Tokens, type, and primitives for Flash Camera Light. Full system
+            notes live in <code className="text-[var(--key-400)]">DESIGN.md</code>{" "}
+            at the repo root.
           </p>
         </Reveal>
 

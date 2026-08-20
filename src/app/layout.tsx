@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import { LocaleProvider } from "@/components/LocaleProvider";
+import { SkipLink } from "@/components/SkipLink";
 import { getLocale } from "@/lib/i18n/get-locale";
 import { getDictionary } from "@/lib/i18n";
 
@@ -51,7 +52,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#0E0B12",
 };
 
@@ -61,6 +61,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const t = getDictionary(locale);
 
   return (
     <html
@@ -68,7 +69,10 @@ export default async function RootLayout({
       className={`${display.variable} ${body.variable} ${cameraDisplay.variable} ${mono.variable} h-full`}
     >
       <body className="min-h-dvh overflow-x-hidden antialiased">
-        <LocaleProvider locale={locale}>{children}</LocaleProvider>
+        <LocaleProvider locale={locale}>
+          <SkipLink label={t.a11y.skipToContent} />
+          {children}
+        </LocaleProvider>
       </body>
     </html>
   );

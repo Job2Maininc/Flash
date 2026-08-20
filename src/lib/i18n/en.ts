@@ -4,6 +4,9 @@ export const en = {
     description:
       "Live video dating. Choose who you are and who you want to meet, swipe to match, and call your favorites back.",
   },
+  a11y: {
+    skipToContent: "Skip to content",
+  },
   nav: {
     howItWorks: "How it works",
     about: "About",
