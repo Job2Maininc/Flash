@@ -67,7 +67,7 @@ export default async function HomePage() {
 
         <ClosingCta
           title={t.home.closingTitle}
-          cta={t.nav.joinVideoChat}
+          cta={t.join.startChat}
           talkingSuffix={t.home.talkingSuffix}
         />
 

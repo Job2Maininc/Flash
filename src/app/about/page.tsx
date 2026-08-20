@@ -27,7 +27,7 @@ export default async function AboutPage() {
       <div className="h-16 pt-[env(safe-area-inset-top)]" />
       <CameraHeader />
       <main id="main" className="relative z-10 mx-auto max-w-3xl px-5 pb-20 pt-10">
-        <p className="cam-eyebrow text-[var(--key-400)]">{t.about.eyebrow}</p>
+        <p className="cam-eyebrow text-[var(--faint)]">{t.about.eyebrow}</p>
         <h1 className="cam-display-l mt-3">{t.about.title}</h1>
         <p className="cam-body-l mt-5 text-[var(--muted)]">{t.about.lead}</p>
 
@@ -58,7 +58,7 @@ export default async function AboutPage() {
         </div>
 
         <Link href="/join" className="mt-12 inline-flex">
-          <Button size="lg">{t.nav.joinVideoChat}</Button>
+          <Button size="lg">{t.join.startChat}</Button>
         </Link>
       </main>
       <CameraFooter />

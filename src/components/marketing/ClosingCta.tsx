@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { CountUp } from "@/components/ui/CountUp";
 import { LiveBadge } from "@/components/ui/Badge";
+import { useI18n } from "@/components/LocaleProvider";
 import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { HERO_PORTRAITS } from "@/lib/hero-portraits";
+import { shouldShowLiveCount } from "@/lib/live-count";
 
 type Props = {
   title: string;
@@ -14,8 +16,10 @@ type Props = {
 };
 
 export function ClosingCta({ title, cta, talkingSuffix }: Props) {
+  const { t } = useI18n();
   const online = useOnlineCount();
-  const count = online ?? 1;
+  const count = online ?? 0;
+  const showLive = shouldShowLiveCount(online);
   const echoes = HERO_PORTRAITS.slice(0, 4);
 
   return (
@@ -43,13 +47,19 @@ export function ClosingCta({ title, cta, talkingSuffix }: Props) {
           <Button size="lg">{cta}</Button>
         </Link>
         <div className="mt-8">
-          <LiveBadge
-            label={
-              <>
-                <CountUp value={count} /> {talkingSuffix}
-              </>
-            }
-          />
+          {showLive ? (
+            <LiveBadge
+              label={
+                <>
+                  <CountUp value={count} /> {talkingSuffix}
+                </>
+              }
+            />
+          ) : (
+            <p className="font-[family-name:var(--font-mono)] text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--faint)]">
+              {t.home.beTheFirst}
+            </p>
+          )}
         </div>
       </div>
     </section>

@@ -23,7 +23,7 @@ export function HomeHero({ portraits }: Props) {
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start lg:gap-10 lg:pt-2">
         <div className="max-w-xl lg:pt-4">
-          <p className="cam-eyebrow text-[var(--key-400)]">{t.home.heroEyebrow}</p>
+          <p className="cam-eyebrow text-[var(--faint)]">{t.home.heroEyebrow}</p>
           <h1 className="cam-display-xl mt-3 text-[var(--cam-paper)]">
             {t.home.heroHeadline}
           </h1>

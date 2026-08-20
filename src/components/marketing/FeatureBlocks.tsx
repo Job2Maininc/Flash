@@ -34,7 +34,7 @@ export function FeatureBlocks({ features }: Props) {
               >
                 <DemoPanel kind={feature.demo} />
                 <div>
-                  <p className="cam-eyebrow text-[var(--key-400)]">
+                  <p className="cam-eyebrow text-[var(--faint)]">
                     {feature.eyebrow}
                   </p>
                   <h2 className="cam-h2 mt-3 max-w-[16ch]">{feature.title}</h2>
@@ -71,12 +71,12 @@ function DemoPanel({ kind }: { kind: string }) {
               {label}
             </div>
           ))}
-          <div className="ml-auto rounded-full bg-[var(--key-500)]/15 px-3 py-1 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--key-400)]">
+          <div className="ml-auto rounded-full bg-[var(--ink-700)] px-3 py-1 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--cam-paper)]">
             paired
           </div>
         </div>
         <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-[var(--ink-700)]">
-          <div className="cam-demo-bar h-full rounded-full bg-[var(--key-500)]" />
+          <div className="cam-demo-bar h-full rounded-full bg-[var(--cam-paper)]/70" />
         </div>
         <p className="mt-4 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)]">
           Queue → match → timer
@@ -112,11 +112,11 @@ function DemoPanel({ kind }: { kind: string }) {
             aria-hidden
             className="absolute inset-0 opacity-60"
             style={{
-              background: `linear-gradient(135deg, rgba(255,122,69,${0.15 + (i % 3) * 0.1}), rgba(108,92,255,0.2))`,
+              background: `linear-gradient(135deg, rgba(255,122,69,${0.12 + (i % 3) * 0.08}), rgba(46,38,55,0.85))`,
             }}
           />
           {i === 2 ? (
-            <span className="cam-verify-stamp absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--ok)] text-xs text-[var(--ink-900)]">
+            <span className="cam-verify-stamp absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--ink-700)] text-xs text-[var(--cam-paper)]">
               ✓
             </span>
           ) : null}

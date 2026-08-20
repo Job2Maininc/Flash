@@ -69,7 +69,7 @@ function QuoteCard({
         inverted
           ? "border-[var(--ink-900)]/10 bg-white/75 shadow-[var(--shadow-soft)]"
           : "border-[var(--ink-700)] bg-[var(--ink-800)] shadow-[var(--elev-1)]",
-        highlight && "border-[var(--key-500)]/45 shadow-[var(--glow-key)]",
+        highlight && "border-[var(--ink-600)] shadow-[var(--elev-1)]",
         className,
       )}
     >

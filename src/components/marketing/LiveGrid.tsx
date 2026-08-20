@@ -243,13 +243,13 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
             x2={line.x2}
             y2={line.y2}
             pathLength={1}
-            stroke="var(--key-500)"
+            stroke="var(--cam-paper)"
             strokeWidth="1.5"
             strokeLinecap="round"
-            className="cam-connect-line"
+            className="cam-connect-line opacity-70"
           />
-          <circle cx={line.x1} cy={line.y1} r="4" fill="var(--key-500)" className="cam-connect-pulse" />
-          <circle cx={line.x2} cy={line.y2} r="4" fill="var(--key-500)" className="cam-connect-pulse" />
+          <circle cx={line.x1} cy={line.y1} r="4" fill="var(--cam-paper)" className="cam-connect-pulse" />
+          <circle cx={line.x2} cy={line.y2} r="4" fill="var(--cam-paper)" className="cam-connect-pulse" />
         </svg>
       ) : null}
     </div>

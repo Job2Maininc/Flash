@@ -8,7 +8,7 @@ import { useI18n } from "@/components/LocaleProvider";
 export function SiteFooter() {
   const { t } = useI18n();
   const footerLinks = [
-    { href: "/join", label: t.nav.joinVideoChat },
+    { href: "/join", label: t.join.startChat },
     { href: "/about", label: t.nav.about },
     { href: "/safety", label: t.nav.safety },
     { href: "/privacy", label: t.nav.privacy },

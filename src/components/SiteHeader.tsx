@@ -22,7 +22,6 @@ export function SiteHeader({
   const pathname = usePathname();
   const dark = variant === "dark";
   const links = [
-    { href: "/join", label: t.nav.joinVideoChat },
     { href: "/#how-it-works", label: t.nav.howItWorks },
     { href: "/about", label: t.nav.about },
     { href: "/safety", label: t.nav.safety },
@@ -52,10 +51,10 @@ export function SiteHeader({
             <Link
               key={link.href}
               href={link.href}
-              className={`shrink-0 font-[family-name:var(--font-display)] text-lg font-bold tracking-tight transition sm:text-xl lg:text-2xl ${
+              className={`shrink-0 font-[family-name:var(--font-camera-display)] text-lg font-bold tracking-tight transition sm:text-xl lg:text-2xl ${
                 active
                   ? dark
-                    ? "text-[var(--accent)]"
+                    ? "text-[var(--cam-paper)]"
                     : "text-[var(--ink)]"
                   : dark
                     ? "text-white/85 hover:text-white"

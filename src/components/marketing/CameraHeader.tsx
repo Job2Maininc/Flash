@@ -30,7 +30,6 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
   const links = [
-    { href: "/join", label: t.nav.joinVideoChat },
     { href: "/#how-it-works", label: t.nav.howItWorks },
     { href: "/about", label: t.nav.about },
     { href: "/safety", label: t.nav.safety },
@@ -95,8 +94,8 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
                   className={cn(
                     "font-[family-name:var(--font-camera-display)] text-base font-bold tracking-tight transition",
                     active
-                      ? "text-[var(--key-400)]"
-                      : "text-[var(--cam-paper)]/80 hover:text-[var(--cam-paper)]",
+                      ? "text-[var(--cam-paper)]"
+                      : "text-[var(--cam-paper)]/70 hover:text-[var(--cam-paper)]",
                   )}
                 >
                   {link.label}
@@ -108,7 +107,7 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
           <div className="flex items-center gap-2">
             <LanguageSwitcher variant="dark" />
             <Link href="/join" className="hidden sm:inline-flex">
-              <Button size="sm">{t.nav.joinVideoChat}</Button>
+              <Button size="sm">{t.join.startChat}</Button>
             </Link>
             <button
               type="button"
@@ -156,7 +155,7 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
           </nav>
           <Link href="/join" className="mt-10" onClick={() => setOpen(false)}>
             <Button size="lg" className="w-full">
-              {t.nav.joinVideoChat}
+              {t.join.startChat}
             </Button>
           </Link>
         </div>

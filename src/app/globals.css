@@ -461,7 +461,7 @@
 }
 
 .cam-grad-key-rim {
-  background: linear-gradient(135deg, var(--key-500), var(--rim-500));
+  background: linear-gradient(135deg, var(--key-500), var(--key-600));
 }
 
 .cam-noise {

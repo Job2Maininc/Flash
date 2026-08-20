@@ -48,7 +48,7 @@ export function HowItWorks({ eyebrow, title, lead, steps }: Props) {
   return (
     <Section id="how-it-works">
       <ScrollReveal>
-        <p className="cam-eyebrow text-[var(--key-400)]">{eyebrow}</p>
+        <p className="cam-eyebrow text-[var(--faint)]">{eyebrow}</p>
         <h2 className="cam-h2 mt-3 max-w-[18ch]">{title}</h2>
         <p className="cam-body-l mt-4 text-[var(--muted)]">{lead}</p>
       </ScrollReveal>
@@ -122,7 +122,7 @@ function FramePreview({ state }: { state: (typeof FRAME_STATES)[number] }) {
         <div
           aria-hidden
           className={cn(
-            "absolute inset-0 bg-gradient-to-br from-[var(--key-500)]/30 to-[var(--rim-500)]/20 transition-opacity duration-[var(--dur-base)]",
+            "absolute inset-0 bg-gradient-to-br from-[var(--key-500)]/25 to-[var(--ink-700)]/40 transition-opacity duration-[var(--dur-base)]",
             state === "connected" ? "opacity-100" : "opacity-0",
           )}
         />

@@ -15,8 +15,8 @@ export const de = {
     safety: "Sicherheit",
     privacy: "Datenschutz",
     matches: "Matches",
-    start: "Loslegen",
-    joinVideoChat: "Videochat beitreten",
+    start: "Videochat starten",
+    joinVideoChat: "Videochat starten",
     language: "Sprache",
     backToCall: "← Anruf",
   },
@@ -45,7 +45,7 @@ export const de = {
       "Später zurückrufen",
       "18+",
     ],
-    startFree: "Kostenlos starten",
+    startFree: "Videochat starten",
     whyFlash: "Warum Flash",
     howEyebrow: "So funktioniert’s",
     howTitle: "Drei Schritte. Eine echte Begegnung.",
@@ -331,7 +331,7 @@ export const de = {
     ],
     emergency:
       "Im Notfall offline die lokalen Dienste rufen. Flash hilft beim Kennenlernen; deine Sicherheit bleibt bei dir.",
-    cta: "Verstanden, ich starte",
+    cta: "Videochat starten",
   },
   matches: {
     title: "Deine Matches",

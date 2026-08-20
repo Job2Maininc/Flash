@@ -12,7 +12,7 @@ export function CameraFooter() {
     {
       heading: t.footer.colProduct,
       links: [
-        { href: "/join", label: t.nav.joinVideoChat },
+        { href: "/join", label: t.join.startChat },
         { href: "/#how-it-works", label: t.nav.howItWorks },
         { href: "/matches", label: t.nav.matches },
       ],

@@ -49,7 +49,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
         className={cn(
           "inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] font-[family-name:var(--font-body)] font-medium",
           "transition-[transform,background-color,border-color,box-shadow,opacity] duration-[var(--dur-fast)] ease-[var(--ease-out)]",
-          "active:scale-[.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--rim-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ink-900)]",
+          "active:scale-[.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--key-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ink-900)]",
           "disabled:cursor-not-allowed disabled:opacity-55",
           variants[variant],
           sizes[size],

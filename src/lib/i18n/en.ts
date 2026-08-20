@@ -13,8 +13,8 @@ export const en = {
     safety: "Safety",
     privacy: "Privacy",
     matches: "Matches",
-    start: "Get started",
-    joinVideoChat: "Join video chat",
+    start: "Start video chat",
+    joinVideoChat: "Start video chat",
     language: "Language",
     backToCall: "← Call",
   },
@@ -43,7 +43,7 @@ export const en = {
       "Call back later",
       "18+",
     ],
-    startFree: "Start for free",
+    startFree: "Start video chat",
     whyFlash: "Why Flash",
     howEyebrow: "How it works",
     howTitle: "Three moves. A real meeting.",
@@ -327,7 +327,7 @@ export const en = {
     ],
     emergency:
       "In an offline emergency, contact local services. Flash helps you meet; your safety stays in your hands.",
-    cta: "Got it — let’s start",
+    cta: "Start video chat",
   },
   matches: {
     title: "Your matches",

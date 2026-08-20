@@ -7,6 +7,7 @@ type Props = {
   glow?: "soft" | "strong";
 };
 
+/** Bolt mark uses `--key-500` orange only (no lime). */
 export function FlashLogo({ size = 32, className = "", glow = "soft" }: Props) {
   const glowOpacity = glow === "strong" ? 0.85 : 0.45;
   const uid = useId().replace(/:/g, "");
@@ -44,20 +45,18 @@ export function FlashLogo({ size = 32, className = "", glow = "soft" }: Props) {
           y2="44"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#f4ff7a" />
-          <stop offset="1" stopColor="#e8ff4a" />
+          <stop stopColor="#ff9466" />
+          <stop offset="1" stopColor="#ff7a45" />
         </linearGradient>
       </defs>
 
-      {/* Outer glow layer */}
       <path
         d="M27.5 3.5L11.5 26.5H22L17.5 44.5L36.5 21.5H26L31.5 3.5Z"
-        fill="#e8ff4a"
+        fill="#ff7a45"
         opacity={glowOpacity}
         filter={`url(#${glowId})`}
       />
 
-      {/* Core bolt */}
       <path
         d="M27.5 3.5L11.5 26.5H22L17.5 44.5L36.5 21.5H26L31.5 3.5Z"
         fill={`url(#${fillId})`}

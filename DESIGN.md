@@ -15,12 +15,15 @@ Defined in `src/app/globals.css` (`:root` + `@theme inline`).
 | `--ink-900` … `--ink-600` | Stage backgrounds / borders | `#0e0b12` → `#2e2637` |
 | `--cam-paper` | Primary text on dark | `#fbf3ec` |
 | `--muted` / `--faint` | Secondary / tertiary text | `#a096aa` / `#6a6172` |
-| `--key-500` / `--key-400` / `--key-600` | Primary CTA / glow | `#ff7a45` family |
-| `--rim-500` / `--rim-400` | Secondary accent / connect lines | `#6c5cff` family |
-| `--live` | Destructive / end-call / alerts | `#ff2d55` |
-| `--ok` / `--warn` | Status | green / amber |
+| `--key-500` / `--key-400` / `--key-600` | **Clickable only** — CTAs, active controls, logo bolt | `#ff7a45` family |
+| `--live` | **Live pulse dot only** — never fill, border, or body text | `#ff2d55` |
+| `--cam-paper` / `--paper` | Affirmative / confirming (checks, wordmark text) | `#fbf3ec` |
+| `--rim-500` | Reserved / unused on marketing (do not decorate with purple) | `#6c5cff` |
+| `--ok` | **Not used on marketing** | `#4ade9b` |
 
-Legacy cream/lime (`--paper-legacy`, `--accent`) remain for any unmigrated chrome; new UI should prefer Camera Light tokens.
+**Logo bolt:** always `--key-500` orange (`FlashLogo`, `icon.svg`). No lime exception.
+
+Legacy cream/lime (`--paper-legacy`, `--accent`) remain only for unmigrated product chrome; new UI prefers Camera Light.
 
 ### Elevation & motion
 
@@ -33,10 +36,10 @@ Legacy cream/lime (`--paper-legacy`, `--accent`) remain for any unmigrated chrom
 
 | Role | Font | CSS |
 | --- | --- | --- |
-| Display (Camera Light) | Bricolage Grotesque | `--font-camera-display` · `.cam-display-xl` / `.cam-display-l` / `.cam-h2` |
+| Display (Camera Light) | Bricolage Grotesque | `--font-camera-display` · wordmark + headlines |
 | Body | DM Sans | `--font-body` · `.cam-body` / `.cam-body-l` |
 | Mono / timers / eyebrows | JetBrains Mono | `--font-mono` · `.cam-eyebrow` |
-| Legacy display | Fraunces | `--font-display` (older product chrome only) |
+| Legacy display | Fraunces | `--font-display` (avoid on Camera Light surfaces) |
 
 ## Primitives
 

@@ -20,7 +20,7 @@ export function FlashBrand({
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <FlashLogo size={size} glow={glow} />
       <span
-        className={`font-[family-name:var(--font-display)] text-2xl tracking-tight ${wordmarkClassName}`}
+        className={`font-[family-name:var(--font-camera-display)] text-2xl font-bold tracking-tight ${wordmarkClassName}`}
       >
         Flash
       </span>

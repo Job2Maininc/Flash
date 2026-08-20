@@ -23,7 +23,7 @@ export default async function PrivacyPage() {
       <div className="h-16 pt-[env(safe-area-inset-top)]" />
       <CameraHeader />
       <main id="main" className="relative z-10 mx-auto max-w-3xl px-5 pb-20 pt-10">
-        <p className="cam-eyebrow text-[var(--key-400)]">{t.privacy.eyebrow}</p>
+        <p className="cam-eyebrow text-[var(--faint)]">{t.privacy.eyebrow}</p>
         <h1 className="cam-display-l mt-3">{t.privacy.title}</h1>
         <p className="cam-body-l mt-5 text-[var(--muted)]">{t.privacy.lead}</p>
 
@@ -54,7 +54,7 @@ export default async function PrivacyPage() {
 
         <Link
           href="/safety"
-          className="cam-footer-link mt-12 inline-flex text-sm text-[var(--key-400)]"
+          className="cam-footer-link mt-12 inline-flex text-sm text-[var(--cam-paper)]"
         >
           {t.privacy.safetyLink}
         </Link>
