@@ -180,8 +180,9 @@ function ScreenCall({
         aria-hidden
         className="absolute inset-0 bg-gradient-to-t from-[var(--ink-900)]/80 via-transparent to-[var(--ink-900)]/35"
       />
-      <div className="absolute left-3 top-3 rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-900)]/55 px-2.5 py-1 font-[family-name:var(--font-camera-display)] text-xs text-[var(--cam-paper)] backdrop-blur-md">
-        Sam
+      <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-900)]/55 px-2.5 py-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--cam-paper)] backdrop-blur-md">
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--live)]" aria-hidden />
+        Live
       </div>
       <div className="absolute bottom-16 right-3 h-20 w-14 overflow-hidden rounded-[0.75rem] border border-[var(--ink-600)] shadow-[var(--elev-1)] ring-1 ring-[var(--key-500)]/30">
         <div className="relative h-full w-full">
