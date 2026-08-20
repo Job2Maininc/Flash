@@ -26,6 +26,7 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [heroCtaInView, setHeroCtaInView] = useState(false);
   const menuId = useId();
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -49,6 +50,40 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Below 768px: hide compact header CTA while the hero CTA is on screen.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+
+    function bind() {
+      if (!mq.matches) {
+        setHeroCtaInView(false);
+        return () => undefined;
+      }
+      const hero = document.querySelector("[data-sticky-hero-cta]");
+      if (!hero) {
+        setHeroCtaInView(false);
+        return () => undefined;
+      }
+      const io = new IntersectionObserver(
+        ([entry]) => setHeroCtaInView(entry.isIntersecting),
+        { threshold: 0.2 },
+      );
+      io.observe(hero);
+      return () => io.disconnect();
+    }
+
+    let cleanup = bind();
+    const onMq = () => {
+      cleanup();
+      cleanup = bind();
+    };
+    mq.addEventListener("change", onMq);
+    return () => {
+      mq.removeEventListener("change", onMq);
+      cleanup();
+    };
+  }, [pathname]);
 
   // Close menu on route change.
   useEffect(() => {
@@ -166,8 +201,23 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
             <div className="hidden md:block">
               <LanguageSwitcher variant="dark" />
             </div>
-            <Link href="/join" className="hidden min-[390px]:inline-flex md:inline-flex">
-              <Button size="sm">{t.nav.start}</Button>
+            <Link
+              href="/join"
+              className={cn(
+                "hidden min-[390px]:inline-flex md:inline-flex",
+                "transition-opacity duration-[var(--dur-fast)]",
+                heroCtaInView &&
+                  "max-md:pointer-events-none max-md:opacity-0",
+              )}
+              tabIndex={heroCtaInView ? -1 : 0}
+              aria-hidden={heroCtaInView}
+            >
+              <Button
+                size="sm"
+                className="!h-10 !min-h-10 px-3.5 text-sm !shadow-none md:!h-11 md:!min-h-11 md:px-4 md:!shadow-[var(--glow-key)]"
+              >
+                {t.nav.start}
+              </Button>
             </Link>
             <button
               ref={hamburgerRef}

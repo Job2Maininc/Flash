@@ -38,7 +38,7 @@ export default function StyleguidePage() {
   return (
     <div className="relative min-h-dvh bg-[var(--ink-900)] text-[var(--cam-paper)]">
       <NoiseOverlay />
-      <div aria-hidden className="cam-spill pointer-events-none absolute inset-x-0 top-0 h-[42vh]" />
+      <div aria-hidden className="cam-spill pointer-events-none absolute inset-x-0 top-0 h-[42dvh]" />
 
       <header className="relative z-10 flex items-center justify-between px-5 py-5 safe-top">
         <p className="cam-eyebrow">Camera Light · Design system</p>

@@ -8,14 +8,9 @@ import {
   useState,
   type CSSProperties,
 } from "react";
-import { LiveBadge } from "@/components/ui/Badge";
-import { CountUp } from "@/components/ui/CountUp";
 import { VideoTile } from "@/components/ui/VideoTile";
-import { useI18n } from "@/components/LocaleProvider";
-import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/cn";
-import { shouldShowLiveCount } from "@/lib/live-count";
 
 export type GridPortrait = {
   src: string;
@@ -25,7 +20,6 @@ export type GridPortrait = {
 
 type Props = {
   portraits: GridPortrait[];
-  talkingSuffix: string;
   className?: string;
 };
 
@@ -44,10 +38,8 @@ function centerOutOrder(cols: number, rows: number): number[] {
   });
 }
 
-export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
-  const { t } = useI18n();
+export function LiveGrid({ portraits, className }: Props) {
   const reduced = useReducedMotion();
-  const online = useOnlineCount();
   const rootRef = useRef<HTMLDivElement>(null);
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [cols, setCols] = useState(5);
@@ -62,7 +54,7 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
   const [entered, setEntered] = useState(false);
   const [staticMode, setStaticMode] = useState(false);
 
-  const rows = cols === 3 ? 3 : 3;
+  const rows = 3;
   const visibleCount = cols * rows;
   const tiles = useMemo(
     () => portraits.slice(0, cols === 3 ? 9 : Math.max(visibleCount, 9)),
@@ -137,18 +129,11 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
     function pair() {
       const n = Math.min(tiles.length, visibleCount);
       if (n < 2) return;
-      // Prefer adjacent tiles so the line never spans the whole grid.
       const a = Math.floor(Math.random() * n);
       const neighbors: number[] = [];
       const col = a % cols;
       const row = Math.floor(a / cols);
-      const candidates = [
-        a - 1,
-        a + 1,
-        a - cols,
-        a + cols,
-      ];
-      for (const c of candidates) {
+      for (const c of [a - 1, a + 1, a - cols, a + cols]) {
         if (c < 0 || c >= n) continue;
         const cCol = c % cols;
         const cRow = Math.floor(c / cols);
@@ -174,7 +159,15 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
       window.clearTimeout(timeout);
       window.clearTimeout(hold);
     };
-  }, [staticMode, inView, entered, tiles.length, visibleCount, measureLine, cols]);
+  }, [
+    staticMode,
+    inView,
+    entered,
+    tiles.length,
+    visibleCount,
+    measureLine,
+    cols,
+  ]);
 
   useEffect(() => {
     if (!connected) return;
@@ -183,36 +176,16 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
     return () => window.removeEventListener("resize", onResize);
   }, [connected, measureLine]);
 
-  const countValue = online ?? 0;
-  const showLive = shouldShowLiveCount(online);
-
   return (
     <div
       ref={rootRef}
       className={cn(
         "relative origin-top scale-[0.85] sm:scale-90 lg:scale-[0.85]",
-        // Crop the third row on mobile so the fold shows “there’s more”.
         "max-md:max-h-[min(52vw,280px)] max-md:overflow-hidden",
         className,
       )}
       data-static={staticMode ? "true" : undefined}
     >
-      <div className="absolute left-3 top-3 z-10 sm:left-4 sm:top-4">
-        {showLive ? (
-          <LiveBadge
-            label={
-              <>
-                <CountUp value={countValue} /> {talkingSuffix}
-              </>
-            }
-          />
-        ) : (
-          <p className="font-[family-name:var(--font-mono)] text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--faint)]">
-            {t.home.beTheFirst}
-          </p>
-        )}
-      </div>
-
       <div
         className="grid gap-2 sm:gap-3"
         style={{
@@ -227,8 +200,7 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
           const isConnected =
             connected !== null &&
             (connected[0] === index || connected[1] === index);
-          const dimmed =
-            connected !== null && !isConnected && !staticMode;
+          const dimmed = connected !== null && !isConnected && !staticMode;
 
           const style: CSSProperties = {
             animationDelay: staticMode ? undefined : floatDelay,
@@ -277,8 +249,20 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
             strokeLinecap="round"
             className="cam-connect-line opacity-70"
           />
-          <circle cx={line.x1} cy={line.y1} r="4" fill="var(--cam-paper)" className="cam-connect-pulse" />
-          <circle cx={line.x2} cy={line.y2} r="4" fill="var(--cam-paper)" className="cam-connect-pulse" />
+          <circle
+            cx={line.x1}
+            cy={line.y1}
+            r="4"
+            fill="var(--cam-paper)"
+            className="cam-connect-pulse"
+          />
+          <circle
+            cx={line.x2}
+            cy={line.y2}
+            r="4"
+            fill="var(--cam-paper)"
+            className="cam-connect-pulse"
+          />
         </svg>
       ) : null}
     </div>

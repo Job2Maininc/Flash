@@ -1,32 +1,36 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/components/LocaleProvider";
 import { cn } from "@/lib/cn";
 
 /**
- * Bottom sticky CTA for ≤768px. Hides when hero or closing CTA is in view.
+ * Bottom sticky CTA for ≤768px.
+ * Visible only after 40% page scroll and when neither hero nor closing CTA is in view.
  */
 export function StickyMobileCta() {
   const { t } = useI18n();
   const [pastFold, setPastFold] = useState(false);
   const [heroVisible, setHeroVisible] = useState(true);
   const [closingVisible, setClosingVisible] = useState(false);
-  const shownOnce = useRef(false);
 
   useEffect(() => {
     function onScroll() {
-      const y = window.scrollY;
-      const threshold = document.documentElement.scrollHeight * 0.4;
-      const next = y > threshold * 0.4 || y > window.innerHeight * 0.4;
-      setPastFold(next);
-      if (next) shownOnce.current = true;
+      const maxScroll = Math.max(
+        1,
+        document.documentElement.scrollHeight - window.innerHeight,
+      );
+      setPastFold(window.scrollY / maxScroll >= 0.4);
     }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -42,7 +46,7 @@ export function StickyMobileCta() {
           else setClosingVisible(entry.isIntersecting);
         }
       },
-      { threshold: 0.35 },
+      { threshold: 0.2 },
     );
 
     if (hero) io.observe(hero);
@@ -50,24 +54,25 @@ export function StickyMobileCta() {
     return () => io.disconnect();
   }, []);
 
-  const visible =
-    pastFold && !heroVisible && !closingVisible && shownOnce.current;
+  const visible = pastFold && !heroVisible && !closingVisible;
 
   return (
     <div
       className={cn(
         "fixed inset-x-0 bottom-0 z-40 border-t border-[var(--ink-700)] bg-[var(--ink-800)] px-5 pt-3 shadow-[var(--elev-2)] transition-transform duration-[var(--dur-base)] ease-[var(--ease-out)] md:hidden",
-        "pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+        "pb-[max(16px,env(safe-area-inset-bottom))]",
         visible ? "translate-y-0" : "translate-y-full pointer-events-none",
       )}
       aria-hidden={!visible}
     >
-      <div className="mx-auto flex max-w-lg items-center gap-3">
-        <p className="min-w-0 flex-1 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--faint)]">
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-2">
+        <p className="whitespace-nowrap text-center font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--faint)]">
           {t.home.stickyCtaHint}
         </p>
-        <Link href="/join" tabIndex={visible ? 0 : -1}>
-          <Button size="md">{t.home.startFree}</Button>
+        <Link href="/join" tabIndex={visible ? 0 : -1} className="w-full">
+          <Button size="md" className="w-full shadow-none">
+            {t.home.startFree}
+          </Button>
         </Link>
       </div>
     </div>

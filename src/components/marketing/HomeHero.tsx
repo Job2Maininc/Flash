@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { LiveGrid, type GridPortrait } from "@/components/marketing/LiveGrid";
 import { Button } from "@/components/ui/Button";
+import { CountUp } from "@/components/ui/CountUp";
 import { Spotlight } from "@/components/ui/Spotlight";
 import { useI18n } from "@/components/LocaleProvider";
+import { useOnlineCount } from "@/hooks/useOnlineCount";
+import { shouldShowLiveCount } from "@/lib/live-count";
 
 type Props = {
   portraits: GridPortrait[];
@@ -12,6 +15,8 @@ type Props = {
 
 export function HomeHero({ portraits }: Props) {
   const { t } = useI18n();
+  const online = useOnlineCount();
+  const showLive = shouldShowLiveCount(online);
 
   return (
     <section className="relative overflow-hidden px-5 pb-6 pt-[4.75rem] sm:pb-8 sm:pt-24 max-md:min-h-[100dvh] lg:min-h-[calc(100dvh-4rem)] lg:pb-8">
@@ -33,26 +38,38 @@ export function HomeHero({ portraits }: Props) {
 
           <div
             data-sticky-hero-cta
-            className="mt-5 flex flex-wrap items-center gap-3 sm:mt-6"
+            className="mt-5 flex w-full flex-col gap-3 md:mt-6 md:w-auto md:flex-row md:flex-wrap md:items-center md:gap-3"
           >
-            <Link href="/join">
-              <Button size="lg">{t.home.startFree}</Button>
-            </Link>
-            <a href="/#how-it-works">
-              <Button variant="secondary" size="lg">
-                {t.home.seeHow}
+            <Link href="/join" className="w-full md:w-auto">
+              <Button size="lg" className="w-full md:w-auto">
+                {t.home.startFree}
               </Button>
+            </Link>
+            <a
+              href="/#how-it-works"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-transparent px-7 text-base text-[var(--muted)] transition-[border-color,color,transform] duration-[var(--dur-fast)] active:scale-[.97] md:w-auto"
+            >
+              {t.home.seeHow}
             </a>
           </div>
 
-          <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)] sm:mt-5">
-            <li className="inline-flex items-center gap-2">
-              <span
-                className="h-1.5 w-1.5 rounded-full bg-[var(--live)]"
-                aria-hidden
-              />
-              {t.home.trustLive}
-            </li>
+          <ul className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)] sm:mt-5">
+            {showLive ? (
+              <li className="inline-flex items-center gap-2 whitespace-nowrap">
+                <span
+                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--live)]"
+                  aria-hidden
+                />
+                <span className="tabular-nums">
+                  <CountUp value={online ?? 0} />
+                </span>{" "}
+                {t.home.talkingSuffix}
+              </li>
+            ) : (
+              <li className="whitespace-nowrap text-[var(--faint)]">
+                {t.home.beTheFirst}
+              </li>
+            )}
             <li>{t.home.trustVerified}</li>
             <li>{t.home.trustNoAds}</li>
             <li>{t.home.trustAge}</li>
@@ -61,7 +78,6 @@ export function HomeHero({ portraits }: Props) {
 
         <LiveGrid
           portraits={portraits}
-          talkingSuffix={t.home.talkingSuffix}
           className="-mt-1 lg:mt-0 lg:min-h-0"
         />
       </div>

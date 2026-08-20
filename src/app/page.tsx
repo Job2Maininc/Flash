@@ -34,7 +34,10 @@ export default async function HomePage() {
     <div className="relative min-h-dvh overflow-x-hidden bg-[var(--ink-900)] text-[var(--cam-paper)]">
       <NoiseOverlay />
       <HomeIntroHeader />
-      <main id="main">
+      <main
+        id="main"
+        className="max-md:pb-[calc(7.5rem+env(safe-area-inset-bottom))] md:pb-0"
+      >
         <HomeHero portraits={HERO_PORTRAITS} />
         <Marquee items={t.home.marquee} />
 
