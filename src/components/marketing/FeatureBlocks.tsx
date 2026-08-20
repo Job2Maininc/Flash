@@ -1,8 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/Accordion";
 import { Section } from "@/components/ui/Section";
+import { useI18n } from "@/components/LocaleProvider";
+import { HERO_PORTRAITS } from "@/lib/hero-portraits";
 import { cn } from "@/lib/cn";
 
 type Feature = {
@@ -37,8 +40,10 @@ export function FeatureBlocks({ features }: Props) {
                   <p className="cam-eyebrow text-[var(--faint)]">
                     {feature.eyebrow}
                   </p>
-                  <h2 className="cam-h2 mt-3 max-w-[16ch]">{feature.title}</h2>
-                  <p className="cam-body mt-4 text-[var(--muted)]">
+                  <h2 className="cam-h2 mt-3 max-w-[16ch] text-balance">
+                    {feature.title}
+                  </h2>
+                  <p className="cam-body mt-4 text-[var(--muted)] text-pretty">
                     {feature.body}
                   </p>
                   <Link
@@ -58,6 +63,8 @@ export function FeatureBlocks({ features }: Props) {
 }
 
 function DemoPanel({ kind }: { kind: string }) {
+  const { t } = useI18n();
+
   if (kind === "match") {
     return (
       <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--ink-700)] bg-[var(--ink-800)] p-6 shadow-[var(--elev-1)]">
@@ -86,42 +93,102 @@ function DemoPanel({ kind }: { kind: string }) {
   }
 
   if (kind === "safety") {
+    const items = t.home.safetyDemo;
     return (
-      <div className="group relative h-56 overflow-hidden rounded-[var(--radius-lg)] border border-[var(--ink-700)] bg-[var(--ink-800)] p-5 shadow-[var(--elev-1)]">
-        {["Report", "Block", "Verified"].map((label, i) => (
-          <div
-            key={label}
-            className="absolute left-5 right-5 rounded-[var(--radius-md)] border border-[var(--ink-600)] bg-[var(--ink-900)] px-4 py-3 text-sm text-[var(--cam-paper)] shadow-[var(--elev-1)] transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)] group-hover:-translate-y-1"
-            style={{ top: `${2.5 + i * 3.2}rem`, zIndex: 3 - i }}
-          >
-            {label}
-          </div>
-        ))}
+      <div className="rounded-[var(--radius-lg)] border border-[var(--ink-700)] bg-[var(--ink-800)] p-5 shadow-[var(--elev-1)]">
+        <ul className="space-y-3">
+          {items.map((item) => (
+            <li
+              key={item.title}
+              className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--ink-600)] bg-[var(--ink-900)]/70 px-3.5 py-3"
+            >
+              <SafetyIcon name={item.icon} />
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-[var(--cam-paper)]">
+                  {item.title}
+                </p>
+                <p className="mt-0.5 text-xs leading-relaxed text-[var(--faint)] text-pretty">
+                  {item.body}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }
 
+  const tiles = HERO_PORTRAITS.slice(0, 6);
   return (
     <div className="grid grid-cols-3 gap-2 rounded-[var(--radius-lg)] border border-[var(--ink-700)] bg-[var(--ink-800)] p-4 shadow-[var(--elev-1)]">
-      {Array.from({ length: 6 }).map((_, i) => (
+      {tiles.map((tile, i) => (
         <div
-          key={i}
-          className="relative aspect-square overflow-hidden rounded-[var(--radius-md)] bg-[var(--ink-700)]"
+          key={tile.src}
+          className="cam-tile-enter relative aspect-square overflow-hidden rounded-[var(--radius-md)] bg-[var(--ink-700)]"
+          style={{ ["--cam-enter-delay" as string]: `${i * 70}ms` }}
         >
-          <div
-            aria-hidden
-            className="absolute inset-0 opacity-60"
-            style={{
-              background: `linear-gradient(135deg, rgba(255,122,69,${0.12 + (i % 3) * 0.08}), rgba(46,38,55,0.85))`,
-            }}
+          <Image
+            src={tile.src}
+            alt=""
+            fill
+            sizes="120px"
+            className="object-cover"
           />
           {i === 2 ? (
-            <span className="cam-verify-stamp absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--ink-700)] text-xs text-[var(--cam-paper)]">
+            <span className="cam-verify-stamp absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--ink-700)] text-xs text-[var(--cam-paper)] shadow-[var(--elev-1)]">
               ✓
             </span>
           ) : null}
         </div>
       ))}
     </div>
+  );
+}
+
+function SafetyIcon({ name }: { name: string }) {
+  const common =
+    "mt-0.5 h-5 w-5 shrink-0 text-[var(--faint)]";
+  if (name === "report") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d="M5 4v16M5 5h10l-1.5 3.5L15 12H5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  if (name === "block") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden>
+        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M7 7l10 10"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+  return (
+    <svg className={common} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 12l1.8 1.8L15 10"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

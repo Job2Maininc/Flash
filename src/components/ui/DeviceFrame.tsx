@@ -7,7 +7,7 @@ type Props = {
   label?: string;
 };
 
-/** Lightweight device frame — not a stock iPhone PNG. */
+/** Lightweight device frame — lit screen with inner highlight + soft reflection. */
 export function DeviceFrame({ children, className, label }: Props) {
   return (
     <div
@@ -18,13 +18,19 @@ export function DeviceFrame({ children, className, label }: Props) {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px bg-[rgba(251,243,236,.12)]"
+        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px bg-[rgba(251,243,236,.14)]"
       />
-      <div className="relative aspect-[9/16] overflow-hidden rounded-[calc(var(--radius-xl)-6px)] bg-[var(--ink-900)]">
+      <div className="relative aspect-[9/16] overflow-hidden rounded-[calc(var(--radius-xl)-6px)] bg-[var(--ink-900)] ring-1 ring-inset ring-[rgba(251,243,236,.1)]">
         {children}
+        {/* Soft screen reflection */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-40"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(251,243,236,.14)_0%,transparent_42%,transparent_100%)]"
+        />
+        {/* 1px inner highlight */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-[calc(var(--radius-xl)-6px)] shadow-[inset_0_0_0_1px_rgba(251,243,236,.08)]"
         />
       </div>
       {label ? (

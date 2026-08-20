@@ -119,7 +119,7 @@ export const de = {
     enterTitle: "Bereit für deinen nächsten Flash?",
     enterLead:
       "Kostenlos starten. Kamera + Mikro nötig. Respekt, Consent und kein erzwungenes Ghosting: swipen und weiter.",
-    howFrameLabels: ["Warteschlange", "Verbunden", "Dein Zug"],
+    howFrameLabels: ["Setup", "Live-Anruf", "Match"],
     features: [
       {
         eyebrow: "Matching",
@@ -144,6 +144,23 @@ export const de = {
         linkLabel: "So funktioniert’s",
         href: "/#how-it-works",
         demo: "verified",
+      },
+    ],
+    safetyDemo: [
+      {
+        icon: "report",
+        title: "Melden",
+        body: "Belästigung oder Regelverstöße während oder nach dem Anruf markieren.",
+      },
+      {
+        icon: "block",
+        title: "Blockieren",
+        body: "Verhindert, dass dich die Person erneut in der Warteschlange trifft.",
+      },
+      {
+        icon: "verified",
+        title: "Echte Präsenz",
+        body: "Die Live-Kamera ist das Profil — weniger polierte Fakes.",
       },
     ],
     trustEyebrow: "Vertrauen & Sicherheit",

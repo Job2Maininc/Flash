@@ -117,7 +117,7 @@ export const en = {
     enterTitle: "Ready for your next flash?",
     enterLead:
       "Free to start. Camera + mic required. Respect, consent, and no forced ghosting: swipe and move on.",
-    howFrameLabels: ["Queue", "Connected", "Your move"],
+    howFrameLabels: ["Setup", "Live call", "Match"],
     features: [
       {
         eyebrow: "Matching",
@@ -142,6 +142,23 @@ export const en = {
         linkLabel: "See how it works",
         href: "/#how-it-works",
         demo: "verified",
+      },
+    ],
+    safetyDemo: [
+      {
+        icon: "report",
+        title: "Report",
+        body: "Flag harassment or rule-breaking during or after a call.",
+      },
+      {
+        icon: "block",
+        title: "Block",
+        body: "Stop someone from reaching you again in the queue.",
+      },
+      {
+        icon: "verified",
+        title: "Verified presence",
+        body: "Live camera is the profile — fewer polished fakes.",
       },
     ],
     trustEyebrow: "Trust & safety",

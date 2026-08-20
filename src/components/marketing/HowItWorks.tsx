@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { DeviceFrame } from "@/components/ui/DeviceFrame";
 import { ScrollReveal } from "@/components/ui/Accordion";
 import { Section } from "@/components/ui/Section";
+import { HERO_PORTRAITS } from "@/lib/hero-portraits";
 import { cn } from "@/lib/cn";
 
 type Step = {
@@ -19,7 +21,7 @@ type Props = {
   steps: Step[];
 };
 
-const FRAME_STATES = ["queue", "connected", "decision"] as const;
+const FRAME_STATES = ["setup", "call", "match"] as const;
 
 export function HowItWorks({ eyebrow, title, lead, steps }: Props) {
   const [active, setActive] = useState(0);
@@ -49,14 +51,14 @@ export function HowItWorks({ eyebrow, title, lead, steps }: Props) {
     <Section id="how-it-works">
       <ScrollReveal>
         <p className="cam-eyebrow text-[var(--faint)]">{eyebrow}</p>
-        <h2 className="cam-h2 mt-3 max-w-[18ch]">{title}</h2>
-        <p className="cam-body-l mt-4 text-[var(--muted)]">{lead}</p>
+        <h2 className="cam-h2 mt-3 max-w-[18ch] text-balance">{title}</h2>
+        <p className="cam-body-l mt-4 text-[var(--muted)] text-pretty">{lead}</p>
       </ScrollReveal>
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
         <div className="lg:sticky lg:top-28 lg:self-start">
           <DeviceFrame label={steps[active]?.frameLabel}>
-            <FramePreview state={FRAME_STATES[active] ?? "queue"} />
+            <FramePreview state={FRAME_STATES[active] ?? "setup"} />
           </DeviceFrame>
         </div>
 
@@ -82,7 +84,7 @@ export function HowItWorks({ eyebrow, title, lead, steps }: Props) {
                 <h3 className="mt-2 font-[family-name:var(--font-camera-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
                   {step.title}
                 </h3>
-                <p className="mt-3 max-w-[42ch] text-base leading-relaxed text-[var(--muted)]">
+                <p className="mt-3 max-w-[42ch] text-base leading-relaxed text-[var(--muted)] text-pretty">
                   {step.body}
                 </p>
               </li>
@@ -94,62 +96,146 @@ export function HowItWorks({ eyebrow, title, lead, steps }: Props) {
   );
 }
 
+/** Token-based product UI mocks — not photos. Cross-fade with scroll step. */
 function FramePreview({ state }: { state: (typeof FRAME_STATES)[number] }) {
+  const peer = HERO_PORTRAITS[3];
+  const self = HERO_PORTRAITS[1];
+
   return (
-    <div className="flex h-full flex-col justify-between bg-[radial-gradient(ellipse_at_top,_#2a2218_0%,_#0e0b12_70%)] p-4">
+    <div className="relative h-full bg-[var(--ink-900)]">
+      <ScreenSetup active={state === "setup"} />
+      <ScreenCall active={state === "call"} peerSrc={peer.src} selfSrc={self.src} />
+      <ScreenMatch active={state === "match"} peerSrc={peer.src} />
+    </div>
+  );
+}
+
+function ScreenSetup({ active }: { active: boolean }) {
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 flex flex-col gap-3 p-4 transition-opacity duration-[var(--dur-base)] ease-[var(--ease-out)]",
+        active ? "opacity-100" : "pointer-events-none opacity-0",
+      )}
+      aria-hidden={!active}
+    >
       <div className="flex items-center justify-between">
-        <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-[var(--faint)]">
+        <span className="font-[family-name:var(--font-camera-display)] text-lg font-bold text-[var(--cam-paper)]">
           Flash
         </span>
-        <span className="inline-flex items-center gap-1.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--live)]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[var(--live)]" />
-          Live
+        <span className="font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--faint)]">
+          Setup
         </span>
       </div>
 
-      <div className="relative mx-auto aspect-[3/4] w-[78%] overflow-hidden rounded-[var(--radius-lg)] border border-white/10 bg-[var(--ink-800)]">
-        <div
-          aria-hidden
-          className={cn(
-            "absolute inset-0 transition-opacity duration-[var(--dur-base)]",
-            state === "queue" ? "opacity-100" : "opacity-0",
-          )}
-          style={{
-            background:
-              "radial-gradient(circle at 50% 40%, rgba(255,122,69,.25), transparent 55%)",
-          }}
-        />
-        <div
-          aria-hidden
-          className={cn(
-            "absolute inset-0 bg-gradient-to-br from-[var(--key-500)]/25 to-[var(--ink-700)]/40 transition-opacity duration-[var(--dur-base)]",
-            state === "connected" ? "opacity-100" : "opacity-0",
-          )}
-        />
-        <div
-          aria-hidden
-          className={cn(
-            "absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-[var(--dur-base)]",
-            state === "decision" ? "opacity-100" : "opacity-0",
-          )}
-        >
-          <span className="rounded-full border border-white/20 px-4 py-2 text-xs text-white/70">
-            Pass
-          </span>
-          <span className="rounded-full bg-[var(--key-500)] px-4 py-2 text-xs text-[var(--ink-900)]">
-            Match
-          </span>
-        </div>
-        <p className="absolute inset-x-0 bottom-3 text-center font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-white/55">
-          {state}
-        </p>
+      <div className="mt-1 flex-1 space-y-2.5">
+        <Field label="Name" value="Alex" />
+        <Field label="Gender" value="Non-binary" />
+        <Field label="Looking for" value="Everyone" />
+        <Field label="Where" value="Nearby" />
       </div>
 
-      <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-        <div
-          className="h-full rounded-full bg-[var(--key-500)] transition-[width] duration-[var(--dur-base)] ease-[var(--ease-out)]"
-          style={{ width: `${((FRAME_STATES.indexOf(state) + 1) / 3) * 100}%` }}
-        />
+      <div className="rounded-[var(--radius-pill)] bg-[var(--key-500)] py-2.5 text-center text-sm font-medium text-[var(--paper)] shadow-[var(--glow-key)]">
+        Start video chat
+      </div>
+      <p className="text-center font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-[var(--faint)]">
+        Camera on · Be kind · 18+
+      </p>
+    </div>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[var(--radius-md)] border border-[var(--ink-600)] bg-[var(--ink-800)] px-3 py-2">
+      <p className="font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-[var(--faint)]">
+        {label}
+      </p>
+      <p className="mt-0.5 text-sm text-[var(--cam-paper)]">{value}</p>
+    </div>
+  );
+}
+
+function ScreenCall({
+  active,
+  peerSrc,
+  selfSrc,
+}: {
+  active: boolean;
+  peerSrc: string;
+  selfSrc: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 transition-opacity duration-[var(--dur-base)] ease-[var(--ease-out)]",
+        active ? "opacity-100" : "pointer-events-none opacity-0",
+      )}
+      aria-hidden={!active}
+    >
+      <div className="absolute inset-0">
+        <Image src={peerSrc} alt="" fill sizes="280px" className="object-cover" />
+      </div>
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-t from-[var(--ink-900)]/80 via-transparent to-[var(--ink-900)]/35"
+      />
+      <div className="absolute left-3 top-3 rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-900)]/55 px-2.5 py-1 font-[family-name:var(--font-camera-display)] text-xs text-[var(--cam-paper)] backdrop-blur-md">
+        Sam
+      </div>
+      <div className="absolute bottom-16 right-3 h-20 w-14 overflow-hidden rounded-[0.75rem] border border-[var(--ink-600)] shadow-[var(--elev-1)] ring-1 ring-[var(--key-500)]/30">
+        <div className="relative h-full w-full">
+          <Image
+            src={selfSrc}
+            alt=""
+            fill
+            sizes="80px"
+            className="object-cover"
+          />
+        </div>
+      </div>
+      <div className="absolute inset-x-3 bottom-3 flex items-center justify-center gap-2">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--ink-600)] bg-[var(--ink-800)]/80 text-[var(--cam-paper)] backdrop-blur-md">
+          ⌕
+        </span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--ink-600)] bg-[var(--ink-800)]/80 text-[var(--cam-paper)] backdrop-blur-md">
+          ◎
+        </span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--ink-600)] bg-[var(--ink-800)]/80 text-[10px] text-[var(--cam-paper)] backdrop-blur-md">
+          ✕
+        </span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--key-500)] text-[10px] text-[var(--paper)] shadow-[var(--glow-key)]">
+          ♥
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function ScreenMatch({
+  active,
+  peerSrc,
+}: {
+  active: boolean;
+  peerSrc: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[var(--ink-900)]/92 p-5 text-center transition-opacity duration-[var(--dur-base)] ease-[var(--ease-out)]",
+        active ? "opacity-100" : "pointer-events-none opacity-0",
+      )}
+      aria-hidden={!active}
+    >
+      <div className="relative h-24 w-24 overflow-hidden rounded-full border border-[var(--ink-600)] shadow-[var(--elev-2)]">
+        <Image src={peerSrc} alt="" fill sizes="96px" className="object-cover" />
+      </div>
+      <p className="font-[family-name:var(--font-camera-display)] text-3xl font-bold tracking-tight text-[var(--cam-paper)]">
+        Match
+      </p>
+      <p className="text-xs text-[var(--muted)]">Saved to Matches</p>
+      <div className="mt-2 w-full rounded-[var(--radius-pill)] bg-[var(--key-500)] py-2.5 text-sm font-medium text-[var(--paper)] shadow-[var(--glow-key)]">
+        Call back
       </div>
     </div>
   );
