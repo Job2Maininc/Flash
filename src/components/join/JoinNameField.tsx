@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n } from "@/components/LocaleProvider";
+import { cn } from "@/lib/cn";
 
 type Props = {
   value: string;
@@ -11,11 +12,17 @@ export function JoinNameField({ value, onChange }: Props) {
   const { t } = useI18n();
 
   return (
-    <label className="flex h-14 min-w-0 flex-1 items-center gap-2.5 rounded-2xl border border-white/15 bg-white/8 px-3.5 transition hover:border-white/35 focus-within:border-[var(--accent)] focus-within:bg-white/10">
+    <label
+      className={cn(
+        "flex h-14 min-w-0 flex-1 items-center gap-2.5 rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-800)]/80 px-3.5",
+        "transition-[border-color,background-color] duration-[var(--dur-fast)]",
+        "hover:border-[var(--ink-700)] focus-within:border-[var(--key-500)]/55 focus-within:bg-[var(--ink-700)]",
+      )}
+    >
       <span aria-hidden className="text-2xl leading-none">
         ✏️
       </span>
-      <span className="shrink-0 font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight text-white sm:text-base">
+      <span className="shrink-0 font-[family-name:var(--font-camera-display)] text-sm font-semibold tracking-tight text-[var(--cam-paper)] sm:text-base">
         {t.join.controlName}
       </span>
       <input
@@ -25,7 +32,7 @@ export function JoinNameField({ value, onChange }: Props) {
         autoComplete="nickname"
         placeholder={t.form.placeholder}
         aria-label={t.form.nickname}
-        className="min-w-0 flex-1 bg-transparent text-base text-white placeholder:text-white/35 focus:outline-none"
+        className="min-w-0 flex-1 bg-transparent text-base text-[var(--cam-paper)] placeholder:text-[var(--cam-paper)]/35 focus:outline-none"
       />
     </label>
   );

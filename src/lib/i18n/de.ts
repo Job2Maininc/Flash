@@ -238,6 +238,8 @@ export const de = {
     scopeRandom: "Zufällig",
     startChat: "Videochat starten",
     starting: "Wird gestartet…",
+    safetyReminder:
+      "Kamera an. Sei respektvoll. Jederzeit auflegen — ohne Erklärung.",
     controlGender: "Geschlecht",
     controlName: "Name",
     controlCountry: "Land",
@@ -340,6 +342,13 @@ export const de = {
     searchingTitle: "Wir suchen dein Match…",
     searchingBody:
       "Warteschlange nach deinem Geschlecht und wen du suchst. Sobald jemand Passendes da ist, startet der Anruf.",
+    searchingHints: [
+      "Filter nach Geschlecht und wen du suchst…",
+      "Warteschlange fair und consent-first…",
+      "Nächste freie passende Person startet den Anruf…",
+      "Bleib hier — Chemie ist einen Flash entfernt…",
+    ],
+    cancelSearch: "Abbrechen",
     connecting: "Verbinden…",
     connectingCall: "Verbindung zum Anruf…",
     recallNotice: "Rückruf läuft — Verbindung zum Anruf…",

@@ -2,6 +2,7 @@
 
 import { hapticTap } from "@/lib/haptics";
 import { useI18n } from "@/components/LocaleProvider";
+import { cn } from "@/lib/cn";
 
 type Props = {
   disabled?: boolean;
@@ -32,24 +33,26 @@ export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
           type="button"
           disabled={disabled || leftVoted}
           onClick={swipeLeft}
-          className={`flash-btn relative flex h-14 w-14 items-center justify-center rounded-full border-2 text-2xl shadow-lg backdrop-blur-md sm:h-16 sm:w-16 ${
+          className={cn(
+            "relative flex h-14 w-14 items-center justify-center rounded-full border-2 text-2xl shadow-[var(--elev-1)] backdrop-blur-md sm:h-16 sm:w-16",
+            "transition-[border-color,background-color,transform] duration-[var(--dur-fast)] active:scale-[.97]",
             leftVoted
-              ? "border-white/15 bg-white/10 text-white/40"
-              : "border-white/25 bg-black/50 text-white enabled:hover:border-white/50 enabled:hover:bg-black/65"
-          }`}
+              ? "border-[var(--ink-600)] bg-[var(--ink-800)] text-[var(--cam-paper)]/40"
+              : "border-[var(--ink-600)] bg-[var(--ink-900)]/70 text-[var(--cam-paper)] enabled:hover:border-[var(--ink-700)] enabled:hover:bg-[var(--ink-800)]",
+          )}
           aria-label={t.call.pass}
         >
           ✕
           {leftVoted ? (
             <span
-              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-[10px]"
+              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--ink-600)] text-[10px]"
               aria-hidden
             >
               ✓
             </span>
           ) : null}
         </button>
-        <span className="text-[10px] font-medium uppercase tracking-widest text-white/45">
+        <span className="font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-widest text-[var(--cam-paper)]/45">
           {t.call.pass}
         </span>
       </div>
@@ -58,17 +61,19 @@ export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
           type="button"
           disabled={disabled || rightVoted}
           onClick={swipeRight}
-          className={`flash-btn relative flex h-14 w-14 items-center justify-center rounded-full border-2 text-2xl sm:h-16 sm:w-16 ${
+          className={cn(
+            "relative flex h-14 w-14 items-center justify-center rounded-full border-2 text-2xl sm:h-16 sm:w-16",
+            "transition-[border-color,background-color,box-shadow,transform] duration-[var(--dur-fast)] active:scale-[.97]",
             rightVoted
-              ? "border-[var(--accent)]/50 bg-[var(--accent)]/25 text-[var(--accent)]/60 shadow-none"
-              : "border-[var(--accent)] bg-[var(--accent)] text-[var(--ink)] shadow-[0_0_28px_rgba(232,255,74,0.4)] enabled:hover:brightness-105"
-          }`}
+              ? "border-[var(--key-500)]/50 bg-[var(--key-500)]/25 text-[var(--key-400)]/60 shadow-none"
+              : "border-[var(--key-500)] bg-[var(--key-500)] text-[var(--paper)] shadow-[var(--glow-key)] enabled:hover:brightness-105",
+          )}
           aria-label={t.call.match}
         >
           ♥
           {rightVoted ? (
             <span
-              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)] text-[10px] text-[var(--ink)]"
+              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--key-500)] text-[10px] text-[var(--paper)]"
               aria-hidden
             >
               ✓
@@ -76,9 +81,10 @@ export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
           ) : null}
         </button>
         <span
-          className={`text-[10px] font-medium uppercase tracking-widest ${
-            rightVoted ? "text-[var(--accent)]/50" : "text-[var(--accent)]/70"
-          }`}
+          className={cn(
+            "font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-widest",
+            rightVoted ? "text-[var(--key-400)]/50" : "text-[var(--key-400)]/70",
+          )}
         >
           {t.call.like}
         </span>

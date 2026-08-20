@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n } from "@/components/LocaleProvider";
+import { LiveBadge } from "@/components/ui/Badge";
 
 type Props = {
   onlineCount: number | null;
@@ -12,24 +13,35 @@ export function JoinStage({ onlineCount }: Props) {
     onlineCount === null ? "—" : new Intl.NumberFormat().format(onlineCount);
 
   return (
-    <div className="relative min-h-[min(58dvh,640px)] w-full overflow-hidden rounded-[1.75rem] border border-white/10 bg-[radial-gradient(ellipse_at_center,_#2c2418_0%,_#0c0a08_62%)] shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:min-h-[min(62dvh,720px)]">
+    <div className="relative min-h-[min(52dvh,560px)] w-full overflow-hidden rounded-[var(--radius-xl)] border border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-2),var(--glow-key)] sm:min-h-[min(56dvh,640px)]">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.12] flash-grain"
+        className="pointer-events-none absolute inset-0 opacity-[0.35] cam-spill"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -inset-px rounded-[var(--radius-xl)] opacity-80"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 55% at 50% 40%, rgba(255,122,69,0.22), transparent 62%)",
+        }}
       />
       <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-        <p className="font-[family-name:var(--font-display)] text-6xl font-bold tracking-tight text-white sm:text-7xl md:text-8xl">
+        <p className="font-[family-name:var(--font-camera-display)] text-6xl font-bold tracking-tight text-[var(--cam-paper)] sm:text-7xl md:text-8xl">
           Flash
         </p>
-        <p
-          className="mt-5 font-[family-name:var(--font-display)] text-4xl font-semibold tabular-nums tracking-tight text-[var(--accent)] sm:text-5xl"
-          aria-live="polite"
-        >
-          {display}
-        </p>
-        <p className="mt-2 text-sm uppercase tracking-[0.22em] text-white/55">
-          {t.join.peopleOnline}
-        </p>
+        <div className="mt-6 flex flex-col items-center gap-2">
+          <LiveBadge
+            label={
+              <span className="tabular-nums">
+                {display}{" "}
+                <span className="font-normal opacity-80">
+                  {t.join.peopleOnline}
+                </span>
+              </span>
+            }
+          />
+        </div>
       </div>
     </div>
   );

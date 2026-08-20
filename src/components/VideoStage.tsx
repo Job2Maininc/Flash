@@ -22,6 +22,7 @@ import { RoomEvent } from "livekit-client";
 import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
 import { AttachedVideo } from "@/components/AttachedVideo";
+import { CallControlBar } from "@/components/browse/CallControlBar";
 import { MediaControls } from "@/components/MediaControls";
 import { Spinner } from "@/components/Spinner";
 import { StatusPill } from "@/components/StatusPill";
@@ -179,16 +180,18 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
       />
 
       {hasRemoteVideo && hasLocalVideo && local ? (
-        <div className="absolute bottom-28 right-4 z-20 flex h-36 w-28 items-center justify-center overflow-hidden rounded-2xl border border-white/20 bg-[var(--surface-dark)] shadow-[0_8px_32px_rgba(0,0,0,0.45)] sm:bottom-32 sm:h-40 sm:w-32">
+        <div className="absolute bottom-28 right-4 z-20 flex h-36 w-28 items-center justify-center overflow-hidden rounded-[1.25rem] border border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-2)] ring-1 ring-[var(--key-500)]/25 sm:bottom-32 sm:h-40 sm:w-32">
           <AttachedVideo trackRef={local} className="h-full w-full" mirror />
         </div>
       ) : localParticipant && !localParticipant.isCameraEnabled ? (
         <div
-          className="absolute bottom-28 right-4 z-20 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-2xl border border-white/20 bg-black/60 text-white/70 shadow-lg sm:bottom-32 sm:h-40 sm:w-32"
+          className="absolute bottom-28 right-4 z-20 flex h-36 w-28 flex-col items-center justify-center gap-1 rounded-[1.25rem] border border-[var(--ink-600)] bg-[var(--ink-900)]/80 text-[var(--cam-paper)]/70 shadow-[var(--elev-1)] sm:bottom-32 sm:h-40 sm:w-32"
           aria-hidden
         >
           <span className="text-2xl">📷</span>
-          <span className="text-[10px] uppercase tracking-wide">off</span>
+          <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wide">
+            off
+          </span>
         </div>
       ) : null}
 
@@ -200,13 +203,17 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
         </div>
       ) : null}
 
-      <div className="absolute bottom-28 left-4 z-30 safe-bottom sm:bottom-32">
+      <CallControlBar className="absolute bottom-28 left-4 z-30 safe-bottom sm:bottom-32">
         <MediaControls />
-      </div>
+      </CallControlBar>
 
       {peerNickname && hasRemoteVideo ? (
         <div className="absolute left-4 top-16 z-20 sm:top-[4.5rem]">
-          <StatusPill variant="glass" animate={false} className="font-[family-name:var(--font-display)] text-base">
+          <StatusPill
+            variant="glass"
+            animate={false}
+            className="font-[family-name:var(--font-camera-display)] text-base"
+          >
             {peerNickname}
           </StatusPill>
         </div>
@@ -271,8 +278,10 @@ export function VideoStage({
 
   if (error) {
     return (
-      <div className="absolute inset-0 flex items-center justify-center bg-[var(--ink)] px-6 text-center text-white">
-        <p>{error}</p>
+      <div className="absolute inset-0 flex items-center justify-center bg-[var(--ink-900)] px-6 text-center text-[var(--cam-paper)]">
+        <p className="max-w-sm text-sm leading-relaxed text-[var(--cam-paper)]/80">
+          {error}
+        </p>
       </div>
     );
   }
@@ -280,9 +289,15 @@ export function VideoStage({
   if (!creds) {
     return (
       <div className="absolute inset-0 h-full w-full">
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/28 text-white/85 backdrop-blur-[2px]">
-          <Spinner size="lg" />
-          <p className="font-[family-name:var(--font-display)] text-lg">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[var(--ink-900)]/40 text-[var(--cam-paper)]/85 backdrop-blur-[2px]">
+          <div className="relative flex h-16 w-16 items-center justify-center">
+            <span
+              aria-hidden
+              className="cam-search-ring absolute inset-0 rounded-full border border-[var(--key-500)]/40"
+            />
+            <Spinner size="lg" />
+          </div>
+          <p className="font-[family-name:var(--font-camera-display)] text-lg">
             {t.browse.connectingCall}
           </p>
         </div>

@@ -9,11 +9,12 @@ import { SwipeSurface } from "@/components/SwipeSurface";
 import { MediaPermissionPrompt } from "@/components/MediaPermissionPrompt";
 import { LocalPreview } from "@/components/LocalPreview";
 import { FlashBrand } from "@/components/FlashBrand";
-import { AmbientOrbs } from "@/components/AmbientOrbs";
 import { MatchCelebration } from "@/components/MatchCelebration";
-import { Spinner } from "@/components/Spinner";
 import { StatusPill } from "@/components/StatusPill";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { SearchingOverlay } from "@/components/browse/SearchingOverlay";
+import { CountIn } from "@/components/browse/CountIn";
+import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 import { useI18n } from "@/components/LocaleProvider";
 import { interpolate } from "@/lib/i18n";
 import { hapticSuccess } from "@/lib/haptics";
@@ -268,8 +269,8 @@ export function BrowseClient() {
   }
 
   return (
-    <div className="relative flex min-h-dvh flex-col bg-[var(--ink)] text-white">
-      <AmbientOrbs variant="dark" />
+    <div className="relative flex min-h-dvh flex-col bg-[var(--ink-900)] text-[var(--cam-paper)]">
+      <NoiseOverlay className="opacity-[0.03]" />
 
       {showMatchCelebration ? (
         <MatchCelebration
@@ -283,14 +284,14 @@ export function BrowseClient() {
           href="/browse"
           glow="strong"
           className="pointer-events-auto"
-          wordmarkClassName="text-white"
+          wordmarkClassName="text-[var(--cam-paper)]"
         />
         <div className="pointer-events-auto flex items-center gap-2">
           <LanguageSwitcher variant="dark" />
           <Link
             href="/matches"
             onClick={() => leaveBrowse("disconnect")}
-            className="flash-btn rounded-full border border-white/15 bg-black/35 px-3.5 py-1.5 text-sm text-white/85 backdrop-blur-md hover:bg-black/50"
+            className="rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-900)]/55 px-3.5 py-1.5 text-sm text-[var(--cam-paper)]/85 backdrop-blur-md transition-colors hover:bg-[var(--ink-800)]"
           >
             {t.browse.matches}
           </Link>
@@ -321,20 +322,7 @@ export function BrowseClient() {
               onError={() => setMediaPrompt(true)}
             >
               {!inCall ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-black/55 px-6 text-center backdrop-blur-[3px]">
-                  <div className="relative flex items-center justify-center">
-                    <div className="absolute h-16 w-16 rounded-full bg-[var(--accent)]/20 flash-pulse-ring" />
-                    <Spinner size="lg" />
-                  </div>
-                  <div className="flash-fade-in space-y-2">
-                    <p className="font-[family-name:var(--font-display)] text-2xl text-white">
-                      {t.browse.searchingTitle}
-                    </p>
-                    <p className="max-w-xs text-sm leading-relaxed text-white/65">
-                      {t.browse.searchingBody}
-                    </p>
-                  </div>
-                </div>
+                <SearchingOverlay onCancel={() => leaveBrowse("disconnect")} />
               ) : null}
             </LocalPreview>
           </div>
@@ -361,14 +349,16 @@ export function BrowseClient() {
 
             {connecting ? (
               <div className="pointer-events-none absolute inset-x-6 top-[4.5rem] z-30 safe-top">
-                <div className="overflow-hidden rounded-full bg-white/10">
-                  <div className="h-1 w-full rounded-full bg-[var(--accent)] flash-connect-bar" />
+                <div className="overflow-hidden rounded-full bg-[var(--ink-600)]">
+                  <div className="h-1 w-full rounded-full bg-[var(--key-500)] flash-connect-bar" />
                 </div>
-                <p className="mt-2 text-center text-xs font-medium uppercase tracking-widest text-white/45">
+                <p className="mt-2 text-center font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-widest text-[var(--cam-paper)]/45">
                   {t.browse.connecting}
                 </p>
               </div>
             ) : null}
+
+            <CountIn active={callReady && !connecting} />
           </div>
         ) : null}
 
@@ -400,7 +390,7 @@ export function BrowseClient() {
       {error ? (
         <div className="absolute bottom-36 left-4 right-4 z-20 mx-auto max-w-sm">
           <p
-            className="flash-fade-in rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/90 px-4 py-2.5 text-center text-sm text-white shadow-lg"
+            className="cam-reveal rounded-xl border border-[var(--live)]/30 bg-[var(--live)]/90 px-4 py-2.5 text-center text-sm text-[var(--paper)] shadow-[var(--elev-1)]"
             role="alert"
           >
             {error}
@@ -415,7 +405,7 @@ export function BrowseClient() {
           onSwipe={onSwipe}
         />
         {inCall ? (
-          <p className="pb-3 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-white/35 safe-bottom">
+          <p className="pb-3 text-center font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--cam-paper)]/35 safe-bottom">
             {t.browse.swipeHint}
           </p>
         ) : null}

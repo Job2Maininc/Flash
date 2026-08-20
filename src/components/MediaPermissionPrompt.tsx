@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Spinner } from "@/components/Spinner";
+import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/components/LocaleProvider";
 import { humanizeMediaError, requestMediaAccess } from "@/lib/media";
 
@@ -27,12 +27,12 @@ export function MediaPermissionPrompt({ onGranted }: Props) {
   }
 
   return (
-    <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/75 px-6 backdrop-blur-md">
-      <div className="flash-fade-in w-full max-w-sm rounded-2xl border border-white/10 bg-[var(--ink)] p-6 text-center shadow-2xl">
-        <p className="font-[family-name:var(--font-display)] text-2xl text-white">
+    <div className="absolute inset-0 z-30 flex items-center justify-center bg-[var(--ink-900)]/80 px-6 backdrop-blur-md">
+      <div className="cam-reveal w-full max-w-sm rounded-[var(--radius-xl)] border border-[var(--ink-600)] bg-[var(--ink-800)] p-6 text-center shadow-[var(--elev-2)]">
+        <p className="font-[family-name:var(--font-camera-display)] text-2xl text-[var(--cam-paper)]">
           {t.media.title}
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-white/65">
+        <p className="mt-3 text-sm leading-relaxed text-[var(--cam-paper)]/65">
           {t.media.body}
         </p>
         {error ? (
@@ -40,21 +40,17 @@ export function MediaPermissionPrompt({ onGranted }: Props) {
             {error}
           </p>
         ) : null}
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="lg"
+          loading={loading}
           disabled={loading}
           onClick={activate}
-          className="flash-btn flash-btn-accent mt-6 w-full px-6 py-3.5 text-lg"
+          className="mt-6 w-full"
         >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <Spinner size="sm" />
-              {t.media.activating}
-            </span>
-          ) : (
-            t.media.activate
-          )}
-        </button>
+          {loading ? t.media.activating : t.media.activate}
+        </Button>
       </div>
     </div>
   );

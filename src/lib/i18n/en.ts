@@ -235,6 +235,7 @@ export const en = {
     scopeRandom: "Random",
     startChat: "Start video chat",
     starting: "Starting…",
+    safetyReminder: "Camera on. Be kind. Hang up anytime — no explanation owed.",
     controlGender: "Gender",
     controlName: "Name",
     controlCountry: "Country",
@@ -337,6 +338,13 @@ export const en = {
     searchingTitle: "Looking for your match…",
     searchingBody:
       "Queue filtered by your gender and who you want. As soon as someone compatible is free, the call starts.",
+    searchingHints: [
+      "Filtering by your gender and who you want…",
+      "Keeping the queue fair and consent-first…",
+      "Next free compatible person starts the call…",
+      "Stay here — chemistry is one flash away…",
+    ],
+    cancelSearch: "Cancel",
     connecting: "Connecting…",
     connectingCall: "Connecting to the call…",
     recallNotice: "Recall in progress — joining the call…",

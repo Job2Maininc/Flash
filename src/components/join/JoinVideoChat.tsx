@@ -7,7 +7,7 @@ import { JoinNameField } from "@/components/join/JoinNameField";
 import { JoinStage } from "@/components/join/JoinStage";
 import { LookingForPicker } from "@/components/join/LookingForPicker";
 import { ScopePicker } from "@/components/join/ScopePicker";
-import { Spinner } from "@/components/Spinner";
+import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/components/LocaleProvider";
 import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { GUEST_ERROR, type GuestErrorCode } from "@/lib/guest-errors";
@@ -150,26 +150,20 @@ export function JoinVideoChat() {
         </p>
       ) : null}
 
-      <button
+      <Button
         type="submit"
+        variant="primary"
+        size="lg"
+        loading={loading}
         disabled={loading || !ready}
-        className="flash-btn flash-btn-accent w-full rounded-2xl px-6 py-4 text-lg tracking-wide disabled:opacity-50"
+        className="w-full rounded-2xl tracking-wide"
       >
-        {loading ? (
-          <>
-            <Spinner size="sm" />
-            {t.join.starting}
-          </>
-        ) : (
-          <>
-            <span aria-hidden className="text-xl">
-              📷
-            </span>
-            {t.join.startChat}
-          </>
-        )}
-      </button>
-      <p className="text-center text-xs leading-relaxed text-white/40">
+        {loading ? t.join.starting : t.join.startChat}
+      </Button>
+      <p className="text-center text-xs leading-relaxed text-[var(--cam-paper)]/45">
+        {t.join.safetyReminder}
+      </p>
+      <p className="text-center text-[11px] leading-relaxed text-[var(--cam-paper)]/35">
         {t.form.legal}
       </p>
     </form>

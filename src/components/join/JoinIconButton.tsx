@@ -1,6 +1,7 @@
 "use client";
 
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { cn } from "@/lib/cn";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   active?: boolean;
@@ -22,17 +23,19 @@ export function JoinIconButton({
       type="button"
       aria-label={label}
       title={label}
-      className={`flex h-14 shrink-0 items-center gap-2.5 rounded-2xl border px-3.5 text-left transition ${
+      className={cn(
+        "flex h-14 shrink-0 items-center gap-2.5 rounded-[var(--radius-pill)] border px-3.5 text-left transition-[border-color,background-color,box-shadow] duration-[var(--dur-fast)]",
         active
-          ? "border-[var(--accent)] bg-[var(--accent)]/15 shadow-[var(--shadow-glow)]"
-          : "border-white/15 bg-white/8 hover:border-white/35 hover:bg-white/12"
-      } ${className}`}
+          ? "border-[var(--key-500)]/55 bg-[var(--key-500)]/15 shadow-[var(--glow-key)]"
+          : "border-[var(--ink-600)] bg-[var(--ink-800)]/80 hover:border-[var(--ink-700)] hover:bg-[var(--ink-700)]",
+        className,
+      )}
       {...props}
     >
       <span aria-hidden className="text-2xl leading-none">
         {emoji}
       </span>
-      <span className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight text-white sm:text-base">
+      <span className="font-[family-name:var(--font-camera-display)] text-sm font-semibold tracking-tight text-[var(--cam-paper)] sm:text-base">
         {caption}
       </span>
     </button>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { SiteHeader } from "@/components/SiteHeader";
+import { CameraHeader } from "@/components/marketing/CameraHeader";
 import { JoinVideoChat } from "@/components/join/JoinVideoChat";
+import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 import { getLocale } from "@/lib/i18n/get-locale";
 import { getDictionary } from "@/lib/i18n";
 
@@ -14,13 +15,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function JoinPage() {
   return (
-    <div className="relative min-h-dvh overflow-x-hidden bg-[var(--surface-dark)] text-white">
+    <div className="relative min-h-dvh overflow-x-hidden bg-[var(--ink-900)] text-[var(--cam-paper)]">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#3a2c18_0%,_transparent_42%)] opacity-70"
+        className="pointer-events-none absolute inset-0 opacity-90"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,122,69,0.18), transparent 55%)",
+        }}
       />
-      <SiteHeader variant="dark" />
-      <main className="relative z-10">
+      <NoiseOverlay className="opacity-[0.04]" />
+      <CameraHeader />
+      <main className="relative z-10 pt-20">
         <JoinVideoChat />
       </main>
     </div>

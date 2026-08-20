@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FlashLogo } from "@/components/FlashLogo";
-import { Spinner } from "@/components/Spinner";
-import { AmbientOrbs } from "@/components/AmbientOrbs";
+import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/components/LocaleProvider";
 import type { MatchEntry } from "@/lib/types";
 
@@ -49,17 +48,14 @@ export function MatchesList({ initialMatches }: Props) {
 
   if (matches.length === 0) {
     return (
-      <div className="relative overflow-hidden">
-        <AmbientOrbs variant="warm" className="opacity-60" />
-        <div className="flash-fade-in flash-card relative flex flex-col items-center gap-4 px-6 py-10 text-center">
-          <FlashLogo size={48} glow="strong" />
-          <p className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
-            {t.matches.emptyTitle}
-          </p>
-          <p className="max-w-xs text-sm leading-relaxed text-[var(--ink-muted)]">
-            {t.matches.emptyBody}
-          </p>
-        </div>
+      <div className="cam-reveal relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--ink-600)] bg-[var(--ink-800)]/80 px-6 py-10 text-center shadow-[var(--elev-1)]">
+        <FlashLogo size={48} glow="strong" />
+        <p className="mt-4 font-[family-name:var(--font-camera-display)] text-xl text-[var(--cam-paper)]">
+          {t.matches.emptyTitle}
+        </p>
+        <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-[var(--cam-paper)]/55">
+          {t.matches.emptyBody}
+        </p>
       </div>
     );
   }
@@ -75,29 +71,28 @@ export function MatchesList({ initialMatches }: Props) {
         {matches.map((m, i) => (
           <li
             key={m.peerId}
-            className="flash-card flash-fade-in flex items-center justify-between gap-4 px-4 py-4 transition hover:bg-white/70"
+            className="cam-reveal flex items-center justify-between gap-4 rounded-[1.25rem] border border-[var(--ink-600)] bg-[var(--ink-800)]/70 px-4 py-4 transition-colors hover:border-[var(--key-500)]/35 hover:bg-[var(--ink-700)]"
             style={{ animationDelay: `${i * 0.06}s` }}
           >
             <div className="min-w-0">
-              <p className="truncate font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
+              <p className="truncate font-[family-name:var(--font-camera-display)] text-xl text-[var(--cam-paper)]">
                 {m.nickname}
               </p>
-              <p className="text-xs text-[var(--ink-muted)]">
+              <p className="font-[family-name:var(--font-mono)] text-xs text-[var(--cam-paper)]/45">
                 {formatMatchDate(m.matchedAt)}
               </p>
             </div>
-            <button
+            <Button
               type="button"
+              variant="primary"
+              size="sm"
+              loading={loadingId === m.peerId}
               disabled={loadingId === m.peerId}
               onClick={() => recall(m.peerId)}
-              className="flash-btn flash-btn-primary shrink-0 px-4 py-2.5 text-sm"
+              className="shrink-0"
             >
-              {loadingId === m.peerId ? (
-                <Spinner size="sm" className="border-[var(--paper)]/30 border-t-[var(--paper)]" />
-              ) : (
-                t.matches.recall
-              )}
-            </button>
+              {t.matches.recall}
+            </Button>
           </li>
         ))}
       </ul>
