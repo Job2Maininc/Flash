@@ -1,4 +1,4 @@
-import { forwardRef, type HTMLAttributes } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 type Props = HTMLAttributes<HTMLSpanElement> & {
@@ -31,8 +31,8 @@ export const Badge = forwardRef<HTMLSpanElement, Props>(
   },
 );
 
-type LiveProps = HTMLAttributes<HTMLSpanElement> & {
-  label: string;
+type LiveProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
+  label: ReactNode;
 };
 
 export const LiveBadge = forwardRef<HTMLSpanElement, LiveProps>(
@@ -41,13 +41,10 @@ export const LiveBadge = forwardRef<HTMLSpanElement, LiveProps>(
       <Badge
         ref={ref}
         tone="live"
-        className={cn("gap-2", className)}
+        className={cn("gap-2 normal-case tracking-[0.08em]", className)}
         {...props}
       >
-        <span
-          aria-hidden
-          className="relative flex h-2 w-2"
-        >
+        <span aria-hidden className="relative flex h-2 w-2">
           <span className="absolute inset-0 animate-ping rounded-full bg-[var(--live)] opacity-60" />
           <span className="relative m-auto h-1.5 w-1.5 rounded-full bg-[var(--live)]" />
         </span>

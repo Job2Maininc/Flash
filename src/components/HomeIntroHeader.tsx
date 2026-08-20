@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { FlashIntro } from "@/components/FlashIntro";
-import { SiteHeader } from "@/components/SiteHeader";
+import { CameraHeader } from "@/components/marketing/CameraHeader";
 
 export function HomeIntroHeader() {
   const brandRef = useRef<HTMLDivElement>(null);
@@ -17,7 +17,7 @@ export function HomeIntroHeader() {
       {intro === "play" ? (
         <FlashIntro targetRef={brandRef} onComplete={onComplete} />
       ) : null}
-      <SiteHeader brandRef={brandRef} brandHidden={intro === "play"} />
+      <CameraHeader brandRef={brandRef} brandHidden={intro === "play"} />
     </>
   );
 }

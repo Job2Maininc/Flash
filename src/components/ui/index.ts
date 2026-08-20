@@ -5,3 +5,7 @@ export { Pill } from "./Pill";
 export { Section } from "./Section";
 export { Reveal } from "./Reveal";
 export { NoiseOverlay } from "./NoiseOverlay";
+export { VideoTile } from "./VideoTile";
+export { Marquee } from "./Marquee";
+export { CountUp } from "./CountUp";
+export { Spotlight } from "./Spotlight";
