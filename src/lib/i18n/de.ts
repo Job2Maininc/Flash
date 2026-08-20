@@ -33,6 +33,7 @@ export const de = {
     trustNoAds: "Ohne Werbung",
     trustAge: "18+",
     talkingSuffix: "gerade im Gespräch",
+    beTheFirst: "Sei heute Abend die Erste · der Erste.",
     marquee: [
       "Paris",
       "Berlin",
@@ -233,6 +234,8 @@ export const de = {
     metaDescription:
       "Tritt einem Flash-Videochat bei. Sieh, wer online ist, wähle dein Setup und starte den Live-Anruf.",
     peopleOnline: "Personen online",
+    personOnline: "Person online",
+    beTheFirst: "Sei heute Abend die Erste · der Erste.",
     scopeLabel: "Wo treffen",
     scopeLocal: "Lokal",
     scopeGlobal: "Global",

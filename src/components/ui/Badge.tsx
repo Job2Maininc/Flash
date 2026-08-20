@@ -35,21 +35,28 @@ type LiveProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
   label: ReactNode;
 };
 
+/**
+ * Live presence chip — only the pulsing `--live` dot carries red.
+ * Label is cream mono (no red fill / glow / border).
+ */
 export const LiveBadge = forwardRef<HTMLSpanElement, LiveProps>(
   function LiveBadge({ className, label, ...props }, ref) {
     return (
-      <Badge
+      <span
         ref={ref}
-        tone="live"
-        className={cn("gap-2 normal-case tracking-[0.08em]", className)}
+        className={cn(
+          "inline-flex items-center gap-2 font-[family-name:var(--font-mono)]",
+          "text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--cam-paper)]",
+          className,
+        )}
         {...props}
       >
-        <span aria-hidden className="relative flex h-2 w-2">
+        <span aria-hidden className="relative flex h-2 w-2 shrink-0">
           <span className="absolute inset-0 animate-ping rounded-full bg-[var(--live)] opacity-60" />
           <span className="relative m-auto h-1.5 w-1.5 rounded-full bg-[var(--live)]" />
         </span>
-        {label}
-      </Badge>
+        <span className="tabular-nums">{label}</span>
+      </span>
     );
   },
 );

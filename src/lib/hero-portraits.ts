@@ -31,7 +31,8 @@ export const HERO_PORTRAITS: GridPortrait[] = [
     alt: "Candid portrait",
   },
   {
-    src: "https://images.unsplash.com/photo-1524504388940-b1c17226555e?auto=format&fit=crop&w=600&q=80",
+    // Replaces 404 photo-1524504388940-b1c17226555e
+    src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=600&q=80",
     alt: "Person smiling softly",
   },
   {
@@ -47,7 +48,8 @@ export const HERO_PORTRAITS: GridPortrait[] = [
     alt: "Warm indoor portrait",
   },
   {
-    src: "https://images.unsplash.com/photo-1552374196-c4e2ffc6e0b0?auto=format&fit=crop&w=600&q=80",
+    // Replaces 404 photo-1552374196-c4e2ffc6e0b0
+    src: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?auto=format&fit=crop&w=600&q=80",
     alt: "Person in soft shadow",
   },
   {

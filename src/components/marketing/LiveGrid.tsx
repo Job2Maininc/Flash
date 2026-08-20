@@ -11,9 +11,11 @@ import {
 import { LiveBadge } from "@/components/ui/Badge";
 import { CountUp } from "@/components/ui/CountUp";
 import { VideoTile } from "@/components/ui/VideoTile";
+import { useI18n } from "@/components/LocaleProvider";
 import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/cn";
+import { shouldShowLiveCount } from "@/lib/live-count";
 
 export type GridPortrait = {
   src: string;
@@ -43,6 +45,7 @@ function centerOutOrder(cols: number, rows: number): number[] {
 }
 
 export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
+  const { t } = useI18n();
   const reduced = useReducedMotion();
   const online = useOnlineCount();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -156,22 +159,29 @@ export function LiveGrid({ portraits, talkingSuffix, className }: Props) {
     return () => window.removeEventListener("resize", onResize);
   }, [connected, measureLine]);
 
-  const countValue = online ?? 1;
+  const countValue = online ?? 0;
+  const showLive = shouldShowLiveCount(online);
 
   return (
     <div
       ref={rootRef}
-      className={cn("relative", className)}
+      className={cn("relative origin-top scale-[0.85] sm:scale-90 lg:scale-[0.85]", className)}
       data-static={staticMode ? "true" : undefined}
     >
       <div className="absolute left-3 top-3 z-10 sm:left-4 sm:top-4">
-        <LiveBadge
-          label={
-            <>
-              <CountUp value={countValue} /> {talkingSuffix}
-            </>
-          }
-        />
+        {showLive ? (
+          <LiveBadge
+            label={
+              <>
+                <CountUp value={countValue} /> {talkingSuffix}
+              </>
+            }
+          />
+        ) : (
+          <p className="font-[family-name:var(--font-mono)] text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--faint)]">
+            {t.home.beTheFirst}
+          </p>
+        )}
       </div>
 
       <div

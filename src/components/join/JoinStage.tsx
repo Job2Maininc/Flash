@@ -2,6 +2,7 @@
 
 import { useI18n } from "@/components/LocaleProvider";
 import { LiveBadge } from "@/components/ui/Badge";
+import { shouldShowLiveCount } from "@/lib/live-count";
 
 type Props = {
   onlineCount: number | null;
@@ -9,8 +10,10 @@ type Props = {
 
 export function JoinStage({ onlineCount }: Props) {
   const { t } = useI18n();
-  const display =
-    onlineCount === null ? "—" : new Intl.NumberFormat().format(onlineCount);
+  const showLive = shouldShowLiveCount(onlineCount);
+  const count = onlineCount ?? 0;
+  const peopleLabel =
+    count === 1 ? t.join.personOnline : t.join.peopleOnline;
 
   return (
     <div className="relative min-h-[min(52dvh,560px)] w-full overflow-hidden rounded-[var(--radius-xl)] border border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-2),var(--glow-key)] sm:min-h-[min(56dvh,640px)]">
@@ -31,16 +34,22 @@ export function JoinStage({ onlineCount }: Props) {
           Flash
         </p>
         <div className="mt-6 flex flex-col items-center gap-2">
-          <LiveBadge
-            label={
-              <span className="tabular-nums">
-                {display}{" "}
-                <span className="font-normal opacity-80">
-                  {t.join.peopleOnline}
+          {showLive ? (
+            <LiveBadge
+              label={
+                <span>
+                  <span className="tabular-nums">
+                    {new Intl.NumberFormat().format(count)}
+                  </span>{" "}
+                  <span className="font-normal opacity-80">{peopleLabel}</span>
                 </span>
-              </span>
-            }
-          />
+              }
+            />
+          ) : (
+            <p className="font-[family-name:var(--font-mono)] text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--faint)]">
+              {t.join.beTheFirst}
+            </p>
+          )}
         </div>
       </div>
     </div>

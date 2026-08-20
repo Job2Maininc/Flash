@@ -31,6 +31,7 @@ export const en = {
     trustNoAds: "No ads",
     trustAge: "18+",
     talkingSuffix: "talking right now",
+    beTheFirst: "Be the first one on tonight.",
     marquee: [
       "Paris",
       "Berlin",
@@ -230,6 +231,8 @@ export const en = {
     metaDescription:
       "Join a Flash video chat. See who’s online, pick your vibe, and start a live call.",
     peopleOnline: "people online",
+    personOnline: "person online",
+    beTheFirst: "Be the first one on tonight.",
     scopeLabel: "Where to meet",
     scopeLocal: "Locally",
     scopeGlobal: "Globally",
