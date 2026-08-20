@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f3ebe0;
+  /* ——— Legacy tokens (existing marketing / product UI — unchanged in Phase 1) ——— */
+  --paper-legacy: #f3ebe0;
   --ink: #1a1410;
   --ink-muted: #5c534a;
   --ink-faint: #9a9086;
@@ -9,15 +10,59 @@
   --accent-soft: #f4ff7a;
   --danger: #c23b22;
   --surface-dark: #0c0a08;
-  --background: var(--paper);
+  --paper: var(--paper-legacy);
+  --background: var(--paper-legacy);
   --foreground: var(--ink);
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
+
+  /* ——— Camera Light system (Phase 1+) ——— */
+  --ink-900: #0e0b12;
+  --ink-800: #16121c;
+  --ink-700: #201a28;
+  --ink-600: #2e2637;
+
+  --cam-paper: #fbf3ec;
+  --muted: #a096aa;
+  --faint: #6a6172;
+
+  --key-500: #ff7a45;
+  --key-400: #ff9466;
+  --key-600: #e85f2c;
+
+  --rim-500: #6c5cff;
+  --rim-400: #8b7dff;
+
+  --live: #ff2d55;
+  --ok: #4ade9b;
+  --warn: #ffc24b;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
   --radius-full: 9999px;
+
   --shadow-soft: 0 8px 32px rgba(26, 20, 16, 0.12);
   --shadow-glow: 0 0 40px rgba(232, 255, 74, 0.22);
+
+  --elev-1: 0 1px 0 rgba(251, 243, 236, 0.06) inset, 0 8px 24px rgba(0, 0, 0, 0.45);
+  --elev-2: 0 1px 0 rgba(251, 243, 236, 0.08) inset, 0 24px 60px rgba(0, 0, 0, 0.55);
+  --glow-key: 0 0 0 1px rgba(255, 122, 69, 0.35), 0 12px 40px rgba(255, 122, 69, 0.25);
+
+  --dur-fast: 140ms;
+  --dur-base: 320ms;
+  --dur-slow: 700ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --type-display-xl: clamp(3.25rem, 8vw, 7.5rem);
+  --type-display-l: clamp(2.5rem, 5.5vw, 4.5rem);
+  --type-h2: clamp(1.75rem, 3.2vw, 2.75rem);
+  --type-h3: 1.375rem;
+  --type-body-l: 1.125rem;
+  --type-body: 1rem;
+  --type-caption: 0.8125rem;
+  --type-eyebrow: 0.6875rem;
 }
 
 @theme inline {
@@ -25,6 +70,22 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+  --color-ink-900: var(--ink-900);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-600: var(--ink-600);
+  --color-cam-paper: var(--cam-paper);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-key-500: var(--key-500);
+  --color-key-400: var(--key-400);
+  --color-key-600: var(--key-600);
+  --color-rim-500: var(--rim-500);
+  --color-rim-400: var(--rim-400);
+  --color-live: var(--live);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
 }
 
 @keyframes flash-fade-in {
@@ -140,6 +201,43 @@
   100% {
     transform: scaleX(1);
     opacity: 0.85;
+  }
+}
+
+@keyframes flash-intro-bloom {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(1.55);
+  }
+}
+
+@keyframes cam-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cam-live-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
   }
 }
 
@@ -281,12 +379,99 @@
   background: var(--surface-dark);
 }
 
+.flash-intro-bloom {
+  width: min(52vmin, 28rem);
+  height: min(52vmin, 28rem);
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(244, 255, 122, 0.95) 0%,
+    rgba(232, 255, 74, 0.45) 38%,
+    rgba(232, 255, 74, 0) 70%
+  );
+  animation: flash-intro-bloom 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .safe-top {
   padding-top: max(1rem, env(safe-area-inset-top));
 }
 
 .safe-bottom {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+/* ——— Camera Light utilities ——— */
+
+.cam-display-xl {
+  font-family: var(--font-camera-display), var(--font-display), system-ui, sans-serif;
+  font-size: var(--type-display-xl);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  max-width: 18ch;
+}
+
+.cam-display-l {
+  font-family: var(--font-camera-display), var(--font-display), system-ui, sans-serif;
+  font-size: var(--type-display-l);
+  line-height: 0.96;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  max-width: 24ch;
+}
+
+.cam-h2 {
+  font-family: var(--font-camera-display), var(--font-display), system-ui, sans-serif;
+  font-size: var(--type-h2);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.cam-eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--type-eyebrow);
+  line-height: 1.45;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.cam-body {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: var(--type-body);
+  line-height: 1.6;
+  max-width: 62ch;
+}
+
+.cam-body-l {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: var(--type-body-l);
+  line-height: 1.55;
+  max-width: 52ch;
+}
+
+.cam-spill {
+  background: radial-gradient(
+    60% 50% at 50% 0%,
+    rgba(255, 122, 69, 0.22),
+    transparent 70%
+  );
+}
+
+.cam-grad-key-rim {
+  background: linear-gradient(135deg, var(--key-500), var(--rim-500));
+}
+
+.cam-noise {
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+
+.cam-reveal {
+  animation: cam-reveal-in var(--dur-base) var(--ease-out) both;
 }
 
 body {
@@ -310,30 +495,13 @@ body {
   color: var(--ink);
 }
 
-@keyframes flash-intro-bloom {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.35);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-  40% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.05);
-  }
-  100% {
-    opacity: 0.55;
-    transform: translate(-50%, -50%) scale(1.55);
-  }
-}
-
-.flash-intro-bloom {
-  width: min(52vmin, 28rem);
-  height: min(52vmin, 28rem);
-  border-radius: 9999px;
-  background: radial-gradient(
-    circle,
-    rgba(244, 255, 122, 0.95) 0%,
-    rgba(232, 255, 74, 0.45) 38%,
-    rgba(232, 255, 74, 0) 70%
-  );
-  animation: flash-intro-bloom 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
