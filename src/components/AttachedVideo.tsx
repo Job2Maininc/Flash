@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import type { TrackReference } from "@livekit/components-core";
 
 type Props = {
@@ -9,25 +9,35 @@ type Props = {
   mirror?: boolean;
 };
 
-export function AttachedVideo({ trackRef, className = "", mirror = false }: Props) {
+/**
+ * Attaches a LiveKit track to a stable <video> element.
+ * Re-attach only when the underlying track identity changes — not when
+ * useTracks() returns a new TrackReference object on every render.
+ */
+export const AttachedVideo = memo(function AttachedVideo({
+  trackRef,
+  className = "",
+  mirror = false,
+}: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const track = trackRef.publication?.track;
+  const trackSid = trackRef.publication?.trackSid ?? null;
+  const isLocal = trackRef.participant.isLocal;
 
   useEffect(() => {
     const element = videoRef.current;
-    const publication = trackRef.publication;
-    const track = publication?.track;
     if (!element || !track) return;
 
     track.attach(element);
-    element.muted = trackRef.participant.isLocal;
+    element.muted = isLocal;
     element.playsInline = true;
     element.autoplay = true;
-    element.play().catch(() => undefined);
+    void element.play().catch(() => undefined);
 
     return () => {
       track.detach(element);
     };
-  }, [trackRef]);
+  }, [track, trackSid, isLocal]);
 
   return (
     <video
@@ -35,14 +45,14 @@ export function AttachedVideo({ trackRef, className = "", mirror = false }: Prop
       className={className}
       playsInline
       autoPlay
-      muted={trackRef.participant.isLocal}
+      muted={isLocal}
       style={{
         width: "100%",
         height: "100%",
         objectFit: "contain",
         transform: mirror ? "scaleX(-1)" : undefined,
-        background: "var(--surface-dark)",
+        background: "var(--ink-900)",
       }}
     />
   );
-}
+});
