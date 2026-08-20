@@ -5,6 +5,7 @@ import { FaqSection } from "@/components/marketing/FaqSection";
 import { FeatureBlocks } from "@/components/marketing/FeatureBlocks";
 import { HomeHero } from "@/components/marketing/HomeHero";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
+import { StickyMobileCta } from "@/components/marketing/StickyMobileCta";
 import { Testimonials } from "@/components/marketing/Testimonials";
 import { TrustSafety } from "@/components/marketing/TrustSafety";
 import { Marquee } from "@/components/ui/Marquee";
@@ -73,6 +74,7 @@ export default async function HomePage() {
 
         <CameraFooter />
       </main>
+      <StickyMobileCta />
     </div>
   );
 }

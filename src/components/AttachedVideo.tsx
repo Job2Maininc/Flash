@@ -49,7 +49,7 @@ export const AttachedVideo = memo(function AttachedVideo({
       style={{
         width: "100%",
         height: "100%",
-        objectFit: "contain",
+        objectFit: "cover",
         transform: mirror ? "scaleX(-1)" : undefined,
         background: "var(--ink-900)",
       }}

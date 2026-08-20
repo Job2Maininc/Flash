@@ -15,9 +15,12 @@ type Props = {
   className?: string;
 };
 
-const HIDE_MS = 3000;
+const HIDE_MS = 4000;
 
-/** Auto-hides call chrome after inactivity — presentational only. */
+/**
+ * Auto-hides call chrome after inactivity.
+ * Touch: show on any tap; fade after 4s. Does not rely on hover.
+ */
 export function CallControlBar({ children, className }: Props) {
   const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(true);
@@ -32,14 +35,14 @@ export function CallControlBar({ children, className }: Props) {
 
   useEffect(() => {
     bump();
-    const onMove = () => bump();
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerdown", onMove);
-    window.addEventListener("keydown", onMove);
+    const onPointer = () => bump();
+    const onKey = () => bump();
+    // pointerdown covers touch + mouse; skip continuous pointermove (hover).
+    window.addEventListener("pointerdown", onPointer);
+    window.addEventListener("keydown", onKey);
     return () => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerdown", onMove);
-      window.removeEventListener("keydown", onMove);
+      window.removeEventListener("pointerdown", onPointer);
+      window.removeEventListener("keydown", onKey);
       if (timerRef.current != null) window.clearTimeout(timerRef.current);
     };
   }, [bump]);
@@ -52,7 +55,6 @@ export function CallControlBar({ children, className }: Props) {
         className,
       )}
       onPointerDown={(e) => e.stopPropagation()}
-      onPointerMove={(e) => e.stopPropagation()}
     >
       {children}
     </div>

@@ -101,7 +101,7 @@ export function JoinVideoChat() {
   return (
     <form
       onSubmit={onSubmit}
-      className="mx-auto flex w-full max-w-lg flex-col gap-6 px-5 pb-10 pt-4"
+      className="mx-auto flex w-full max-w-lg flex-col gap-5 px-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-4"
     >
       <JoinStage onlineCount={onlineCount} />
 

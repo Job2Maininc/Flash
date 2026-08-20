@@ -35,7 +35,7 @@ export function CameraFooter() {
   ];
 
   return (
-    <footer className="relative z-10 border-t border-[var(--ink-700)] bg-[var(--ink-900)] px-5 py-16 text-[var(--cam-paper)]">
+    <footer className="relative z-10 border-t border-[var(--ink-700)] bg-[var(--ink-900)] px-5 py-16 pb-[max(4rem,calc(5.5rem+env(safe-area-inset-bottom)))] text-[var(--cam-paper)] md:pb-16">
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.2fr_2fr]">
         <div className="max-w-sm space-y-4">
           <FlashBrand
@@ -52,16 +52,26 @@ export function CameraFooter() {
           <LanguageSwitcher variant="dark" />
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
           {columns.map((col) => (
-            <div key={col.heading}>
+            <div
+              key={col.heading}
+              className={
+                col.heading === t.footer.colLegal
+                  ? "col-span-2 sm:col-span-1"
+                  : undefined
+              }
+            >
               <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)]">
                 {col.heading}
               </p>
               <ul className="mt-4 space-y-3">
                 {col.links.map((link) => (
                   <li key={`${col.heading}-${link.href}-${link.label}`}>
-                    <Link href={link.href} className="cam-footer-link text-sm text-[var(--muted)]">
+                    <Link
+                      href={link.href}
+                      className="cam-footer-link inline-flex min-h-11 items-center text-sm text-[var(--muted)]"
+                    >
                       {link.label}
                     </Link>
                   </li>

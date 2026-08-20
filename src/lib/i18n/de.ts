@@ -46,6 +46,8 @@ export const de = {
       "18+",
     ],
     startFree: "Videochat starten",
+    stickyCtaHint: "Kostenlos · ohne Anmeldung",
+    rotatePrompt: "Dreh dein Handy für einen besseren Call",
     whyFlash: "Warum Flash",
     howEyebrow: "So funktioniert’s",
     howTitle: "Drei Schritte. Eine echte Begegnung.",

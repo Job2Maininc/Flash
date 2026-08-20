@@ -55,7 +55,33 @@ export function HowItWorks({ eyebrow, title, lead, steps }: Props) {
         <p className="cam-body-l mt-4 text-[var(--muted)] text-pretty">{lead}</p>
       </ScrollReveal>
 
-      <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
+      {/* Mobile: stacked cards — frame above each step (no sticky pin). */}
+      <ol className="mt-10 space-y-10 lg:hidden">
+        {steps.map((step, index) => (
+          <li key={step.title} className="space-y-4">
+            <DeviceFrame
+              label={step.frameLabel}
+              className="mx-auto w-full max-w-[280px]"
+            >
+              <FramePreview state={FRAME_STATES[index] ?? "setup"} />
+            </DeviceFrame>
+            <div className="rounded-[var(--radius-lg)] border border-[var(--ink-600)] bg-[var(--ink-800)] p-5 shadow-[var(--elev-1)]">
+              <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)]">
+                0{index + 1}
+              </p>
+              <h3 className="mt-2 font-[family-name:var(--font-camera-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
+                {step.title}
+              </h3>
+              <p className="mt-3 max-w-[42ch] text-base leading-relaxed text-[var(--muted)] text-pretty">
+                {step.body}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      {/* Desktop: sticky frame + step list */}
+      <div className="mt-12 hidden gap-10 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
         <div className="lg:sticky lg:top-28 lg:self-start">
           <DeviceFrame label={steps[active]?.frameLabel}>
             <FramePreview state={FRAME_STATES[active] ?? "setup"} />
