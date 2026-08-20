@@ -75,7 +75,7 @@ export const de = {
       "Rückrufbare Matches: Halt den Faden mit Menschen, die geklickt haben.",
       "Inklusiv: Männer, Frauen, nicht-binäre Personen — alle gehören dazu.",
     ],
-    socialEyebrow: "Sie haben geflasht",
+    socialEyebrow: "Echte Gespräche",
     socialTitle: "Begegnungen, die wirklich beginnen.",
     testimonials: [
       {
@@ -138,7 +138,7 @@ export const de = {
         demo: "safety",
       },
       {
-        eyebrow: "Präsenz",
+        eyebrow: "Auf Kamera",
         title: "Echte Gesichter, keine polierten Profile",
         body: "Du erscheinst per Kamera. Matches, die sitzen, bleiben auf deiner Liste zum Zurückrufen.",
         linkLabel: "So funktioniert’s",
@@ -305,7 +305,7 @@ export const de = {
     metaDescription:
       "Flash-Sicherheitsregeln: 18+, Consent, Respekt im Video und gute Kamera-Praxis.",
     eyebrow: "Sicherheit",
-    title: "Sexy Begegnungen, keine toxischen.",
+    title: "Du entscheidest, wie jeder Anruf endet.",
     lead: "Video-Dating braucht gegenseitigen Respekt. Das ist der Flash-Rahmen — klar, nicht verhandelbar, damit du die Kontrolle behältst.",
     tips: [
       {
@@ -397,10 +397,7 @@ export const de = {
     generic: "Kein Zugriff auf Kamera oder Mikrofon.",
   },
   images: {
-    hero: "Paar lächelt sich bei weichem Licht an",
-    videoDate: "Person im Videoanruf am Laptop",
-    chemistry: "Lächelndes Porträt, Date-Stimmung",
-    safety: "Selbstbewusste Person blickt in die Kamera",
-    community: "Enge Freunde draußen unterwegs",
+    chemistry: "Zwei Menschen mitten im Gespräch bei warmem Abendlicht",
+    community: "Menschen im Gespräch, ungestellt",
   },
 } satisfies Dictionary;

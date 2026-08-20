@@ -28,32 +28,36 @@ export default async function AboutPage() {
       <CameraHeader />
       <main id="main" className="relative z-10 mx-auto max-w-3xl px-5 pb-20 pt-10">
         <p className="cam-eyebrow text-[var(--faint)]">{t.about.eyebrow}</p>
-        <h1 className="cam-display-l mt-3">{t.about.title}</h1>
-        <p className="cam-body-l mt-5 text-[var(--muted)]">{t.about.lead}</p>
+        <h1 className="cam-display-l mt-3 text-balance">{t.about.title}</h1>
+        <p className="cam-body-l mt-5 text-[var(--muted)] text-pretty">
+          {t.about.lead}
+        </p>
 
-        <div className="relative mt-10 aspect-[16/10] overflow-hidden rounded-[var(--radius-xl)]">
-          <Image
-            src={images.chemistry.src}
-            alt={images.chemistry.alt}
-            fill
-            sizes="(max-width: 768px) 100vw, 768px"
-            className="object-cover"
-            priority
-          />
+        <div className="relative mt-10 max-h-[60vh] overflow-hidden rounded-[var(--radius-xl)]">
+          <div className="relative aspect-[5/4] max-h-[60vh] w-full">
+            <Image
+              src={images.chemistry.src}
+              alt={images.chemistry.alt}
+              fill
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover object-center"
+              priority
+            />
+          </div>
         </div>
 
         <div className="mt-12 space-y-8 text-base leading-relaxed text-[var(--muted)]">
           <section className="space-y-3">
             <h2 className="cam-h2 text-[var(--cam-paper)]">{t.about.promiseTitle}</h2>
-            <p>{t.about.promiseBody}</p>
+            <p className="text-pretty">{t.about.promiseBody}</p>
           </section>
           <section className="space-y-3">
             <h2 className="cam-h2 text-[var(--cam-paper)]">{t.about.whoTitle}</h2>
-            <p>{t.about.whoBody}</p>
+            <p className="text-pretty">{t.about.whoBody}</p>
           </section>
           <section className="space-y-3">
             <h2 className="cam-h2 text-[var(--cam-paper)]">{t.about.notTitle}</h2>
-            <p>{t.about.notBody}</p>
+            <p className="text-pretty">{t.about.notBody}</p>
           </section>
         </div>
 

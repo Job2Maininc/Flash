@@ -108,6 +108,12 @@ Document regressions in PR notes; do not “fix” a11y by changing product APIs
 
 EN + DE dictionaries in `src/lib/i18n/`. Camera Light copy (features, trust, FAQ, searching hints, safety reminder) must stay in sync across both files. `Dictionary` is `typeof en`.
 
+## Imagery
+
+- Processed assets live in `public/images/` (warm key grade, reduced saturation, 4:5 portraits as WebP ≤180 KB).
+- Mood only: never attach names, ages, cities, or quotes to a stock/processed face.
+- Safety page is typography-only — no photography.
+
 ## Anti-patterns (do not ship)
 
 - Purple mesh / indigo SaaS gradients as the main look

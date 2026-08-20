@@ -73,7 +73,7 @@ export const en = {
       "Recallable matches: keep the thread with people who clicked.",
       "Inclusive: men, women, non-binary people — everyone belongs.",
     ],
-    socialEyebrow: "They flashed",
+    socialEyebrow: "Real conversations",
     socialTitle: "Meetings that actually start.",
     testimonials: [
       {
@@ -136,7 +136,7 @@ export const en = {
         demo: "safety",
       },
       {
-        eyebrow: "Presence",
+        eyebrow: "On camera",
         title: "Real faces, not polished profiles",
         body: "You show up on camera. Matches you like stay on your list so you can call them back.",
         linkLabel: "See how it works",
@@ -301,7 +301,7 @@ export const en = {
     metaDescription:
       "Flash safety rules: 18+, consent, respect on video, and camera best practices.",
     eyebrow: "Safety",
-    title: "Sexy meetings, not toxic ones.",
+    title: "You decide how every call ends.",
     lead: "Video dating needs mutual respect. Here’s the Flash frame — clear, non-negotiable, and built so you stay in control.",
     tips: [
       {
@@ -392,11 +392,8 @@ export const en = {
     generic: "Couldn’t access the camera or microphone.",
   },
   images: {
-    hero: "Couple smiling face to face in soft light",
-    videoDate: "Person on a video call on a laptop",
-    chemistry: "Smiling portrait, date-night mood",
-    safety: "Confident person looking at the camera",
-    community: "Close friends hanging out outdoors",
+    chemistry: "Two people mid-conversation in warm evening light",
+    community: "People talking together in a candid moment",
   },
 };
 
