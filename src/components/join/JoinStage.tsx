@@ -26,7 +26,7 @@ export function JoinStage({ onlineCount }: Props) {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 70% 55% at 50% 35%, rgba(255,122,69,0.14), transparent 62%)",
+            "radial-gradient(ellipse 70% 55% at 50% 35%, rgba(255,67,38,0.14), transparent 62%)",
         }}
       />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 text-center">

@@ -36,7 +36,7 @@ export default async function MatchesPage() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 70% 45% at 80% 0%, rgba(255,122,69,0.16), transparent 55%)",
+            "radial-gradient(ellipse 70% 45% at 80% 0%, rgba(255,67,38,0.16), transparent 55%)",
         }}
       />
       <NoiseOverlay className="opacity-[0.04]" />

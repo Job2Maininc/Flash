@@ -173,7 +173,7 @@ export default function StyleguidePage() {
           <h2 className="cam-h2">Assumptions (Phase 1)</h2>
           <ul className="cam-body list-disc space-y-2 pl-5 text-[var(--muted)]">
             <li>Body face stays DM Sans until Geist/Switzer is installed via npm.</li>
-            <li>Display for the new system is Bricolage Grotesque; Fraunces remains on the live site.</li>
+            <li>Display and body use Schibsted Grotesk; mono is Spline Sans Mono.</li>
             <li>Hero grid will use still portraits with a drop-in VideoTile prop.</li>
             <li>No fake stats band; testimonials if numbers are not publishable.</li>
             <li>DE/EN i18n stays; no native-app sticky bar.</li>

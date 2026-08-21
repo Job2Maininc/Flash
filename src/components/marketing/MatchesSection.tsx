@@ -47,7 +47,7 @@ export function MatchesSection() {
     <Section seam>
       <ScrollReveal>
         <p className="cam-eyebrow text-[var(--faint)]">{t.matches.eyebrow}</p>
-        <h2 className="cam-h2 mt-3 max-w-[18ch] text-balance">
+        <h2 className="cam-h2 mt-3 max-w-[18ch]">
           {t.matches.title}
         </h2>
       </ScrollReveal>

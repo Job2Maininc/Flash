@@ -44,7 +44,7 @@ export function FeatureBlocks({ features }: Props) {
                   <p className="cam-eyebrow text-[var(--faint)]">
                     {feature.eyebrow}
                   </p>
-                  <h2 className="cam-h2 mt-3 max-w-[16ch] text-balance">
+                  <h2 className="cam-h2 mt-3 max-w-[16ch]">
                     {feature.title}
                   </h2>
                   <p className="cam-body mt-4 text-[var(--muted)] text-pretty">

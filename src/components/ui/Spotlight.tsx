@@ -73,7 +73,7 @@ export function Spotlight({ className, size = 420 }: Props) {
       style={{
         width: size,
         height: size,
-        background: `radial-gradient(circle, rgba(255,122,69,.18) 0%, transparent 68%)`,
+        background: `radial-gradient(circle, rgba(255,67,38,.18) 0%, transparent 68%)`,
       }}
     />
   );

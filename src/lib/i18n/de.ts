@@ -21,12 +21,18 @@ export const de = {
     backToCall: "← Anruf",
   },
   home: {
-    headline: "Live-Video-Dating — keine Fotogalerie.",
-    lead: "Begegnungen mit Consent, Matching nach dem, wer du bist und wen du suchst. Swipe für den Funken — oder die nächste Person.",
+    headline: "Live-Video-Dating nach deinen Regeln",
+    lead: "Du sagst, wer du bist und wen du suchst. Der Anruf startet. Swipen, wenn du fertig bist.",
     heroEyebrow: "Live-Video-Dating",
     heroHeadline: "Sprich in den nächsten 30 Sekunden mit jemandem Neuem",
+    heroParts: {
+      before: "Sprich in den nächsten",
+      emph1: "30 Sekunden",
+      mid: "mit jemandem",
+      emph2: "Neuen",
+    },
     heroLead:
-      "Sag, wer du bist und wen du suchst. Match per Live-Video, swipen für den Funken, Favoriten später zurückrufen.",
+      "Spitzname, Geschlecht, wen du suchst. Dann bist du vor der Kamera mit jemandem, der dasselbe gewählt hat.",
     seeHow: "So funktioniert’s",
     trustLive: "Live",
     trustVerified: "Verifiziert",
@@ -50,51 +56,55 @@ export const de = {
     rotatePrompt: "Dreh dein Handy für einen besseren Call",
     whyFlash: "Warum Flash",
     howEyebrow: "So funktioniert’s",
-    howTitle: "Drei Schritte. Eine echte Begegnung.",
+    howTitle: "Drei Schritte. Ein Live-Anruf",
+    howParts: {
+      before: "Drei Schritte. Ein",
+      emph: "Live-Anruf",
+    },
     howLead:
-      "Flash verbindet die Energie eines spontanen Anrufs mit der Präzision modernen Datings.",
+      "Einstellungen einmal setzen. Flash setzt euch Gesicht an Gesicht. Behalten, wer sitzt.",
     steps: [
       {
         title: "Sag, wer du bist",
-        body: "Spitzname, Geschlecht und wen du suchst. Wir filtern für Begegnungen, die Sinn ergeben.",
+        body: "Spitzname, Geschlecht und wen du suchst. Damit filtern wir die Warteschlange, bevor jemand klingelt.",
       },
       {
         title: "Sprich live",
-        body: "Sofortiger Videoanruf. Chemie sieht man — nicht in einer Bio von 2019.",
+        body: "Der Anruf startet in Sekunden. Du hörst die Pause vor dem Lachen. Genau das ist das Produkt.",
       },
       {
         title: "Swipen & zurückrufen",
-        body: "Rechts zum Matchen, links für die nächste Person. Ein Match? Ruf sie an, wann du willst.",
+        body: "Rechts behält. Links sucht weiter. Matches bleiben auf deiner Liste zum späteren Anruf.",
       },
     ],
     whyEyebrow: "Warum Flash",
-    whyTitle: "Weniger Foto-Swipes. Mehr Präsenz.",
+    whyTitle: "Schluss mit Foto-Scrollen",
     whyLead:
-      "Wir verkaufen das Echte: Gesichter, die sich bewegen, Stimmen, die zögern, Lachen, das nicht retuschiert ist.",
+      "Gesichter bewegen sich. Stimmen brechen. Du entscheidest im Moment, nicht nach zwanzig Nachrichten.",
     whyPoints: [
-      "Intelligentes Matching nach deinem Geschlecht und wen du suchst — weniger Missverständnisse.",
-      "Dauerhafter Videoanruf: Du likest kein Profil, du spürst Chemie.",
-      "Rückrufbare Matches: Halt den Faden mit Menschen, die geklickt haben.",
-      "Inklusiv: Männer, Frauen, nicht-binäre Personen — alle gehören dazu.",
+      "Matching nutzt dein Geschlecht und wen du suchst. Weniger falsche Türen.",
+      "Video ist von Anfang an an. Du spürst die Stimmung, bevor du einen Abend investierst.",
+      "Gegenseitige Likes landen auf einer Liste, die du später öffnest.",
+      "Männer, Frauen, nicht-binär. Ab 18 bist du willkommen.",
     ],
     socialEyebrow: "Echte Gespräche",
-    socialTitle: "Begegnungen, die wirklich beginnen.",
+    socialTitle: "Anrufe, die wirklich beginnen",
     testimonials: [
       {
         quote:
-          "Endlich Dating, bei dem man aufhört, Fotos zu scrollen. Nach zwei Flashes hatte ich ein echtes Gespräch.",
+          "Ich habe aufgehört, Fotos zu scrollen. Nach zwei Anrufen war ich mitten im Satz mit jemandem, der mich angesehen hat.",
         name: "Camille",
         detail: "Paris · sucht Männer",
       },
       {
         quote:
-          "Der Filter „wen ich suche“ ändert alles. Weniger Fehlversuche, mehr Menschen, die zu dem passen, was ich will.",
+          "Vorher zu sagen, wen ich suche, hat die peinlichen Fehlversuche reduziert. Die Warteschlange wirkte ruhiger.",
         name: "Noah",
         detail: "Lyon · sucht Frauen",
       },
       {
         quote:
-          "Match plus Video-Rückruf ist die Kombi. Am nächsten Tag gab’s den virtuellen Kaffee, ohne den Faden zu verlieren.",
+          "Dienstags gematcht. Donnerstags Rückruf getippt — und den Kaffee-Chat fortgesetzt, ohne einen Username zu suchen.",
         name: "Inès",
         detail: "Bordeaux · sucht alle",
       },
@@ -106,27 +116,27 @@ export const de = {
       },
       {
         quote:
-          "Kein endloses Chatten. Kamera an, echte Stimmung, dann swipen. Genau das wollte ich.",
+          "Kein endloser Chat. Kamera, Stimmung, swipen. Genau das wollte ich.",
         name: "Mara",
         detail: "Wien · sucht Männer",
       },
       {
         quote:
-          "Die Rückrufliste zählt. Dienstags gematcht, donnerstags weitergesprochen — ohne irgendwo einen Handle zu suchen.",
+          "Die Rückrufliste ist der stille Held. Wir haben einfach weitergemacht.",
         name: "Sam",
         detail: "Zürich · sucht alle",
       },
     ],
     enterEyebrow: "Bei Flash einsteigen",
-    enterTitle: "Bereit für deinen nächsten Flash?",
+    enterTitle: "Bereit für deinen nächsten Anruf?",
     enterLead:
-      "Kostenlos starten. Kamera + Mikro nötig. Respekt, Consent und kein erzwungenes Ghosting: swipen und weiter.",
+      "Kostenlos starten. Kamera und Mikro nötig. Wenn’s komisch wird: auflegen. Keine Rede nötig.",
     howFrameLabels: ["Setup", "Live-Anruf", "Match"],
     features: [
       {
         eyebrow: "Matching",
         title: "Triff jemanden, der zu dem passt, was du willst",
-        body: "Wir paaren nach Geschlecht und Vorliebe, dann geht’s live. Weniger Rauschen, mehr Chemie.",
+        body: "Zuerst Geschlecht und Vorliebe. Dann Live-Video. Der Filter macht die langweilige Arbeit.",
         linkLabel: "Matching starten",
         href: "/join",
         demo: "match",
@@ -134,15 +144,15 @@ export const de = {
       {
         eyebrow: "Sicherheit",
         title: "Du behältst die Kontrolle über jeden Anruf",
-        body: "Melden, blockieren, jederzeit auflegen. Consent ist die Basis — kein Nice-to-have.",
+        body: "Blockieren ist ein Tippen. Melden danach optional. Consent ist die Basis — kein Nice-to-have.",
         linkLabel: "Sicherheitsregeln lesen",
         href: "/safety",
         demo: "safety",
       },
       {
         eyebrow: "Auf Kamera",
-        title: "Echte Gesichter, keine polierten Profile",
-        body: "Du erscheinst per Kamera. Matches, die sitzen, bleiben auf deiner Liste zum Zurückrufen.",
+        title: "Dein Gesicht ist das Profil",
+        body: "Kein polierter Foto-Stapel. Menschen, die beide liked haben, bleiben zum späteren Anruf.",
         linkLabel: "So funktioniert’s",
         href: "/#how-it-works",
         demo: "verified",
@@ -162,21 +172,21 @@ export const de = {
       {
         icon: "verified",
         title: "Live vor der Kamera",
-        body: "Dein Gesicht ist das Profil — kein polierter Foto-Stapel. Gastmodus ist keine Ausweisprüfung.",
+        body: "Dein Gesicht ist das Profil. Gastmodus ist keine Ausweisprüfung.",
       },
     ],
     trustEyebrow: "Vertrauen & Sicherheit",
-    trustTitle: "Für Erwachsene, die das Echte wollen",
+    trustTitle: "Für Erwachsene, die auftauchen",
     trustLead:
-      "Video-Dating braucht klare Regeln. Das ist der Flash-Rahmen — ruhig, ohne Marketing-Sprech.",
+      "Video-Dating braucht klare Regeln. Das macht Flash tatsächlich.",
     trustBullets: [
       {
         title: "Nur 18+",
-        body: "Flash ist für Erwachsene. Wenn jemand minderjährig wirkt, blockiere und melde — diese Meldung hat Priorität.",
+        body: "Flash ist für Erwachsene. Wenn jemand minderjährig wirkt, blockiere und melde. Diese Meldung hat Priorität.",
       },
       {
         title: "Consent zuerst",
-        body: "Ein Nein, Stille oder Unwohlsein beendet es. Links swipen und weiter — ohne Erklärung.",
+        body: "Ein Nein, Stille oder Unwohlsein beendet es. Links swipen. Du schuldest keine Rede.",
       },
       {
         title: "Blockieren & melden",
@@ -212,7 +222,7 @@ export const de = {
         id: "safe",
         question: "Wie beende ich einen schlechten Anruf?",
         answer:
-          "Jederzeit auflegen oder nach links swipen. Du schuldest keine Erklärung. Details stehen auf der Sicherheitsseite.",
+          "Jederzeit auflegen oder nach links swipen. Details stehen auf der Sicherheitsseite.",
       },
     ],
     closingTitle: "Dein nächstes Gespräch ist einen Tipp entfernt",
@@ -264,7 +274,7 @@ export const de = {
     startChat: "Videochat starten",
     starting: "Wird gestartet…",
     safetyReminder:
-      "Kamera an. Sei respektvoll. Jederzeit auflegen — ohne Erklärung.",
+      "Kamera an. Sei respektvoll. Jederzeit auflegen, wenn du musst.",
     previewTitle: "Sieh dich selbst, bevor es live geht",
     previewBody:
       "Kamera und Mikrofon werden auf dem nächsten Screen freigegeben — nachdem du sagst, wer du bist und wen du suchst.",
@@ -283,7 +293,7 @@ export const de = {
   },
   footer: {
     blurb:
-      "Flash ist eine Live-Video-Dating-Seite. Weniger starre Profile, mehr echte Gespräche — swipen, matchen, zurückrufen.",
+      "Flash ist Live-Video-Dating. Sag wer du bist, sprich vor der Kamera, swipe, behalte wer sitzt.",
     age: "18+ · Einvernehmliches Dating",
     colProduct: "Produkt",
     colCompany: "Unternehmen",
@@ -296,17 +306,17 @@ export const de = {
     metaDescription:
       "Flash ist Live-Video-Dating: Matching nach Vorlieben, Swipe und rückrufbare Matches.",
     eyebrow: "Über uns",
-    title: "Flash ist Dating. Wirklich.",
-    lead: "Wir haben Flash für Leute gebaut, die photoshopte Profile und Gespräche satt haben, die ins Leere laufen. Hier zeigst du dich im Video, swipest, matchst — und kannst die Menschen zurückrufen, die geklickt haben.",
+    title: "Flash ist Dating vor der Kamera",
+    lead: "Wir haben Flash für Leute gebaut, die retuschierte Profile und Chats satt haben, die ungelesen sterben. Du zeigst dich im Video. Du swipest. Du kannst zurückrufen, wer geklickt hat.",
     promiseTitle: "Unser Versprechen",
     promiseBody:
-      "Weniger Fiktion, mehr Präsenz. Flash filtert Begegnungen nach deinem Geschlecht und wen du suchst, damit jeder Anruf ehrlich startet.",
+      "Jeder Anruf startet mit deinem Geschlecht und wen du suchst schon gefiltert. Der Rest sind eure Gesichter.",
     whoTitle: "Für wen",
     whoBody:
-      "Männer, Frauen, nicht-binäre Personen — hetero, queer, neugierig — ab 18. Wenn du eine menschliche Verbindung vor einem Dating-Lebenslauf willst, bist du richtig.",
+      "Männer, Frauen, nicht-binäre Personen — hetero, queer, neugierig — ab 18. Wenn du einen Menschen vor einem Lebenslauf willst, bist du richtig.",
     notTitle: "Was wir nicht sind",
     notBody:
-      "Kein Fotokatalog. Kein soziales Netzwerk. Kein Spiel anonymer Likes ohne Folge. Flash ist ein Video-Date, das ein dauerhaftes Match werden kann.",
+      "Kein Fotokatalog. Kein soziales Netzwerk. Keine anonymen Likes ohne Folge. Flash ist ein Video-Date, das bleiben kann.",
     join: "Flash beitreten",
   },
   privacy: {

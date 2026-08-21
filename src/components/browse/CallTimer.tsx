@@ -93,7 +93,7 @@ export function CallTimer({ endsAt, onExpire }: Props) {
               className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(255,122,69,.28) 0%, transparent 70%)",
+                  "radial-gradient(circle, rgba(255,67,38,.28) 0%, transparent 70%)",
               }}
             />
             {seconds}
