@@ -110,6 +110,18 @@ export const de = {
     enterLead:
       "Kostenlos starten. Kamera und Mikro nötig. Wenn’s komisch wird: auflegen. Keine Rede nötig.",
     howFrameLabels: ["Setup", "Live-Anruf", "Match"],
+    howDemo: {
+      ringing: "Verbindung…",
+      keep: "Behalten",
+      pass: "Weiter",
+      swipeHint:
+        "Nach rechts wischen zum Behalten, nach links für Weiter. Pfeiltasten tun dasselbe.",
+      swipeCardLabel: "Wischbare Profilkarte",
+      keptLive: "Behalten. Jetzt auf deiner Liste.",
+      passedLive: "Weiter. Nächste Person.",
+      deckEmpty: "Stapel leer — starte einen echten Call.",
+      matchesEmpty: "Rechts wischen füllt deine Liste",
+    },
     features: [
       {
         eyebrow: "Matching",
