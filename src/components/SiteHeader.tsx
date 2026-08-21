@@ -67,7 +67,19 @@ export function SiteHeader({
           );
         })}
       </nav>
-      <LanguageSwitcher variant={dark ? "dark" : "light"} />
+      <div className="flex shrink-0 items-center gap-3">
+        <Link
+          href="/join"
+          className={`shrink-0 font-[family-name:var(--font-body)] text-[13px] font-medium transition ${
+            dark
+              ? "text-white/80 hover:text-white"
+              : "text-[var(--ink)]/80 hover:text-[var(--ink)]"
+          }`}
+        >
+          {t.nav.login}
+        </Link>
+        <LanguageSwitcher variant={dark ? "dark" : "light"} />
+      </div>
     </header>
   );
 }
