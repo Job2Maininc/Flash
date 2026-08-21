@@ -52,7 +52,7 @@ export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
             </span>
           ) : null}
         </button>
-        <span className="font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-widest text-[var(--cam-paper)]/45">
+        <span className="text-[10px] font-medium text-[var(--cam-paper)]/45">
           {t.call.pass}
         </span>
       </div>
@@ -82,7 +82,7 @@ export function SwipeControls({ disabled, myVote, onSwipe }: Props) {
         </button>
         <span
           className={cn(
-            "font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-widest",
+            "text-[10px] font-medium",
             rightVoted ? "text-[var(--key-400)]/50" : "text-[var(--key-400)]/70",
           )}
         >

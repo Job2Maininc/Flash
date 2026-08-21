@@ -66,7 +66,7 @@ export function StickyMobileCta() {
       aria-hidden={!visible}
     >
       <div className="mx-auto flex w-full max-w-lg flex-col gap-2">
-        <p className="whitespace-nowrap text-center font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--faint)]">
+        <p className="whitespace-nowrap text-center text-[13px] font-medium text-[var(--muted)]">
           {t.home.stickyCtaHint}
         </p>
         <Link href="/join" tabIndex={visible ? 0 : -1} className="w-full">

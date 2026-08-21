@@ -72,7 +72,7 @@ export default function StyleguidePage() {
                   className="aspect-[4/3] rounded-[var(--radius-md)] border border-[var(--ink-600)] shadow-[var(--elev-1)]"
                   style={{ background: `var(${swatch.varName})` }}
                 />
-                <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--faint)]">
+                <p className="text-[13px] font-medium text-[var(--muted)]">
                   {swatch.name}
                 </p>
               </div>
@@ -82,7 +82,7 @@ export default function StyleguidePage() {
             <div className="cam-grad-key-rim h-24 rounded-[var(--radius-lg)] shadow-[var(--elev-1)]" />
             <div className="relative h-24 overflow-hidden rounded-[var(--radius-lg)] bg-[var(--ink-800)] shadow-[var(--elev-1)]">
               <div className="cam-spill absolute inset-0" />
-              <p className="relative z-10 p-4 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--faint)]">
+              <p className="relative z-10 p-4 text-[13px] font-medium text-[var(--muted)]">
                 Key→Rim · Spill
               </p>
             </div>
@@ -92,7 +92,7 @@ export default function StyleguidePage() {
         <section className="space-y-5">
           <h2 className="cam-h2">Typography</h2>
           <div className="space-y-6 rounded-[var(--radius-lg)] border border-[var(--ink-700)] bg-[var(--ink-800)] p-6 shadow-[var(--elev-1)]">
-            <p className="cam-eyebrow">Eyebrow / mono</p>
+            <p className="cam-eyebrow">Section label</p>
             <p className="cam-display-xl">Display XL</p>
             <p className="cam-display-l">Display L headline</p>
             <p className="cam-h2">Section H2</p>

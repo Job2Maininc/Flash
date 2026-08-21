@@ -78,7 +78,7 @@ export function JoinStage({ onlineCount }: Props) {
             }
           />
         ) : (
-          <p className="font-[family-name:var(--font-mono)] text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--faint)]">
+          <p className="text-[13px] font-medium text-[var(--muted)]">
             {t.join.beTheFirst}
           </p>
         )}

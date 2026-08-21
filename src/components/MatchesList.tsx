@@ -78,7 +78,7 @@ export function MatchesList({ initialMatches }: Props) {
               <p className="truncate font-[family-name:var(--font-camera-display)] text-xl text-[var(--cam-paper)]">
                 {m.nickname}
               </p>
-              <p className="font-[family-name:var(--font-mono)] text-xs text-[var(--cam-paper)]/45">
+              <p className="font-[family-name:var(--font-mono)] text-xs tabular-nums text-[var(--cam-paper)]/45">
                 {formatMatchDate(m.matchedAt)}
               </p>
             </div>

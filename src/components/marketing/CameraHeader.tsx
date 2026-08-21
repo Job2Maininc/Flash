@@ -230,7 +230,7 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
             >
               <span
                 aria-hidden
-                className="font-[family-name:var(--font-mono)] text-lg"
+                className="text-lg"
               >
                 {open ? "✕" : "☰"}
               </span>
@@ -290,7 +290,7 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
                   <Link
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.12em] text-[var(--faint)] active:text-[var(--cam-paper)]"
+                    className="text-[13px] font-medium text-[var(--muted)] active:text-[var(--cam-paper)]"
                   >
                     {link.label}
                   </Link>

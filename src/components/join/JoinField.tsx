@@ -12,7 +12,7 @@ type Props = {
 export function JoinField({ label, children, icon, className }: Props) {
   return (
     <label className={cn("flex w-full flex-col gap-1.5", className)}>
-      <span className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--faint)]">
+      <span className="text-[13px] font-medium text-[var(--muted)]">
         {label}
       </span>
       <span className="relative flex min-h-14 items-center gap-3 rounded-[var(--radius-md)] border border-[var(--ink-600)] bg-[var(--ink-800)] px-3.5 transition-[border-color] duration-[var(--dur-fast)] focus-within:border-[var(--key-500)]/55">

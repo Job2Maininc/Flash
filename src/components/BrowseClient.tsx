@@ -412,7 +412,7 @@ export function BrowseClient() {
                 <div className="overflow-hidden rounded-full bg-[var(--ink-600)]">
                   <div className="h-1 w-full rounded-full bg-[var(--key-500)] flash-connect-bar" />
                 </div>
-                <p className="mt-2 text-center font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-widest text-[var(--cam-paper)]/45">
+                <p className="mt-2 text-center text-xs font-medium text-[var(--cam-paper)]/55">
                   {t.browse.connecting}
                 </p>
               </div>
@@ -480,7 +480,7 @@ export function BrowseClient() {
           onSwipe={onSwipe}
         />
         {inCall ? (
-          <p className="pb-3 text-center font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--cam-paper)]/35 safe-bottom">
+          <p className="pb-3 text-center text-[11px] font-medium text-[var(--cam-paper)]/45 safe-bottom">
             {t.browse.swipeHint}
           </p>
         ) : null}

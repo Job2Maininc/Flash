@@ -27,9 +27,7 @@ export function MarketingSection({
     >
       <div className={reverse ? "lg:order-2" : undefined}>
         {eyebrow ? (
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--ink-faint)]">
-            {eyebrow}
-          </p>
+          <p className="cam-eyebrow">{eyebrow}</p>
         ) : null}
         <h2 className="mt-2 font-[family-name:var(--font-display)] text-3xl tracking-tight text-[var(--ink)] sm:text-4xl">
           {title}

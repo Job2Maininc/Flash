@@ -72,7 +72,7 @@ export function SearchingOverlay({ onCancel }: Props) {
           {hints[hintIndex] ?? t.browse.searchingBody}
         </p>
         <p
-          className="font-[family-name:var(--font-mono)] text-sm tabular-nums tracking-[0.14em] text-[var(--key-400)]"
+          className="font-[family-name:var(--font-mono)] text-sm tabular-nums text-[var(--key-400)]"
           aria-live="polite"
         >
           {formatElapsed(elapsed)}

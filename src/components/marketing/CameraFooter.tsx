@@ -46,7 +46,7 @@ export function CameraFooter() {
           <p className="text-sm leading-relaxed text-[var(--muted)]">
             {t.footer.blurb}
           </p>
-          <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)]">
+          <p className="text-[13px] font-medium text-[var(--muted)]">
             {t.footer.age}
           </p>
           <LanguageSwitcher variant="dark" />
@@ -62,7 +62,7 @@ export function CameraFooter() {
                   : undefined
               }
             >
-              <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)]">
+              <p className="text-[13px] font-medium text-[var(--muted)]">
                 {col.heading}
               </p>
               <ul className="mt-4 space-y-3">

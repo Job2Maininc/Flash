@@ -46,7 +46,7 @@ export function MatchesSection() {
   return (
     <Section seam>
       <ScrollReveal>
-        <p className="cam-eyebrow text-[var(--faint)]">{t.matches.eyebrow}</p>
+        <p className="cam-eyebrow">{t.matches.eyebrow}</p>
         <h2 className="cam-h2 mt-3 max-w-[18ch]">
           {t.matches.title}
         </h2>
@@ -61,7 +61,7 @@ export function MatchesSection() {
               <p className="font-[family-name:var(--font-camera-display)] text-lg font-bold text-[var(--cam-paper)]">
                 {m.peerNickname}
               </p>
-              <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--faint)]">
+              <p className="text-[13px] font-medium text-[var(--muted)]">
                 {m.unlocked ? t.matches.unlocked : t.matches.locked}
               </p>
             </div>

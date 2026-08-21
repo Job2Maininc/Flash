@@ -23,7 +23,8 @@
   /* Near-neutral off-white — yellow cream removed (typography brief) */
   --cam-paper: #f3f1ee;
   --muted: #a096aa;
-  --faint: #6a6172;
+  /* Was #6a6172 (~3.3:1 on ink-900) — raised for ≥4.5:1 at 13px */
+  --faint: #8f8799;
 
   /* Vermillion key — hotter than coral; live is a distinct magenta */
   --key-500: #ff4326;
@@ -456,12 +457,13 @@
 }
 
 .cam-eyebrow {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: var(--type-eyebrow);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.8125rem; /* 13px */
   line-height: 1.45;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--faint);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
 }
 
 .cam-body {
@@ -593,12 +595,12 @@
 }
 
 .cam-marquee-track {
-  animation: cam-marquee 42s linear infinite;
+  animation: cam-marquee 55s linear infinite;
 }
 
 @media (max-width: 1023px) {
   .cam-marquee-track {
-    animation-duration: 55s;
+    animation-duration: 71s;
   }
 }
 
