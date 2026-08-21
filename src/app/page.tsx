@@ -1,13 +1,13 @@
 import { HomeIntroHeader } from "@/components/HomeIntroHeader";
 import { CameraFooter } from "@/components/marketing/CameraFooter";
 import { ClosingCta } from "@/components/marketing/ClosingCta";
+import { CompareSection } from "@/components/marketing/CompareSection";
 import { FaqSection } from "@/components/marketing/FaqSection";
 import { FeatureBlocks } from "@/components/marketing/FeatureBlocks";
 import { HomeHero } from "@/components/marketing/HomeHero";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
 import { MatchesSection } from "@/components/marketing/MatchesSection";
 import { StickyMobileCta } from "@/components/marketing/StickyMobileCta";
-import { Testimonials } from "@/components/marketing/Testimonials";
 import { TrustSafety } from "@/components/marketing/TrustSafety";
 import { Marquee } from "@/components/ui/Marquee";
 import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
@@ -49,11 +49,7 @@ export default async function HomePage() {
 
         <FeatureBlocks features={t.home.features} />
 
-        <Testimonials
-          eyebrow={t.home.socialEyebrow}
-          title={t.home.socialTitle}
-          quotes={t.home.testimonials}
-        />
+        <CompareSection />
 
         <TrustSafety
           eyebrow={t.home.trustEyebrow}
@@ -68,11 +64,7 @@ export default async function HomePage() {
           items={t.home.faq}
         />
 
-        <ClosingCta
-          title={t.home.closingTitle}
-          cta={t.join.startChat}
-          talkingSuffix={t.home.talkingSuffix}
-        />
+        <ClosingCta title={t.home.closingTitle} cta={t.join.startChat} />
 
         <CameraFooter />
       </main>

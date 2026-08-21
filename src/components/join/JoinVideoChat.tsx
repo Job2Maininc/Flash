@@ -6,7 +6,6 @@ import { JoinField, JoinFieldIcon } from "@/components/join/JoinField";
 import { JoinStage } from "@/components/join/JoinStage";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/components/LocaleProvider";
-import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { COUNTRIES } from "@/lib/countries";
 import { GUEST_ERROR, type GuestErrorCode } from "@/lib/guest-errors";
 import type { LookingFor, MeetScope, Sex } from "@/lib/types";
@@ -18,12 +17,12 @@ const selectClass =
 export function JoinVideoChat() {
   const router = useRouter();
   const { t, locale } = useI18n();
-  const onlineCount = useOnlineCount();
   const [nickname, setNickname] = useState("");
   const [sex, setSex] = useState<Sex | "">("");
   const [lookingFor, setLookingFor] = useState<LookingFor | "">("");
   const [meetScope, setMeetScope] = useState<MeetScope>("random");
   const [preferredCountry, setPreferredCountry] = useState("");
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -56,6 +55,7 @@ export function JoinVideoChat() {
           meetScope,
           preferredCountry:
             meetScope === "global" ? preferredCountry || null : null,
+          ageConfirmed,
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -76,6 +76,7 @@ export function JoinVideoChat() {
     if (meetScope === "global" && !preferredCountry) {
       return t.join.missingCountry;
     }
+    if (!ageConfirmed) return t.join.missingAge;
     return null;
   })();
 
@@ -103,7 +104,7 @@ export function JoinVideoChat() {
       onSubmit={onSubmit}
       className="mx-auto flex w-full max-w-lg flex-col gap-5 px-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-4"
     >
-      <JoinStage onlineCount={onlineCount} />
+      <JoinStage />
 
       <div className="flex flex-col gap-4">
         <JoinField
@@ -265,6 +266,19 @@ export function JoinVideoChat() {
       <p className="text-center text-xs leading-relaxed text-[var(--muted)] text-pretty">
         {t.join.safetyReminder}
       </p>
+
+      <label className="flex min-h-11 cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border border-[var(--ink-600)] bg-[var(--ink-800)] px-3.5 py-3">
+        <input
+          type="checkbox"
+          checked={ageConfirmed}
+          onChange={(e) => setAgeConfirmed(e.target.checked)}
+          className="mt-1 h-4 w-4 shrink-0 accent-[var(--key-500)]"
+          required
+        />
+        <span className="text-sm leading-relaxed text-[var(--cam-paper)]">
+          {t.form.ageConfirm}
+        </span>
+      </label>
 
       <div className="flex flex-col gap-2">
         <Button

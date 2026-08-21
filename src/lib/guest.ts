@@ -20,6 +20,7 @@ export type CreateGuestInput = {
   globalMode?: GlobalMode | null;
   country?: string | null;
   preferredCountry?: string | null;
+  ageConfirmed: boolean;
 };
 
 function secretKey() {
@@ -55,6 +56,9 @@ export async function createGuest(input: CreateGuestInput): Promise<Guest> {
   if (await isNicknameBanned(trimmed)) {
     throw new Error(GUEST_ERROR.NICKNAME_BANNED);
   }
+  if (!input.ageConfirmed) {
+    throw new Error(GUEST_ERROR.AGE_REQUIRED);
+  }
 
   const guest: Guest = {
     id: randomUUID(),
@@ -66,6 +70,7 @@ export async function createGuest(input: CreateGuestInput): Promise<Guest> {
     globalMode: input.meetScope === "global" ? "all" : null,
     country: input.country ?? null,
     preferredCountry,
+    ageConfirmed: true,
   };
 
   const redis = getRedis();
@@ -82,6 +87,7 @@ export async function createGuest(input: CreateGuestInput): Promise<Guest> {
     ...(guest.preferredCountry
       ? { preferredCountry: guest.preferredCountry }
       : {}),
+    ageConfirmed: true,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -138,6 +144,7 @@ export async function getGuestFromCookie(): Promise<Guest | null> {
         typeof payload.preferredCountry === "string"
           ? normalizeCountryCode(payload.preferredCountry)
           : null,
+      ageConfirmed: payload.ageConfirmed === true,
     };
     await redis.set(keys.guest(id), restored);
     return restored;

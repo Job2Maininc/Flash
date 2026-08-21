@@ -39,7 +39,6 @@ export const en = {
     trustAge: "18+",
     trustFreeStart: "Free to start",
     talkingSuffix: "talking right now",
-    beTheFirst: "Be the first one on tonight.",
     marquee: [
       "Paris",
       "Berlin",
@@ -84,46 +83,18 @@ export const en = {
       "Matches you both liked sit on a list you can open later.",
       "Men, women, non-binary. If you’re 18+, you’re welcome.",
     ],
-    socialEyebrow: "Real conversations",
-    socialTitle: "Calls that actually begin",
-    testimonials: [
-      {
-        quote:
-          "I stopped scrolling photos. Two calls in, I was mid-sentence with someone who was looking at me.",
-        name: "Camille",
-        detail: "Paris · looking for men",
-      },
-      {
-        quote:
-          "Saying who I want up front cut the awkward mismatches. The queue felt quieter.",
-        name: "Noah",
-        detail: "Lyon · looking for women",
-      },
-      {
-        quote:
-          "We matched Tuesday. Thursday I tapped recall and we finished the coffee chat without hunting a username.",
-        name: "Inès",
-        detail: "Bordeaux · looking for everyone",
-      },
-      {
-        quote:
-          "I liked stating who I look for before the camera opens. It felt respectful immediately.",
-        name: "Jules",
-        detail: "Berlin · looking for women",
-      },
-      {
-        quote:
-          "No endless chat thread. Camera, vibe, swipe. That is what I wanted.",
-        name: "Mara",
-        detail: "Vienna · looking for men",
-      },
-      {
-        quote:
-          "The recall list is the quiet hero. We picked up where we left off.",
-        name: "Sam",
-        detail: "Zurich · looking for everyone",
-      },
-    ],
+    compare: {
+      eyebrow: "Different by design",
+      title: "How dating apps run · How Flash runs",
+      lead: "Same goal — meeting someone. Different path to the first real hello.",
+      appsLabel: "Dating apps",
+      flashLabel: "Flash",
+      rows: [
+        { apps: "Swipe photos", flash: "See a face" },
+        { apps: "Days of typing", flash: "Talk in 30 seconds" },
+        { apps: "Match buried in chat", flash: "Recall list" },
+      ],
+    },
     enterEyebrow: "Join Flash",
     enterTitle: "Ready for your next call?",
     enterLead:
@@ -169,7 +140,7 @@ export const en = {
       {
         icon: "verified",
         title: "Live on camera",
-        body: "Your face is the profile. Guest mode is not an ID check.",
+        body: "Your face is the profile — not a polished photo stack.",
       },
     ],
     trustEyebrow: "Trust & safety",
@@ -180,6 +151,10 @@ export const en = {
       {
         title: "18+ only",
         body: "Flash is for adults. If someone seems underage, block and report. That report is prioritized.",
+      },
+      {
+        title: "Guest mode is not an ID check",
+        body: "You confirm you are 18+ when you join. We do not verify government ID in guest mode — report underage behaviour so we can act.",
       },
       {
         title: "Consent first",
@@ -242,8 +217,8 @@ export const en = {
     lookingTous: "Everyone",
     submitting: "Entering…",
     submit: "Start my first flash",
-    legal:
-      "By continuing, you confirm you are 18 or older and accept our respectful dating rules.",
+    ageConfirm: "I am 18 years of age or older",
+    legal: "By continuing you accept Flash’s respectful dating rules.",
     continueError: "Couldn’t continue",
     genericError: "Something went wrong",
   },
@@ -253,6 +228,13 @@ export const en = {
     LOOKING_FOR_REQUIRED: "Tell us who you’re looking for.",
     NICKNAME_BANNED: "This nickname is temporarily blocked. Pick another one.",
     SCOPE_REQUIRED: "Choose where you want to meet people.",
+    AGE_REQUIRED: "Confirm that you are 18 or older.",
+  },
+  presence: {
+    waitingMany: "{n} people waiting right now",
+    someoneThere: "Someone is here right now",
+    primeTime:
+      "Prime Time from 21:00 — join and we’ll ping you · next hour in",
   },
   join: {
     metaTitle: "Join video chat",
@@ -260,7 +242,6 @@ export const en = {
       "Join a Flash video chat. See who’s online, pick your vibe, and start a live call.",
     peopleOnline: "people online",
     personOnline: "person online",
-    beTheFirst: "Be the first one on tonight.",
     scopeLabel: "Where to meet",
     scopeLocal: "Locally",
     scopeGlobal: "Globally",
@@ -281,6 +262,7 @@ export const en = {
     missingLooking: "Tell us who you’re looking for.",
     missingScope: "Choose where you want to meet.",
     missingCountry: "Pick a country from the list.",
+    missingAge: "Confirm that you are 18 or older.",
     controlGender: "Gender",
     controlName: "Name",
     controlCountry: "Where to meet",
@@ -313,6 +295,63 @@ export const en = {
     notBody:
       "Not a photo catalog. Not a social network. Not anonymous likes with no follow-through. Flash is a video date that can stick.",
     join: "Join Flash",
+  },
+  imprint: {
+    metaTitle: "Imprint",
+    metaDescription: "Legal notice pursuant to § 5 DDG.",
+    eyebrow: "Legal",
+    title: "Imprint",
+    lead: "Information required by § 5 DDG. Replace bracket placeholders before going live.",
+    providerTitle: "Service provider",
+    emailLabel: "Email",
+    phoneLabel: "Phone",
+    vatLabel: "VAT ID",
+    responsibleTitle: "Responsible for content pursuant to § 18 (2) MStV",
+    odrTitle: "Online dispute resolution",
+    odrBody:
+      "The European Commission provides a platform for online dispute resolution (ODR):",
+    disputeTitle: "Consumer arbitration",
+    disputeBody:
+      "We are neither obliged nor willing to participate in dispute resolution proceedings before a consumer arbitration board. [[ADJUST if different]]",
+  },
+  terms: {
+    metaTitle: "Terms of use",
+    metaDescription: "Draft terms of use for Flash.",
+    draftNotice:
+      "Draft — have a lawyer review. Internal prep only; do not deploy as final.",
+    eyebrow: "Legal",
+    title: "Terms of use",
+    lead: "Skeleton with [[placeholders]]. Have counsel review before public launch.",
+    sections: [
+      {
+        title: "Scope",
+        body: "These terms apply to the use of Flash operated by [[NAME]] ([[ANSCHRIFT]]). Flash is a live video dating service.",
+      },
+      {
+        title: "Minimum age 18",
+        body: "Only people who are 18 or older may use Flash. When you join as a guest you actively confirm that age.",
+      },
+      {
+        title: "Conduct",
+        body: "Respect and consent are mandatory. Harassment, threats, unwanted sexual content, and impersonation are prohibited.",
+      },
+      {
+        title: "Suspension / termination",
+        body: "[[NAME]] may suspend guest sessions for violations. You may stop using Flash anytime by ending the session and clearing site data.",
+      },
+      {
+        title: "Liability",
+        body: "[[LIABILITY TEXT — counsel to draft]]. Flash connects conversations; we are liable for other users’ behaviour only where mandatory law requires.",
+      },
+      {
+        title: "Withdrawal",
+        body: "[[WITHDRAWAL TEXT — counsel to draft]]. Where digital services are involved, applicable consumer protection rules apply.",
+      },
+      {
+        title: "Governing law",
+        body: "The law of [[COUNTRY / JURISDICTION]] applies unless mandatory consumer law provides otherwise. Venue: [[VENUE]].",
+      },
+    ],
   },
   privacy: {
     metaTitle: "Privacy",

@@ -2,12 +2,10 @@
 
 import Link from "next/link";
 import { LiveGrid, type GridPortrait } from "@/components/marketing/LiveGrid";
+import { PresenceLine } from "@/components/marketing/PresenceLine";
 import { Button } from "@/components/ui/Button";
-import { CountUp } from "@/components/ui/CountUp";
 import { Spotlight } from "@/components/ui/Spotlight";
 import { useI18n } from "@/components/LocaleProvider";
-import { useOnlineCount } from "@/hooks/useOnlineCount";
-import { shouldShowLiveCount } from "@/lib/live-count";
 
 type Props = {
   portraits: GridPortrait[];
@@ -15,8 +13,6 @@ type Props = {
 
 export function HomeHero({ portraits }: Props) {
   const { t } = useI18n();
-  const online = useOnlineCount();
-  const showLive = shouldShowLiveCount(online);
   const h = t.home.heroParts;
 
   return (
@@ -57,22 +53,7 @@ export function HomeHero({ portraits }: Props) {
             </a>
           </div>
 
-          {showLive ? (
-            <p className="mt-4 inline-flex items-center gap-2 text-[13px] font-medium text-[var(--muted)] sm:mt-5">
-              <span
-                className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--live)]"
-                aria-hidden
-              />
-              <span className="font-[family-name:var(--font-mono)] tabular-nums">
-                <CountUp value={online ?? 0} />
-              </span>
-              <span>{t.home.talkingSuffix}</span>
-            </p>
-          ) : (
-            <p className="mt-4 text-[13px] font-medium text-[var(--muted)] sm:mt-5">
-              {t.home.beTheFirst}
-            </p>
-          )}
+          <PresenceLine className="mt-4 sm:mt-5" />
 
           <p className="mt-2 text-[13px] font-medium text-[var(--muted)]">
             {t.home.trustNoAds}

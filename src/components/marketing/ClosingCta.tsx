@@ -1,25 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { PresenceLine } from "@/components/marketing/PresenceLine";
 import { Button } from "@/components/ui/Button";
-import { CountUp } from "@/components/ui/CountUp";
-import { LiveBadge } from "@/components/ui/Badge";
-import { useI18n } from "@/components/LocaleProvider";
-import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { HERO_PORTRAITS } from "@/lib/hero-portraits";
-import { shouldShowLiveCount } from "@/lib/live-count";
 
 type Props = {
   title: string;
   cta: string;
-  talkingSuffix: string;
+  talkingSuffix?: string;
 };
 
-export function ClosingCta({ title, cta, talkingSuffix }: Props) {
-  const { t } = useI18n();
-  const online = useOnlineCount();
-  const count = online ?? 0;
-  const showLive = shouldShowLiveCount(online);
+export function ClosingCta({ title, cta }: Props) {
   const echoes = HERO_PORTRAITS.slice(0, 2);
 
   return (
@@ -48,21 +40,7 @@ export function ClosingCta({ title, cta, talkingSuffix }: Props) {
         <Link href="/join" className="mt-10" data-sticky-closing-cta>
           <Button size="lg">{cta}</Button>
         </Link>
-        <div className="mt-8">
-          {showLive ? (
-            <LiveBadge
-              label={
-                <>
-                  <CountUp value={count} /> {talkingSuffix}
-                </>
-              }
-            />
-          ) : (
-            <p className="text-[13px] font-medium text-[var(--muted)]">
-              {t.home.beTheFirst}
-            </p>
-          )}
-        </div>
+        <PresenceLine className="mt-8 justify-center" />
       </div>
     </section>
   );
