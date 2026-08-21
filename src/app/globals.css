@@ -25,13 +25,15 @@
   --muted: #a096aa;
   /* Was #6a6172 (~3.3:1 on ink-900) — raised for ≥4.5:1 at 13px */
   --faint: #8f8799;
+  /* muted #a096aa ≈ 6.9:1 on ink-900 — passes AA */
+  /* rim-500 was #6c5cff ≈ 4.29:1 — lifted to clear 4.5:1 for icon/text use */
 
   /* Vermillion key — hotter than coral; live is a distinct magenta */
   --key-500: #ff4326;
   --key-400: #ff6a52;
   --key-600: #e02e14;
 
-  --rim-500: #6c5cff;
+  --rim-500: #7061ff;
   --rim-400: #8b7dff;
 
   --live: #e8256b;
@@ -586,6 +588,13 @@
 
 .cam-marquee {
   mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
     90deg,
     transparent,
     #000 8%,

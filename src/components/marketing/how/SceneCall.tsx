@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useI18n } from "@/components/LocaleProvider";
 import { HERO_PORTRAITS } from "@/lib/hero-portraits";
+import {
+  playDemoRingtone,
+  readRingSoundEnabled,
+  writeRingSoundEnabled,
+} from "@/lib/ring-sound";
 import { cn } from "@/lib/cn";
 
 type Props = {
@@ -13,6 +18,7 @@ type Props = {
 
 /**
  * Step 1 — ringing rings, then cut to a live face with timer + waveform.
+ * Ringtone is opt-in (localStorage); never autoplays with sound by default.
  */
 export function SceneCall({ active, reducedMotion = false }: Props) {
   const { t } = useI18n();
@@ -20,8 +26,13 @@ export function SceneCall({ active, reducedMotion = false }: Props) {
     reducedMotion ? "live" : "ring",
   );
   const [elapsed, setElapsed] = useState(0);
+  const [soundOn, setSoundOn] = useState(false);
   const peer = HERO_PORTRAITS[4];
   const self = HERO_PORTRAITS[1];
+
+  useEffect(() => {
+    setSoundOn(readRingSoundEnabled());
+  }, []);
 
   useEffect(() => {
     if (!active) {
@@ -33,9 +44,12 @@ export function SceneCall({ active, reducedMotion = false }: Props) {
       setPhase("live");
       return;
     }
+    if (soundOn) {
+      void playDemoRingtone();
+    }
     const cut = window.setTimeout(() => setPhase("live"), 1600);
     return () => window.clearTimeout(cut);
-  }, [active, reducedMotion]);
+  }, [active, reducedMotion, soundOn]);
 
   useEffect(() => {
     if (!active || phase !== "live") return;
@@ -45,6 +59,15 @@ export function SceneCall({ active, reducedMotion = false }: Props) {
     }, 250);
     return () => window.clearInterval(id);
   }, [active, phase]);
+
+  function toggleSound() {
+    const next = !soundOn;
+    setSoundOn(next);
+    writeRingSoundEnabled(next);
+    if (next && active && phase === "ring") {
+      void playDemoRingtone();
+    }
+  }
 
   const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
   const ss = String(elapsed % 60).padStart(2, "0");
@@ -57,13 +80,15 @@ export function SceneCall({ active, reducedMotion = false }: Props) {
           ? "z-[1] translate-y-0 opacity-100"
           : "pointer-events-none z-0 translate-y-2 opacity-0",
       )}
-      aria-hidden={!active}
+      {...(!active ? { "aria-hidden": true } : {})}
     >
       {/* Ringing */}
       <div
         className={cn(
           "absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[var(--ink-900)] transition-opacity duration-[var(--dur-slow)]",
-          phase === "ring" ? "opacity-100" : "opacity-0",
+          phase === "ring"
+            ? "opacity-100"
+            : "pointer-events-none opacity-0",
         )}
       >
         <div className="relative flex h-28 w-28 items-center justify-center">
@@ -86,13 +111,23 @@ export function SceneCall({ active, reducedMotion = false }: Props) {
         <p className="text-sm font-medium text-[var(--cam-paper)]">
           {t.home.howDemo.ringing}
         </p>
+        <button
+          type="button"
+          onClick={toggleSound}
+          className="pointer-events-auto absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-900)]/70 px-2.5 py-1.5 text-[11px] font-medium text-[var(--cam-paper)] backdrop-blur-md"
+          aria-pressed={soundOn}
+          aria-label={soundOn ? t.home.howDemo.soundOn : t.home.howDemo.soundOff}
+        >
+          <SpeakerIcon on={soundOn} />
+          {soundOn ? t.home.howDemo.soundOnShort : t.home.howDemo.soundOffShort}
+        </button>
       </div>
 
       {/* Live */}
       <div
         className={cn(
           "absolute inset-0 transition-opacity duration-[var(--dur-slow)]",
-          phase === "live" ? "opacity-100" : "opacity-0",
+          phase === "live" ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       >
         <div className="absolute inset-0" aria-hidden>
@@ -149,7 +184,51 @@ export function SceneCall({ active, reducedMotion = false }: Props) {
             ) : null}
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={toggleSound}
+          className="pointer-events-auto absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-900)]/70 px-2.5 py-1.5 text-[11px] font-medium text-[var(--cam-paper)] backdrop-blur-md"
+          aria-pressed={soundOn}
+          aria-label={soundOn ? t.home.howDemo.soundOn : t.home.howDemo.soundOff}
+        >
+          <SpeakerIcon on={soundOn} />
+          {soundOn ? t.home.howDemo.soundOnShort : t.home.howDemo.soundOffShort}
+        </button>
       </div>
     </div>
+  );
+}
+
+function SpeakerIcon({ on }: { on: boolean }) {
+  return (
+    <svg
+      className="h-3.5 w-3.5"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M4 10v4h3l5 4V6l-5 4H4z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      {on ? (
+        <path
+          d="M16 9.5c1.2.9 1.2 4.1 0 5M18.5 7c2.2 1.8 2.2 8.2 0 10"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      ) : (
+        <path
+          d="M16 10l4 4M20 10l-4 4"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      )}
+    </svg>
   );
 }

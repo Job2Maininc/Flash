@@ -1,11 +1,20 @@
 import { ImageResponse } from "next/og";
+import { getLocale } from "@/lib/i18n/get-locale";
+import { getDictionary } from "@/lib/i18n";
 
 export const runtime = "edge";
 export const alt = "Flash — live video dating";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpenGraphImage() {
+export default async function OpenGraphImage() {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+  const headline =
+    locale === "de"
+      ? "Live-Video-Dating. Kamera an. Match, wenn’s sitzt."
+      : "Live video dating. Camera on. Match when it clicks.";
+
   return new ImageResponse(
     (
       <div
@@ -56,7 +65,17 @@ export default function OpenGraphImage() {
             lineHeight: 1.15,
           }}
         >
-          Live video dating. Camera on. Match when it clicks.
+          {headline}
+        </div>
+        <div
+          style={{
+            marginTop: 28,
+            fontSize: 22,
+            color: "#a096aa",
+            maxWidth: 720,
+          }}
+        >
+          {t.meta.description}
         </div>
       </div>
     ),

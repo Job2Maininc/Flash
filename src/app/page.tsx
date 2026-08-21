@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import { HomeIntroHeader } from "@/components/HomeIntroHeader";
 import { CameraFooter } from "@/components/marketing/CameraFooter";
 import { ClosingCta } from "@/components/marketing/ClosingCta";
 import { CompareSection } from "@/components/marketing/CompareSection";
+import { FaqJsonLd } from "@/components/marketing/FaqJsonLd";
 import { FaqSection } from "@/components/marketing/FaqSection";
 import { FeatureBlocks } from "@/components/marketing/FeatureBlocks";
 import { HomeHero } from "@/components/marketing/HomeHero";
@@ -13,6 +15,38 @@ import { Marquee } from "@/components/ui/Marquee";
 import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 import { getLocale } from "@/lib/i18n/get-locale";
 import { getDictionary } from "@/lib/i18n";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+  const title = t.meta.titleDefault;
+  const description = t.meta.description;
+
+  return {
+    title,
+    description,
+    alternates: {
+      languages: {
+        en: "/",
+        de: "/",
+        "x-default": "/",
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      locale: locale === "de" ? "de_DE" : "en_US",
+      alternateLocale: locale === "de" ? ["en_US"] : ["de_DE"],
+      type: "website",
+      siteName: "Flash",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function HomePage() {
   // Keep the guest cookie so blocks/matches survive a visit to /.
@@ -28,6 +62,7 @@ export default async function HomePage() {
 
   return (
     <div className="relative min-h-dvh overflow-x-clip bg-[var(--ink-900)] text-[var(--cam-paper)]">
+      <FaqJsonLd items={t.home.faq} />
       <NoiseOverlay />
       <HomeIntroHeader />
       <main
