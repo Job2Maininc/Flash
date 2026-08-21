@@ -8,7 +8,7 @@ type Props = {
   className?: string;
 };
 
-/** Infinite CSS marquee — items separated by · ; edge fade via mask. */
+/** Infinite CSS marquee — language / reach labels; edge fade via mask. */
 export function Marquee({ items, className }: Props) {
   const reduced = useReducedMotion();
   const row = reduced ? items : [...items, ...items];
