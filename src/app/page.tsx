@@ -13,7 +13,6 @@ import { Marquee } from "@/components/ui/Marquee";
 import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 import { getLocale } from "@/lib/i18n/get-locale";
 import { getDictionary } from "@/lib/i18n";
-import { HERO_PORTRAITS } from "@/lib/hero-portraits";
 
 export default async function HomePage() {
   // Keep the guest cookie so blocks/matches survive a visit to /.
@@ -35,7 +34,7 @@ export default async function HomePage() {
         id="main"
         className="max-md:pb-[calc(7.5rem+env(safe-area-inset-bottom))] md:pb-0"
       >
-        <HomeHero portraits={HERO_PORTRAITS} />
+        <HomeHero />
         <Marquee items={t.home.marquee} />
 
         <MatchesSection />

@@ -51,6 +51,14 @@ export const de = {
     ],
     startFree: "Videochat starten",
     stickyCtaHint: "Kostenlos · ohne Anmeldung",
+    previewShowMe: "Zeig mir, wie ich aussehe",
+    previewPrivacy:
+      "Läuft nur in deinem Browser. Nichts wird gesendet, nichts gespeichert.",
+    previewWaiting: "Warte auf Kamerafreigabe…",
+    previewDenied:
+      "Kamera ist blockiert. Im Schloss-Symbol der Adresszeile wieder freigeben.",
+    previewRetry: "Erneut versuchen",
+    previewCamOff: "Kamera aus",
     rotatePrompt: "Dreh dein Handy für einen besseren Call",
     whyFlash: "Warum Flash",
     howEyebrow: "So funktioniert’s",
@@ -251,6 +259,13 @@ export const de = {
     scopeAllCountries: "Alle Länder",
     scopeGlobalRandom: "Zufällig",
     scopeRandom: "Zufällig",
+    scopeAnywhere: "Egal wo",
+    scopeAnywhereHint: "Ohne Länderfilter",
+    scopeNearby: "In meiner Nähe",
+    scopeNearbyHint: "Bevorzuge Leute in der Nähe",
+    scopePickCountry: "Bestimmtes Land wählen",
+    prefsImported: "Aus deiner Auswahl übernommen",
+    prefsChange: "Ändern",
     startChat: "Videochat starten",
     starting: "Wird gestartet…",
     safetyReminder:

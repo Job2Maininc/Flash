@@ -1,30 +1,62 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { JoinField, JoinFieldIcon } from "@/components/join/JoinField";
 import { JoinStage } from "@/components/join/JoinStage";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/components/LocaleProvider";
 import { COUNTRIES } from "@/lib/countries";
 import { GUEST_ERROR, type GuestErrorCode } from "@/lib/guest-errors";
+import {
+  prefGenderToSex,
+  prefSeekingToLooking,
+  readHeroPrefs,
+  writeHeroPrefs,
+  sexToPrefGender,
+  lookingToPrefSeeking,
+} from "@/lib/hero-prefs";
 import type { LookingFor, MeetScope, Sex } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 const selectClass =
   "min-w-0 flex-1 appearance-none bg-transparent py-3 text-base text-[var(--cam-paper)] focus:outline-none";
 
-export function JoinVideoChat() {
+function JoinVideoChatForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t, locale } = useI18n();
   const [nickname, setNickname] = useState("");
   const [sex, setSex] = useState<Sex | "">("");
   const [lookingFor, setLookingFor] = useState<LookingFor | "">("");
   const [meetScope, setMeetScope] = useState<MeetScope>("random");
   const [preferredCountry, setPreferredCountry] = useState("");
+  const [showCountryList, setShowCountryList] = useState(false);
+  const [prefsFromHero, setPrefsFromHero] = useState(false);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fromQueryG = prefGenderToSex(searchParams.get("g"));
+    const fromQueryS = prefSeekingToLooking(searchParams.get("seeking"));
+    const stored = readHeroPrefs();
+    const fromStoreG = prefGenderToSex(stored.g);
+    const fromStoreS = prefSeekingToLooking(stored.seeking);
+
+    const nextSex = fromQueryG ?? fromStoreG;
+    const nextLooking = fromQueryS ?? fromStoreS;
+
+    if (nextSex) setSex(nextSex);
+    if (nextLooking) setLookingFor(nextLooking);
+    if (nextSex || nextLooking) {
+      setPrefsFromHero(true);
+      writeHeroPrefs({
+        ...(nextSex ? { g: sexToPrefGender(nextSex) } : {}),
+        ...(nextLooking ? { seeking: lookingToPrefSeeking(nextLooking) } : {}),
+      });
+    }
+  }, [searchParams]);
 
   const sortedCountries = useMemo(() => {
     const key = locale === "de" ? "de" : "en";
@@ -82,21 +114,21 @@ export function JoinVideoChat() {
 
   const ready = missingHint === null;
 
-  const locationValue =
-    meetScope === "global" && preferredCountry
-      ? `country:${preferredCountry}`
-      : meetScope;
+  function pickAnywhere() {
+    setMeetScope("random");
+    setPreferredCountry("");
+    setShowCountryList(false);
+  }
 
-  function onLocationChange(value: string) {
-    if (value === "local" || value === "random") {
-      setMeetScope(value);
-      setPreferredCountry("");
-      return;
-    }
-    if (value.startsWith("country:")) {
-      setMeetScope("global");
-      setPreferredCountry(value.slice("country:".length));
-    }
+  function pickNearby() {
+    setMeetScope("local");
+    setPreferredCountry("");
+    setShowCountryList(false);
+  }
+
+  function pickCountry(code: string) {
+    setMeetScope("global");
+    setPreferredCountry(code);
   }
 
   return (
@@ -105,6 +137,21 @@ export function JoinVideoChat() {
       className="mx-auto flex w-full max-w-lg flex-col gap-5 px-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-4"
     >
       <JoinStage />
+
+      {prefsFromHero ? (
+        <div className="flex items-start justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--ink-600)] bg-[var(--ink-800)] px-3.5 py-3">
+          <p className="text-sm leading-relaxed text-[var(--cam-paper)]">
+            {t.join.prefsImported}
+          </p>
+          <button
+            type="button"
+            className="shrink-0 text-sm font-medium text-[var(--key-400)] underline-offset-4 hover:underline"
+            onClick={() => setPrefsFromHero(false)}
+          >
+            {t.join.prefsChange}
+          </button>
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-4">
         <JoinField
@@ -166,7 +213,10 @@ export function JoinVideoChat() {
         >
           <select
             value={sex}
-            onChange={(e) => setSex(e.target.value as Sex | "")}
+            onChange={(e) => {
+              setSex(e.target.value as Sex | "");
+              setPrefsFromHero(false);
+            }}
             aria-label={t.form.iAm}
             className={selectClass}
           >
@@ -206,9 +256,10 @@ export function JoinVideoChat() {
         >
           <select
             value={lookingFor}
-            onChange={(e) =>
-              setLookingFor(e.target.value as LookingFor | "")
-            }
+            onChange={(e) => {
+              setLookingFor(e.target.value as LookingFor | "");
+              setPrefsFromHero(false);
+            }}
             aria-label={t.form.lookingFor}
             className={selectClass}
           >
@@ -219,42 +270,105 @@ export function JoinVideoChat() {
           </select>
         </JoinField>
 
-        <JoinField
-          label={t.join.controlCountry}
-          icon={
-            <JoinFieldIcon>
-              <circle
-                cx="12"
-                cy="12"
-                r="8"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M4 12h16M12 4c2.5 2.8 2.5 13.2 0 16M12 4c-2.5 2.8-2.5 13.2 0 16"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-            </JoinFieldIcon>
-          }
-        >
-          <select
-            value={locationValue}
-            onChange={(e) => onLocationChange(e.target.value)}
-            aria-label={t.join.scopeLabel}
-            className={selectClass}
-          >
-            <option value="random">{t.join.scopeRandom}</option>
-            <option value="local">{t.join.scopeLocal}</option>
-            <optgroup label={t.join.scopeAllCountries}>
-              {sortedCountries.map((country) => (
-                <option key={country.code} value={`country:${country.code}`}>
-                  {locale === "de" ? country.de : country.en}
-                </option>
-              ))}
-            </optgroup>
-          </select>
-        </JoinField>
+        <div className="space-y-3">
+          <p className="text-[13px] font-medium text-[var(--muted)]">
+            {t.join.controlCountry}
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={pickAnywhere}
+              className={cn(
+                "min-h-[4.5rem] rounded-[var(--radius-lg)] border px-3 py-3 text-left transition",
+                meetScope === "random" && !preferredCountry
+                  ? "border-[var(--cam-paper)] bg-[var(--cam-paper)] text-[var(--ink-900)]"
+                  : "border-[var(--ink-600)] bg-[var(--ink-800)] text-[var(--cam-paper)]",
+              )}
+            >
+              <span className="block text-sm font-medium">
+                {t.join.scopeAnywhere}
+              </span>
+              <span
+                className={cn(
+                  "mt-1 block text-xs leading-snug",
+                  meetScope === "random" && !preferredCountry
+                    ? "text-[var(--ink-700)]"
+                    : "text-[var(--muted)]",
+                )}
+              >
+                {t.join.scopeAnywhereHint}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={pickNearby}
+              className={cn(
+                "min-h-[4.5rem] rounded-[var(--radius-lg)] border px-3 py-3 text-left transition",
+                meetScope === "local"
+                  ? "border-[var(--cam-paper)] bg-[var(--cam-paper)] text-[var(--ink-900)]"
+                  : "border-[var(--ink-600)] bg-[var(--ink-800)] text-[var(--cam-paper)]",
+              )}
+            >
+              <span className="block text-sm font-medium">
+                {t.join.scopeNearby}
+              </span>
+              <span
+                className={cn(
+                  "mt-1 block text-xs leading-snug",
+                  meetScope === "local"
+                    ? "text-[var(--ink-700)]"
+                    : "text-[var(--muted)]",
+                )}
+              >
+                {t.join.scopeNearbyHint}
+              </span>
+            </button>
+          </div>
+
+          {!showCountryList ? (
+            <button
+              type="button"
+              onClick={() => setShowCountryList(true)}
+              className="text-sm font-medium text-[var(--key-400)] underline-offset-4 hover:underline"
+            >
+              {t.join.scopePickCountry}
+            </button>
+          ) : (
+            <JoinField
+              label={t.join.scopeAllCountries}
+              icon={
+                <JoinFieldIcon>
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="8"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                  <path
+                    d="M4 12h16M12 4c2.5 2.8 2.5 13.2 0 16M12 4c-2.5 2.8-2.5 13.2 0 16"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                </JoinFieldIcon>
+              }
+            >
+              <select
+                value={preferredCountry}
+                onChange={(e) => pickCountry(e.target.value)}
+                aria-label={t.join.scopeAllCountries}
+                className={selectClass}
+              >
+                <option value="">{t.join.selectCountry}</option>
+                {sortedCountries.map((country) => (
+                  <option key={country.code} value={country.code}>
+                    {locale === "de" ? country.de : country.en}
+                  </option>
+                ))}
+              </select>
+            </JoinField>
+          )}
+        </div>
       </div>
 
       {error ? (
@@ -302,5 +416,13 @@ export function JoinVideoChat() {
         {t.form.legal}
       </p>
     </form>
+  );
+}
+
+export function JoinVideoChat() {
+  return (
+    <Suspense fallback={null}>
+      <JoinVideoChatForm />
+    </Suspense>
   );
 }
