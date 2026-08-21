@@ -19,12 +19,18 @@ export const en = {
     backToCall: "← Call",
   },
   home: {
-    headline: "Live video dating — not a photo gallery.",
-    lead: "Consent-first meetings, matching by who you are and who you want, swipe for the spark — or the next person.",
+    headline: "Live video dating on your terms",
+    lead: "You pick who you are and who you want. The call starts. Swipe when you’re done.",
     heroEyebrow: "Live video dating",
     heroHeadline: "Talk to someone new in the next 30 seconds",
+    heroParts: {
+      before: "Talk to someone",
+      emph1: "new",
+      mid: "in the next",
+      emph2: "30 seconds",
+    },
     heroLead:
-      "Say who you are and who you want to meet. Match on live video, swipe for the spark, call favorites back.",
+      "Nickname, gender, who you’re looking for. Then you’re on camera with someone who asked for the same.",
     seeHow: "See how it works",
     trustLive: "Live",
     trustVerified: "Verified",
@@ -48,83 +54,87 @@ export const en = {
     rotatePrompt: "Rotate your phone for a better call",
     whyFlash: "Why Flash",
     howEyebrow: "How it works",
-    howTitle: "Three moves. A real meeting.",
+    howTitle: "Three moves. One live call",
+    howParts: {
+      before: "Three moves. One",
+      emph: "live call",
+    },
     howLead:
-      "Flash mixes the energy of a spontaneous call with the precision of modern dating.",
+      "You set preferences once. Flash puts you face to face. Keep who you liked.",
     steps: [
       {
         title: "Say who you are",
-        body: "Nickname, gender, and who you’re looking for. We filter for meetings that actually make sense.",
+        body: "Nickname, gender, and who you’re looking for. We use that to filter the queue before anyone rings.",
       },
       {
         title: "Talk live",
-        body: "Immediate video call. Chemistry shows — not on a bio from 2019.",
+        body: "The call starts in seconds. You hear the pause before they laugh. That is the whole product.",
       },
       {
         title: "Swipe & call back",
-        body: "Right to match, left for the next person. Got a match? Call them whenever you want.",
+        body: "Right keeps them. Left finds someone else. Matches stay on your list so you can ring them again.",
       },
     ],
     whyEyebrow: "Why Flash",
-    whyTitle: "Fewer photo swipes. More presence.",
+    whyTitle: "Skip the photo scroll",
     whyLead:
-      "We sell the real thing: faces that move, voices that hesitate, laughs that aren’t retouched.",
+      "Faces move. Voices crack. You decide in the moment, not after twenty messages.",
     whyPoints: [
-      "Smart matching by your gender and who you want — fewer mix-ups.",
-      "Always-on video: you don’t like a profile, you feel chemistry.",
-      "Recallable matches: keep the thread with people who clicked.",
-      "Inclusive: men, women, non-binary people — everyone belongs.",
+      "Matching uses your gender and who you want, so fewer wrong doors.",
+      "Video is on from the start. You feel the vibe before you invest an evening.",
+      "Matches you both liked sit on a list you can open later.",
+      "Men, women, non-binary. If you’re 18+, you’re welcome.",
     ],
     socialEyebrow: "Real conversations",
-    socialTitle: "Meetings that actually start.",
+    socialTitle: "Calls that actually begin",
     testimonials: [
       {
         quote:
-          "Finally dating where you stop scrolling photos. Two flashes in, I had a real conversation.",
+          "I stopped scrolling photos. Two calls in, I was mid-sentence with someone who was looking at me.",
         name: "Camille",
         detail: "Paris · looking for men",
       },
       {
         quote:
-          "The ‘who I’m looking for’ filter changes everything. Fewer mismatches, more people aligned with what I want.",
+          "Saying who I want up front cut the awkward mismatches. The queue felt quieter.",
         name: "Noah",
         detail: "Lyon · looking for women",
       },
       {
         quote:
-          "Match plus video recall is the combo. We picked up a virtual coffee the next day without losing the thread.",
+          "We matched Tuesday. Thursday I tapped recall and we finished the coffee chat without hunting a username.",
         name: "Inès",
         detail: "Bordeaux · looking for everyone",
       },
       {
         quote:
-          "I liked that I could say who I am looking for before the call. It felt respectful from the first second.",
+          "I liked stating who I look for before the camera opens. It felt respectful immediately.",
         name: "Jules",
         detail: "Berlin · looking for women",
       },
       {
         quote:
-          "No endless chat. Camera on, real vibe, then swipe. That is the product I wanted.",
+          "No endless chat thread. Camera, vibe, swipe. That is what I wanted.",
         name: "Mara",
         detail: "Vienna · looking for men",
       },
       {
         quote:
-          "The recall list matters. We matched on Tuesday and talked again on Thursday without hunting for a handle.",
+          "The recall list is the quiet hero. We picked up where we left off.",
         name: "Sam",
         detail: "Zurich · looking for everyone",
       },
     ],
     enterEyebrow: "Join Flash",
-    enterTitle: "Ready for your next flash?",
+    enterTitle: "Ready for your next call?",
     enterLead:
-      "Free to start. Camera + mic required. Respect, consent, and no forced ghosting: swipe and move on.",
+      "Free to start. Camera and mic required. If it feels off, hang up. No speech required.",
     howFrameLabels: ["Setup", "Live call", "Match"],
     features: [
       {
         eyebrow: "Matching",
         title: "Meet someone who fits what you asked for",
-        body: "We pair by gender and preference first, then put you on live video. Less noise, more chemistry.",
+        body: "Gender and preference first. Then live video. The filter does the boring work so the call can be interesting.",
         linkLabel: "Start matching",
         href: "/join",
         demo: "match",
@@ -132,15 +142,15 @@ export const en = {
       {
         eyebrow: "Safety",
         title: "You stay in control of every call",
-        body: "Report, block, hang up anytime. Consent is the floor — not a nice-to-have.",
+        body: "Block is one tap. Report is optional after. Consent is the floor — not a nice-to-have.",
         linkLabel: "Read safety rules",
         href: "/safety",
         demo: "safety",
       },
       {
         eyebrow: "On camera",
-        title: "Real faces, not polished profiles",
-        body: "You show up on camera. Matches you like stay on your list so you can call them back.",
+        title: "Your face is the profile",
+        body: "No polished photo stack. People you both liked stay on your list for a later call.",
         linkLabel: "See how it works",
         href: "/#how-it-works",
         demo: "verified",
@@ -160,21 +170,21 @@ export const en = {
       {
         icon: "verified",
         title: "Live on camera",
-        body: "Your face is the profile — no polished photo stack. Guest mode is not an ID check.",
+        body: "Your face is the profile. Guest mode is not an ID check.",
       },
     ],
     trustEyebrow: "Trust & safety",
-    trustTitle: "Built for adults who want the real thing",
+    trustTitle: "Built for adults who show up",
     trustLead:
-      "Video dating needs clear rules. Here is what Flash commits to — calmly, without marketing spin.",
+      "Video dating needs clear rules. Here is what Flash actually does.",
     trustBullets: [
       {
         title: "18+ only",
-        body: "Flash is for adults. If someone seems underage, block and report — that report is prioritized.",
+        body: "Flash is for adults. If someone seems underage, block and report. That report is prioritized.",
       },
       {
         title: "Consent first",
-        body: "A no, silence, or discomfort ends it. Swipe left and move on — no explanation owed.",
+        body: "A no, silence, or discomfort ends it. Swipe left. You do not owe a speech.",
       },
       {
         title: "Block & report",
@@ -210,7 +220,7 @@ export const en = {
         id: "safe",
         question: "How do I leave a bad call?",
         answer:
-          "Hang up or swipe left anytime. You do not owe an explanation. Read the safety page for the full frame.",
+          "Hang up or swipe left anytime. Read the safety page for the full frame.",
       },
     ],
     closingTitle: "Your next conversation is one tap away",
@@ -260,7 +270,7 @@ export const en = {
     scopeRandom: "Random",
     startChat: "Start video chat",
     starting: "Starting…",
-    safetyReminder: "Camera on. Be kind. Hang up anytime — no explanation owed.",
+    safetyReminder: "Camera on. Be kind. Hang up anytime if you need to.",
     previewTitle: "See yourself before you go live",
     previewBody:
       "Camera and mic unlock on the next screen, after you set who you are and who you want to meet.",
@@ -279,7 +289,7 @@ export const en = {
   },
   footer: {
     blurb:
-      "Flash is a live video dating site. Fewer frozen profiles, more real conversations — swipe, match, call back.",
+      "Flash is live video dating. Set who you are, talk on camera, swipe, keep the people who clicked.",
     age: "18+ · Consensual dating",
     colProduct: "Product",
     colCompany: "Company",
@@ -292,17 +302,17 @@ export const en = {
     metaDescription:
       "Flash is a live video dating site: preference matching, swipe, and recallable matches.",
     eyebrow: "About",
-    title: "Flash is dating. For real.",
-    lead: "We built Flash for people tired of photoshopped profiles and conversations that die in the void. Here you show up on video, swipe, match — and you can call back the people who clicked.",
+    title: "Flash is dating on camera",
+    lead: "We built Flash for people tired of retouched profiles and chats that die unread. You show up on video. You swipe. You can call back the people who clicked.",
     promiseTitle: "Our promise",
     promiseBody:
-      "Less fiction, more presence. Flash filters meetings by your gender and who you want, so every call starts on an honest base.",
+      "Every call starts with your gender and who you want already filtered. The rest is your face and theirs.",
     whoTitle: "Who it’s for",
     whoBody:
-      "Men, women, non-binary people — straight, queer, curious — 18+. If you want a human connection before a dating résumé, you’re in the right place.",
+      "Men, women, non-binary people — straight, queer, curious — 18+. If you want a human before a résumé, you’re in the right place.",
     notTitle: "What we’re not",
     notBody:
-      "Not a photo catalog. Not a social network. Not a game of anonymous likes with no follow-through. Flash is a video date that can become a lasting match.",
+      "Not a photo catalog. Not a social network. Not anonymous likes with no follow-through. Flash is a video date that can stick.",
     join: "Join Flash",
   },
   privacy: {

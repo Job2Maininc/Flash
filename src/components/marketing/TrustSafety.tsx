@@ -18,7 +18,7 @@ export function TrustSafety({ eyebrow, title, lead, bullets }: Props) {
     <Section alt seam>
       <ScrollReveal>
         <p className="cam-eyebrow">{eyebrow}</p>
-        <h2 className="cam-h2 mt-3 max-w-[18ch] text-balance">{title}</h2>
+        <h2 className="cam-h2 mt-3 max-w-[18ch]">{title}</h2>
         <p className="cam-body mt-4 max-w-[52ch] text-[var(--muted)] text-pretty">
           {lead}
         </p>

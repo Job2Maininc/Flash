@@ -21,7 +21,7 @@ export default function JoinPage() {
         className="pointer-events-none absolute inset-0 opacity-90"
         style={{
           background:
-            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,122,69,0.18), transparent 55%)",
+            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,67,38,0.18), transparent 55%)",
         }}
       />
       <NoiseOverlay className="opacity-[0.04]" />

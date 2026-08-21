@@ -5,6 +5,7 @@ import Image from "next/image";
 import { DeviceFrame } from "@/components/ui/DeviceFrame";
 import { ScrollReveal } from "@/components/ui/Accordion";
 import { Section } from "@/components/ui/Section";
+import { useI18n } from "@/components/LocaleProvider";
 import { HERO_PORTRAITS } from "@/lib/hero-portraits";
 import { cn } from "@/lib/cn";
 
@@ -23,7 +24,10 @@ type Props = {
 
 const FRAME_STATES = ["setup", "call", "match"] as const;
 
-export function HowItWorks({ eyebrow, title, lead, steps }: Props) {
+export function HowItWorks({ eyebrow, title: _title, lead, steps }: Props) {
+  const { t } = useI18n();
+  const how = t.home.howParts;
+  void _title;
   const [active, setActive] = useState(0);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
 
@@ -51,7 +55,10 @@ export function HowItWorks({ eyebrow, title, lead, steps }: Props) {
     <Section id="how-it-works" seam>
       <ScrollReveal>
         <p className="cam-eyebrow text-[var(--faint)]">{eyebrow}</p>
-        <h2 className="cam-h2 mt-3 max-w-[18ch] text-balance">{title}</h2>
+        <h2 className="cam-h2 mt-3">
+          {how.before}{" "}
+          <span className="font-extrabold">{how.emph}</span>
+        </h2>
         <p className="cam-body-l mt-4 text-[var(--muted)] text-pretty">{lead}</p>
       </ScrollReveal>
 

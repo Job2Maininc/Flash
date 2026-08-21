@@ -17,6 +17,7 @@ export function HomeHero({ portraits }: Props) {
   const { t } = useI18n();
   const online = useOnlineCount();
   const showLive = shouldShowLiveCount(online);
+  const h = t.home.heroParts;
 
   return (
     <section className="relative overflow-hidden px-5 pb-6 pt-[4.75rem] sm:pb-8 sm:pt-24 max-md:min-h-[100dvh] lg:min-h-[calc(100dvh-4rem)] lg:pb-8">
@@ -29,10 +30,13 @@ export function HomeHero({ portraits }: Props) {
       <div className="relative z-10 mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start lg:gap-10 lg:pt-2">
         <div className="max-w-xl lg:pt-4">
           <p className="cam-eyebrow text-[var(--faint)]">{t.home.heroEyebrow}</p>
-          <h1 className="cam-display-xl mt-3 max-md:text-[2.75rem] text-[var(--cam-paper)]">
-            {t.home.heroHeadline}
+          <h1 className="cam-display-xl cam-balance mt-3 max-md:text-[2.75rem] text-[var(--cam-paper)]">
+            {h.before}{" "}
+            <span className="cam-emph">{h.emph1}</span>{" "}
+            {h.mid}{" "}
+            <span className="cam-emph">{h.emph2}</span>
           </h1>
-          <p className="mt-3 max-w-md text-pretty text-base leading-relaxed text-[var(--muted)] sm:mt-4 sm:text-lg">
+          <p className="cam-body mt-3 max-w-md text-[var(--muted)] sm:mt-4">
             {t.home.heroLead}
           </p>
 

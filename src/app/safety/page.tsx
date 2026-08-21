@@ -24,7 +24,7 @@ export default async function SafetyPage() {
       <CameraHeader />
       <main id="main" className="relative z-10 mx-auto max-w-3xl px-5 pb-20 pt-10">
         <p className="cam-eyebrow text-[var(--faint)]">{t.safety.eyebrow}</p>
-        <h1 className="cam-display-l mt-3 text-balance">{t.safety.title}</h1>
+        <h1 className="cam-display-l mt-3">{t.safety.title}</h1>
         <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-[var(--muted)]">
           {t.safety.lead}
         </p>

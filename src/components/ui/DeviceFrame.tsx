@@ -18,19 +18,19 @@ export function DeviceFrame({ children, className, label }: Props) {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px bg-[rgba(251,243,236,.14)]"
+        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px bg-[rgba(243,241,238,.14)]"
       />
-      <div className="relative aspect-[9/16] overflow-hidden rounded-[calc(var(--radius-xl)-6px)] bg-[var(--ink-900)] ring-1 ring-inset ring-[rgba(251,243,236,.1)]">
+      <div className="relative aspect-[9/16] overflow-hidden rounded-[calc(var(--radius-xl)-6px)] bg-[var(--ink-900)] ring-1 ring-inset ring-[rgba(243,241,238,.1)]">
         {children}
         {/* Soft screen reflection */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(251,243,236,.14)_0%,transparent_42%,transparent_100%)]"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(243,241,238,.14)_0%,transparent_42%,transparent_100%)]"
         />
         {/* 1px inner highlight */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-[calc(var(--radius-xl)-6px)] shadow-[inset_0_0_0_1px_rgba(251,243,236,.08)]"
+          className="pointer-events-none absolute inset-0 rounded-[calc(var(--radius-xl)-6px)] shadow-[inset_0_0_0_1px_rgba(243,241,238,.08)]"
         />
       </div>
       {label ? (

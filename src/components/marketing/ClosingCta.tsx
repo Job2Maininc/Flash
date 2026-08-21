@@ -42,7 +42,7 @@ export function ClosingCta({ title, cta, talkingSuffix }: Props) {
       ))}
 
       <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
-        <h2 className="cam-display-xl max-md:text-[2.5rem] text-[var(--cam-paper)]">
+        <h2 className="cam-display-xl cam-balance max-md:text-[2.5rem] text-[var(--cam-paper)]">
           {title}
         </h2>
         <Link href="/join" className="mt-10" data-sticky-closing-cta>

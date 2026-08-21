@@ -21,7 +21,7 @@ export function Testimonials({ eyebrow, title, quotes }: Props) {
     <Section inverted>
       <ScrollReveal>
         <p className="cam-eyebrow !text-[var(--ink-600)]">{eyebrow}</p>
-        <h2 className="cam-h2 mt-3 max-w-[20ch] text-balance !text-[var(--ink-900)]">
+        <h2 className="cam-h2 mt-3 max-w-[20ch] !text-[var(--ink-900)]">
           {title}
         </h2>
       </ScrollReveal>

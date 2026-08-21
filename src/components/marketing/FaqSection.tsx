@@ -20,7 +20,7 @@ export function FaqSection({ eyebrow, title, items }: Props) {
     <Section narrow seam>
       <ScrollReveal>
         <p className="cam-eyebrow text-[var(--faint)]">{eyebrow}</p>
-        <h2 className="cam-h2 mt-3 text-balance">{title}</h2>
+        <h2 className="cam-h2 mt-3">{title}</h2>
         <div className="mt-8">
           <Accordion items={items} />
         </div>

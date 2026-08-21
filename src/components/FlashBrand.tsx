@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FlashLogo } from "@/components/FlashLogo";
+import { cn } from "@/lib/cn";
 
 type Props = {
   href?: string;
@@ -9,6 +10,10 @@ type Props = {
   wordmarkClassName?: string;
 };
 
+/**
+ * Wordmark in display face (extra-bold), tracking -0.04em.
+ * The `l` is replaced by the bolt mark so it reads as a logo, not plain text.
+ */
 export function FlashBrand({
   href,
   size = 32,
@@ -16,13 +21,26 @@ export function FlashBrand({
   className = "",
   wordmarkClassName = "",
 }: Props) {
+  const boltSize = Math.round(size * 0.72);
+
   const content = (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <FlashLogo size={size} glow={glow} />
+    <span
+      className={cn("inline-flex items-baseline gap-0.5", className)}
+      aria-label="Flash"
+    >
       <span
-        className={`font-[family-name:var(--font-camera-display)] text-2xl font-bold tracking-tight ${wordmarkClassName}`}
+        className={cn(
+          "inline-flex items-baseline font-[family-name:var(--font-display)] text-2xl font-extrabold tracking-[-0.04em] text-[var(--cam-paper)]",
+          wordmarkClassName,
+        )}
       >
-        Flash
+        <span>F</span>
+        <FlashLogo
+          size={boltSize}
+          glow={glow}
+          className="mx-0.5 inline-block translate-y-[0.12em] self-center"
+        />
+        <span>ash</span>
       </span>
     </span>
   );
