@@ -1,23 +1,19 @@
 "use client";
 
+import { PresenceLine } from "@/components/marketing/PresenceLine";
 import { useI18n } from "@/components/LocaleProvider";
-import { LiveBadge } from "@/components/ui/Badge";
-import { shouldShowLiveCount } from "@/lib/live-count";
 
 type Props = {
-  onlineCount: number | null;
+  /** @deprecated PresenceLine fetches its own count */
+  onlineCount?: number | null;
 };
 
 /**
  * Pre-join stage — calm trust frame without getUserMedia.
  * Live camera preview needs explicit approval (touches media pipeline).
  */
-export function JoinStage({ onlineCount }: Props) {
+export function JoinStage(_props: Props) {
   const { t } = useI18n();
-  const showLive = shouldShowLiveCount(onlineCount);
-  const count = onlineCount ?? 0;
-  const peopleLabel =
-    count === 1 ? t.join.personOnline : t.join.peopleOnline;
 
   return (
     <div className="relative min-h-[min(45dvh,420px)] w-full overflow-hidden rounded-[var(--radius-xl)] border border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-2)] sm:min-h-[min(46dvh,480px)]">
@@ -66,22 +62,7 @@ export function JoinStage({ onlineCount }: Props) {
           </p>
         </div>
 
-        {showLive ? (
-          <LiveBadge
-            label={
-              <span>
-                <span className="tabular-nums">
-                  {new Intl.NumberFormat().format(count)}
-                </span>{" "}
-                <span className="font-normal opacity-80">{peopleLabel}</span>
-              </span>
-            }
-          />
-        ) : (
-          <p className="text-[13px] font-medium text-[var(--muted)]">
-            {t.join.beTheFirst}
-          </p>
-        )}
+        <PresenceLine />
       </div>
     </div>
   );

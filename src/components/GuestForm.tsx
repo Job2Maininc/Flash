@@ -17,6 +17,7 @@ export function GuestForm() {
   const [nickname, setNickname] = useState("");
   const [sex, setSex] = useState<Sex | "">("");
   const [lookingFor, setLookingFor] = useState<LookingFor | "">("");
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +47,7 @@ export function GuestForm() {
       const res = await fetch("/api/guest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nickname, sex, lookingFor }),
+        body: JSON.stringify({ nickname, sex, lookingFor, ageConfirmed }),
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
@@ -140,9 +141,19 @@ export function GuestForm() {
           {error}
         </p>
       ) : null}
+      <label className="flex cursor-pointer items-start gap-3 text-sm text-[var(--ink)]">
+        <input
+          type="checkbox"
+          checked={ageConfirmed}
+          onChange={(e) => setAgeConfirmed(e.target.checked)}
+          className="mt-1 h-4 w-4 shrink-0"
+          required
+        />
+        <span>{t.form.ageConfirm}</span>
+      </label>
       <button
         type="submit"
-        disabled={loading || !sex || !lookingFor}
+        disabled={loading || !sex || !lookingFor || !ageConfirmed}
         className="flash-btn flash-btn-primary mt-1 px-6 py-4 text-lg tracking-wide disabled:opacity-50"
       >
         {loading ? (

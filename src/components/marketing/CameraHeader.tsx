@@ -41,8 +41,8 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
 
   const legalLinks = [
     { href: "/privacy", label: t.nav.privacy },
-    { href: "/safety", label: t.footer.impressum },
-    { href: "/privacy", label: t.footer.terms },
+    { href: "/imprint", label: t.footer.impressum },
+    { href: "/terms", label: t.footer.terms },
   ];
 
   useEffect(() => {

@@ -32,6 +32,8 @@ export type Guest = {
   country?: string | null;
   /** Preferred country to meet when meetScope is global (ISO alpha-2) */
   preferredCountry?: string | null;
+  /** Explicit 18+ confirmation from join checkbox */
+  ageConfirmed?: boolean;
 };
 
 export type Session = {

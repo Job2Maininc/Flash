@@ -26,6 +26,7 @@ export async function POST(request: Request) {
       lookingFor?: string;
       meetScope?: string;
       preferredCountry?: string | null;
+      ageConfirmed?: boolean;
     };
     const nickname = body.nickname ?? "";
     if (!isSex(body.sex)) {
@@ -37,6 +38,12 @@ export async function POST(request: Request) {
     if (!isLookingFor(body.lookingFor)) {
       return NextResponse.json(
         { error: GUEST_ERROR.LOOKING_FOR_REQUIRED },
+        { status: 400 },
+      );
+    }
+    if (body.ageConfirmed !== true) {
+      return NextResponse.json(
+        { error: GUEST_ERROR.AGE_REQUIRED },
         { status: 400 },
       );
     }
@@ -58,6 +65,7 @@ export async function POST(request: Request) {
       meetScope,
       preferredCountry,
       country: readCountryFromHeaders(request.headers),
+      ageConfirmed: true,
     });
     return NextResponse.json({ guest });
   } catch (error) {
@@ -67,7 +75,8 @@ export async function POST(request: Request) {
       message === GUEST_ERROR.SEX_REQUIRED ||
       message === GUEST_ERROR.LOOKING_FOR_REQUIRED ||
       message === GUEST_ERROR.NICKNAME_BANNED ||
-      message === GUEST_ERROR.SCOPE_REQUIRED
+      message === GUEST_ERROR.SCOPE_REQUIRED ||
+      message === GUEST_ERROR.AGE_REQUIRED
         ? 400
         : 500;
     return NextResponse.json({ error: message }, { status });
