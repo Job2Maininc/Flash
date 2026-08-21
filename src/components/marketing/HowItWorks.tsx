@@ -24,6 +24,10 @@ type Props = {
 
 const FRAME_STATES = ["setup", "call", "match"] as const;
 
+/**
+ * One DOM for steps — mobile stacks frame+copy; desktop sticky frame + list.
+ * Layout switches via CSS only (no duplicate step markup).
+ */
 export function HowItWorks({ eyebrow, title: _title, lead, steps }: Props) {
   const { t } = useI18n();
   const how = t.home.howParts;
@@ -62,40 +66,18 @@ export function HowItWorks({ eyebrow, title: _title, lead, steps }: Props) {
         <p className="cam-body-l mt-4 text-[var(--muted)] text-pretty">{lead}</p>
       </ScrollReveal>
 
-      {/* Mobile: stacked cards — frame above each step (no sticky pin). */}
-      <ol className="mt-10 space-y-10 lg:hidden">
-        {steps.map((step, index) => (
-          <li key={step.title} className="space-y-4">
-            <DeviceFrame
-              label={step.frameLabel}
-              className="mx-auto w-full max-w-[280px]"
-            >
-              <FramePreview state={FRAME_STATES[index] ?? "setup"} />
-            </DeviceFrame>
-            <div className="rounded-[var(--radius-lg)] border border-[var(--ink-600)] bg-[var(--ink-800)] p-5 shadow-[var(--elev-1)]">
-              <p className="text-[13px] font-medium text-[var(--muted)]">
-                0{index + 1}
-              </p>
-              <h3 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
-                {step.title}
-              </h3>
-              <p className="mt-3 max-w-[42ch] text-base leading-relaxed text-[var(--muted)] text-pretty">
-                {step.body}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ol>
-
-      {/* Desktop: sticky frame + step list */}
-      <div className="mt-12 hidden gap-10 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
-        <div className="lg:sticky lg:top-28 lg:self-start">
+      <div className="mt-10 grid gap-10 lg:mt-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
+        {/* Desktop sticky preview — decorative mock UI, not step text. */}
+        <div
+          className="hidden lg:sticky lg:top-28 lg:block lg:self-start"
+          aria-hidden
+        >
           <DeviceFrame label={steps[active]?.frameLabel}>
             <FramePreview state={FRAME_STATES[active] ?? "setup"} />
           </DeviceFrame>
         </div>
 
-        <ol className="space-y-6 lg:space-y-10">
+        <ol className="space-y-10 lg:space-y-10">
           {steps.map((step, index) => {
             const on = index === active;
             return (
@@ -104,22 +86,37 @@ export function HowItWorks({ eyebrow, title: _title, lead, steps }: Props) {
                 ref={(node) => {
                   stepRefs.current[index] = node;
                 }}
-                className={cn(
-                  "rounded-[var(--radius-lg)] border p-5 transition-[opacity,border-color,background-color] duration-[var(--dur-base)] ease-[var(--ease-out)] sm:p-6",
-                  on
-                    ? "border-[var(--ink-600)] bg-[var(--ink-800)] opacity-100 shadow-[var(--elev-1)]"
-                    : "border-transparent opacity-35",
-                )}
+                className="space-y-4"
               >
-                <p className="text-[13px] font-medium text-[var(--muted)]">
-                  0{index + 1}
-                </p>
-                <h3 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
-                  {step.title}
-                </h3>
-                <p className="mt-3 max-w-[42ch] text-base leading-relaxed text-[var(--muted)] text-pretty">
-                  {step.body}
-                </p>
+                {/* Mobile-only per-step frame (same preview states, one copy of steps). */}
+                <DeviceFrame
+                  label={step.frameLabel}
+                  className="mx-auto w-full max-w-[280px] lg:hidden"
+                  aria-hidden
+                >
+                  <FramePreview state={FRAME_STATES[index] ?? "setup"} />
+                </DeviceFrame>
+
+                <div
+                  className={cn(
+                    "rounded-[var(--radius-lg)] border p-5 transition-[opacity,border-color,background-color] duration-[var(--dur-base)] ease-[var(--ease-out)] sm:p-6",
+                    "border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-1)]",
+                    "lg:border-transparent lg:bg-transparent lg:shadow-none",
+                    on
+                      ? "lg:border-[var(--ink-600)] lg:bg-[var(--ink-800)] lg:opacity-100 lg:shadow-[var(--elev-1)]"
+                      : "lg:opacity-35",
+                  )}
+                >
+                  <p className="text-[13px] font-medium text-[var(--muted)]">
+                    0{index + 1}
+                  </p>
+                  <h3 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
+                    {step.title}
+                  </h3>
+                  <p className="mt-3 max-w-[42ch] text-base leading-relaxed text-[var(--muted)] text-pretty">
+                    {step.body}
+                  </p>
+                </div>
               </li>
             );
           })}
@@ -206,8 +203,15 @@ function ScreenCall({
       )}
       aria-hidden={!active}
     >
-      <div className="absolute inset-0">
-        <Image src={peerSrc} alt="" fill sizes="280px" className="object-cover" />
+      <div className="absolute inset-0" aria-hidden>
+        <Image
+          src={peerSrc}
+          alt=""
+          fill
+          sizes="280px"
+          quality={60}
+          className="object-cover"
+        />
       </div>
       <div
         aria-hidden
@@ -217,13 +221,17 @@ function ScreenCall({
         <span className="h-1.5 w-1.5 rounded-full bg-[var(--live)]" aria-hidden />
         Live
       </div>
-      <div className="absolute bottom-16 right-3 h-20 w-14 overflow-hidden rounded-[0.75rem] border border-[var(--ink-600)] shadow-[var(--elev-1)] ring-1 ring-[var(--key-500)]/30">
+      <div
+        className="absolute bottom-16 right-3 h-20 w-14 overflow-hidden rounded-[0.75rem] border border-[var(--ink-600)] shadow-[var(--elev-1)] ring-1 ring-[var(--key-500)]/30"
+        aria-hidden
+      >
         <div className="relative h-full w-full">
           <Image
             src={selfSrc}
             alt=""
             fill
             sizes="80px"
+            quality={60}
             className="object-cover"
           />
         </div>
@@ -261,8 +269,18 @@ function ScreenMatch({
       )}
       aria-hidden={!active}
     >
-      <div className="relative h-24 w-24 overflow-hidden rounded-full border border-[var(--ink-600)] shadow-[var(--elev-2)]">
-        <Image src={peerSrc} alt="" fill sizes="96px" className="object-cover" />
+      <div
+        className="relative h-24 w-24 overflow-hidden rounded-full border border-[var(--ink-600)] shadow-[var(--elev-2)]"
+        aria-hidden
+      >
+        <Image
+          src={peerSrc}
+          alt=""
+          fill
+          sizes="96px"
+          quality={60}
+          className="object-cover"
+        />
       </div>
       <p className="font-[family-name:var(--font-camera-display)] text-3xl font-bold tracking-tight text-[var(--cam-paper)]">
         Match

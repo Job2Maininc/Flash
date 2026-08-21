@@ -222,9 +222,9 @@ export function LiveGrid({ portraits, className }: Props) {
             >
               <VideoTile
                 src={tile.src}
-                alt={tile.alt}
+                alt=""
                 videoSrc={tile.videoSrc}
-                priority={index < 4}
+                priority={index === 0}
                 dimmed={dimmed}
                 connected={isConnected}
               />

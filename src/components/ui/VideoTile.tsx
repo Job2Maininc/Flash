@@ -4,10 +4,14 @@ import Image from "next/image";
 import { useState, type CSSProperties } from "react";
 import { cn } from "@/lib/cn";
 
+/** Display width of LiveGrid tiles — keep in sync with LiveGrid column layout. */
+export const LIVE_TILE_SIZES = "(max-width: 767px) 33vw, 120px";
+
 export type VideoTileProps = {
   /** Poster / still frame. Required until real clips ship. */
   src: string;
-  alt: string;
+  /** Decorative tiles should pass "" — no informational alt. */
+  alt?: string;
   /** Optional silent loop clip (webm/mp4). Drop in later. */
   videoSrc?: string;
   className?: string;
@@ -24,7 +28,7 @@ export type VideoTileProps = {
  */
 export function VideoTile({
   src,
-  alt,
+  alt = "",
   videoSrc,
   className,
   priority = false,
@@ -33,6 +37,7 @@ export function VideoTile({
   style,
 }: VideoTileProps) {
   const [failed, setFailed] = useState(false);
+  const decorative = alt.trim() === "";
 
   return (
     <div
@@ -44,6 +49,7 @@ export function VideoTile({
         className,
       )}
       style={style}
+      aria-hidden={decorative ? true : undefined}
     >
       {!failed ? (
         videoSrc ? (
@@ -55,7 +61,7 @@ export function VideoTile({
             playsInline
             loop
             preload="metadata"
-            aria-label={alt}
+            aria-hidden={decorative}
             onError={() => setFailed(true)}
           />
         ) : (
@@ -63,8 +69,10 @@ export function VideoTile({
             src={src}
             alt={alt}
             fill
-            sizes="(max-width: 768px) 33vw, 20vw"
+            sizes={LIVE_TILE_SIZES}
+            quality={60}
             priority={priority}
+            loading={priority ? undefined : "lazy"}
             className="cam-tile-media object-cover"
             onError={() => setFailed(true)}
           />
@@ -75,8 +83,9 @@ export function VideoTile({
           className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,_var(--ink-600)_0%,_var(--ink-800)_55%,_var(--ink-900)_100%)]"
         />
       )}
-      {/* Screen-reader label when media failed (no visible caption). */}
-      {failed ? <span className="sr-only">{alt}</span> : null}
+      {!decorative && failed ? (
+        <span className="sr-only">{alt}</span>
+      ) : null}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--ink-900)]/55 via-transparent to-transparent"
