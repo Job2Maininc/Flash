@@ -18,6 +18,7 @@ import {
 import { areGuestsCompatible } from "./compatibility";
 import { blockedIdsFor, rememberLastPartner } from "./safety";
 import { ensureDurableMatch } from "./hearts";
+import { CALL_DURATION_MS } from "./constants";
 import type {
   Guest,
   MatchEntry,
@@ -27,8 +28,14 @@ import type {
   SwipeVote,
 } from "./types";
 
-const ROUND_TIMEOUT_MS = 20_000;
+/** Round ends with the live call — not a short swipe window mid-call. */
 const MATCH_EXTENSION_MS = 5 * 60 * 1000;
+
+function callDeadlineMs(session: Session): number {
+  return (
+    session.callEndsAt ?? session.roundStartedAt + CALL_DURATION_MS
+  );
+}
 const SESSION_TTL_SEC = 60 * 60 * 6;
 const MATCH_TTL_SEC = 60 * 60 * 24 * 90;
 
@@ -419,7 +426,7 @@ async function handleRoundTimeout(session: Session): Promise<Session> {
 
 async function applyRoundTimeout(session: Session): Promise<Session> {
   if (session.status !== "active") return session;
-  if (Date.now() - session.roundStartedAt < ROUND_TIMEOUT_MS) return session;
+  if (Date.now() < callDeadlineMs(session)) return session;
 
   if (session.voteA === "right" && session.voteB === "right") {
     session.status = "matched";
@@ -471,9 +478,7 @@ function toView(session: Session | null, userId: string): SessionView {
   else if (session.status === "ended") state = "ended";
 
   const roundEndsAt =
-    session.status === "active"
-      ? session.roundStartedAt + ROUND_TIMEOUT_MS
-      : null;
+    session.status === "active" ? callDeadlineMs(session) : null;
 
   return {
     state,
