@@ -21,15 +21,23 @@ export function HowSceneFrame({
   className,
 }: Props) {
   return (
-    <DeviceFrame
-      label={label}
-      className={cn("w-full max-w-[min(100%,380px)]", className)}
-    >
-      <div className="absolute inset-0 overflow-hidden bg-[var(--ink-900)]">
-        <SceneSetup active={step === 0} reducedMotion={reducedMotion} />
-        <SceneCall active={step === 1} reducedMotion={reducedMotion} />
-        <SceneMatch active={step === 2} reducedMotion={reducedMotion} />
-      </div>
-    </DeviceFrame>
+    <div className={cn("relative w-full max-w-[min(100%,380px)]", className)}>
+      {/* Warm skin-tone glow — only behind this frame, nowhere else */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-[18%] z-0 h-[70%] w-[85%] -translate-x-1/2 rounded-full opacity-70 blur-3xl"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, rgba(232,168,120,0.28) 0%, rgba(196,110,78,0.12) 42%, transparent 72%)",
+        }}
+      />
+      <DeviceFrame label={label} className="relative z-[1] w-full">
+        <div className="absolute inset-0 overflow-hidden bg-[var(--ink-900)]">
+          <SceneSetup active={step === 0} reducedMotion={reducedMotion} />
+          <SceneCall active={step === 1} reducedMotion={reducedMotion} />
+          <SceneMatch active={step === 2} reducedMotion={reducedMotion} />
+        </div>
+      </DeviceFrame>
+    </div>
   );
 }

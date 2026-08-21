@@ -119,6 +119,10 @@ export const en = {
       passedLive: "Passed. Next person.",
       deckEmpty: "That’s the stack — try a real call.",
       matchesEmpty: "Swipe right to fill your list",
+      soundOn: "Ringtone on",
+      soundOff: "Ringtone off (default)",
+      soundOnShort: "Sound on",
+      soundOffShort: "Sound off",
     },
     features: [
       {

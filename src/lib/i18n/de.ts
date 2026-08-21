@@ -121,6 +121,10 @@ export const de = {
       passedLive: "Weiter. Nächste Person.",
       deckEmpty: "Stapel leer — starte einen echten Call.",
       matchesEmpty: "Rechts wischen füllt deine Liste",
+      soundOn: "Klingelton an",
+      soundOff: "Klingelton aus (Standard)",
+      soundOnShort: "Ton an",
+      soundOffShort: "Ton aus",
     },
     features: [
       {

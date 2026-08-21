@@ -8,7 +8,7 @@ type Props = {
   className?: string;
 };
 
-/** Infinite CSS marquee — cities only; static when reduced motion is preferred. */
+/** Infinite CSS marquee — items separated by · ; edge fade via mask. */
 export function Marquee({ items, className }: Props) {
   const reduced = useReducedMotion();
   const row = reduced ? items : [...items, ...items];
@@ -23,18 +23,25 @@ export function Marquee({ items, className }: Props) {
     >
       <div
         className={cn(
-          "flex gap-10 whitespace-nowrap",
+          "flex items-center whitespace-nowrap",
           reduced
-            ? "w-full flex-wrap justify-center px-5"
+            ? "w-full flex-wrap justify-center gap-x-3 gap-y-2 px-5"
             : "cam-marquee-track w-max will-change-transform",
         )}
       >
         {row.map((item, i) => (
-          <span
-            key={`${item}-${i}`}
-            className="font-[family-name:var(--font-body)] text-[13px] font-medium tracking-normal text-[var(--muted)]"
-          >
-            {item}
+          <span key={`${item}-${i}`} className="inline-flex items-center">
+            {i > 0 ? (
+              <span
+                aria-hidden
+                className="mx-4 select-none text-[13px] text-[var(--faint)] sm:mx-5"
+              >
+                ·
+              </span>
+            ) : null}
+            <span className="font-[family-name:var(--font-body)] text-[13px] font-medium tracking-normal text-[var(--muted)]">
+              {item}
+            </span>
           </span>
         ))}
       </div>

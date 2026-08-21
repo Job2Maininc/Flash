@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/Accordion";
+import { LoopingPortrait } from "@/components/ui/LoopingPortrait";
 import { Section } from "@/components/ui/Section";
 import { useI18n } from "@/components/LocaleProvider";
 import { HERO_PORTRAITS } from "@/lib/hero-portraits";
@@ -135,13 +136,11 @@ function DemoPanel({ kind }: { kind: string }) {
             key={`${tile.src}-${i}`}
             className="relative h-24 w-[4.5rem] shrink-0 overflow-hidden rounded-[var(--radius-md)] bg-[var(--ink-700)] sm:h-28 sm:w-20"
           >
-            <Image
-              src={tile.src}
-              alt=""
-              fill
+            <LoopingPortrait
+              poster={tile.src}
+              src={tile.videoSrc}
               sizes="80px"
               quality={60}
-              className="object-cover"
             />
           </div>
         ))}
