@@ -45,7 +45,10 @@ export function HowItWorks({ eyebrow, title: _title, lead, steps }: Props) {
 
         <ol className="mt-10 space-y-14">
           {steps.map((step, index) => (
-            <li key={step.title} className="grid gap-6 md:grid-cols-2 md:items-center md:gap-10">
+            <li
+              key={step.title}
+              className="grid gap-6 md:grid-cols-2 md:items-center md:gap-10"
+            >
               <HowSceneFrame
                 step={(index as 0 | 1 | 2) ?? 0}
                 label={step.frameLabel}
@@ -100,7 +103,8 @@ function HowItWorksScroll({
         const index = nodes.indexOf(visible.target as HTMLLIElement);
         if (index >= 0 && index <= 2) setActive(index as 0 | 1 | 2);
       },
-      { rootMargin: "-30% 0px -35% 0px", threshold: [0.25, 0.5, 0.75] },
+      // Center band of the viewport — keeps the phone scene in sync with copy.
+      { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
     );
 
     nodes.forEach((n) => io.observe(n));
@@ -118,15 +122,23 @@ function HowItWorksScroll({
         <p className="cam-body-l mt-4 text-[var(--muted)] text-pretty">{lead}</p>
       </ScrollReveal>
 
-      <div className="mt-10 grid gap-10 lg:mt-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start lg:gap-14">
-        <div className="sticky top-24 z-[1] mx-auto w-full max-w-[min(100%,380px)] self-start lg:mx-0 lg:top-28">
-          <HowSceneFrame
-            step={active}
-            label={steps[active]?.frameLabel}
-          />
+      {/*
+        One tall wrapper so sticky stays alive for all three steps.
+        Avoid items-start on the grid — that shrink-wraps the phone column
+        and sticky dies after step 1.
+      */}
+      <div className="relative mt-10 lg:mt-12 lg:grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
+        <div
+          className={cn(
+            "sticky top-[calc(4.5rem+env(safe-area-inset-top))] z-[2]",
+            "mx-auto mb-6 w-full max-w-[200px] sm:max-w-[240px]",
+            "lg:mb-0 lg:max-w-[min(100%,340px)] lg:self-start",
+          )}
+        >
+          <HowSceneFrame step={active} label={steps[active]?.frameLabel} />
         </div>
 
-        <ol className="space-y-6">
+        <ol>
           {steps.map((step, index) => {
             const on = index === active;
             return (
@@ -135,7 +147,7 @@ function HowItWorksScroll({
                 ref={(node) => {
                   stepRefs.current[index] = node;
                 }}
-                className="flex min-h-[min(70vh,560px)] items-center"
+                className="flex min-h-[min(58vh,420px)] items-center py-4 lg:min-h-[min(65vh,520px)] lg:py-6"
               >
                 <div
                   className={cn(
