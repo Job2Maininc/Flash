@@ -34,7 +34,7 @@ export function LanguageSwitcher({ variant = "light" }: Props) {
       role="group"
       aria-label={t.nav.language}
       className={cn(
-        "inline-flex overflow-hidden rounded-[var(--radius-pill)] border text-[11px] font-medium uppercase tracking-widest",
+        "inline-flex overflow-hidden rounded-[var(--radius-pill)] border text-[13px] font-medium tracking-normal",
         isDark
           ? "border-[var(--ink-600)] bg-[var(--ink-800)] text-[var(--muted)]"
           : "border-[var(--ink)]/12 bg-white/50 text-[var(--ink-muted)]",

@@ -21,7 +21,7 @@ export const Badge = forwardRef<HTMLSpanElement, Props>(
         ref={ref}
         className={cn(
           "inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] px-2.5 py-1",
-          "font-[family-name:var(--font-mono)] text-[0.6875rem] uppercase tracking-[0.12em]",
+          "font-[family-name:var(--font-body)] text-[13px] font-medium tracking-normal",
           tones[tone],
           className,
         )}
@@ -37,7 +37,7 @@ type LiveProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
 
 /**
  * Live presence chip — only the pulsing `--live` dot carries red.
- * Label is cream mono (no red fill / glow / border).
+ * Count uses mono + tabular-nums; label is body sans.
  */
 export const LiveBadge = forwardRef<HTMLSpanElement, LiveProps>(
   function LiveBadge({ className, label, ...props }, ref) {
@@ -45,8 +45,8 @@ export const LiveBadge = forwardRef<HTMLSpanElement, LiveProps>(
       <span
         ref={ref}
         className={cn(
-          "inline-flex items-center gap-2 font-[family-name:var(--font-mono)]",
-          "text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--cam-paper)]",
+          "inline-flex items-center gap-2 font-[family-name:var(--font-body)]",
+          "text-[13px] font-medium tracking-normal text-[var(--cam-paper)]",
           className,
         )}
         {...props}
@@ -55,7 +55,9 @@ export const LiveBadge = forwardRef<HTMLSpanElement, LiveProps>(
           <span className="absolute inset-0 animate-ping rounded-full bg-[var(--live)] opacity-60" />
           <span className="relative m-auto h-1.5 w-1.5 rounded-full bg-[var(--live)]" />
         </span>
-        <span className="tabular-nums">{label}</span>
+        <span className="font-[family-name:var(--font-mono)] tabular-nums">
+          {label}
+        </span>
       </span>
     );
   },

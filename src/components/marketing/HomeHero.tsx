@@ -29,7 +29,7 @@ export function HomeHero({ portraits }: Props) {
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start lg:gap-10 lg:pt-2">
         <div className="max-w-xl lg:pt-4">
-          <p className="cam-eyebrow text-[var(--faint)]">{t.home.heroEyebrow}</p>
+          <p className="cam-eyebrow">{t.home.heroEyebrow}</p>
           <h1 className="cam-display-xl cam-balance mt-3 max-md:text-[2.75rem] text-[var(--cam-paper)]">
             {h.before}{" "}
             <span className="cam-emph">{h.emph1}</span>{" "}
@@ -57,26 +57,34 @@ export function HomeHero({ portraits }: Props) {
             </a>
           </div>
 
-          <ul className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)] sm:mt-5">
-            {showLive ? (
-              <li className="inline-flex items-center gap-2 whitespace-nowrap">
-                <span
-                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--live)]"
-                  aria-hidden
-                />
-                <span className="tabular-nums">
-                  <CountUp value={online ?? 0} />
-                </span>{" "}
-                {t.home.talkingSuffix}
-              </li>
-            ) : (
-              <li className="whitespace-nowrap text-[var(--faint)]">
-                {t.home.beTheFirst}
-              </li>
-            )}
-            <li>{t.home.trustNoAds}</li>
-            <li>{t.home.trustAge}</li>
-          </ul>
+          {showLive ? (
+            <p className="mt-4 inline-flex items-center gap-2 text-[13px] font-medium text-[var(--muted)] sm:mt-5">
+              <span
+                className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--live)]"
+                aria-hidden
+              />
+              <span className="font-[family-name:var(--font-mono)] tabular-nums">
+                <CountUp value={online ?? 0} />
+              </span>
+              <span>{t.home.talkingSuffix}</span>
+            </p>
+          ) : (
+            <p className="mt-4 text-[13px] font-medium text-[var(--muted)] sm:mt-5">
+              {t.home.beTheFirst}
+            </p>
+          )}
+
+          <p className="mt-2 text-[13px] font-medium text-[var(--muted)]">
+            {t.home.trustNoAds}
+            <span aria-hidden className="mx-2 text-[var(--faint)]">
+              ·
+            </span>
+            {t.home.trustAge}
+            <span aria-hidden className="mx-2 text-[var(--faint)]">
+              ·
+            </span>
+            {t.home.trustFreeStart}
+          </p>
         </div>
 
         <LiveGrid

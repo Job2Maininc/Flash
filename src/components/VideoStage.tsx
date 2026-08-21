@@ -245,7 +245,7 @@ function StageInner({
           aria-hidden
         >
           <span className="text-2xl">📷</span>
-          <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wide">
+          <span className="font-[family-name:var(--font-body)] text-[10px]">
             off
           </span>
         </div>
@@ -300,7 +300,7 @@ function StageInner({
 
       {landscapePhone ? (
         <div className="pointer-events-none absolute inset-x-0 top-[max(0.75rem,env(safe-area-inset-top))] z-40 flex justify-center px-4 md:hidden">
-          <p className="rounded-[var(--radius-pill)] bg-[rgba(22,18,28,0.92)] px-4 py-2 text-center font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--cam-paper)]">
+          <p className="rounded-[var(--radius-pill)] bg-[rgba(22,18,28,0.92)] px-4 py-2 text-center text-[11px] font-medium text-[var(--cam-paper)]">
             {t.home.rotatePrompt}
           </p>
         </div>

@@ -14,7 +14,7 @@ Defined in `src/app/globals.css` (`:root` + `@theme inline`).
 | --- | --- | --- |
 | `--ink-900` … `--ink-600` | Stage backgrounds / borders | `#0e0b12` → `#2e2637` |
 | `--cam-paper` | Primary text on dark | `#f3f1ee` (near-neutral off-white) |
-| `--muted` / `--faint` | Secondary / tertiary text | `#a096aa` / `#6a6172` |
+| `--muted` / `--faint` | Secondary / tertiary text | `#a096aa` (~6.9:1) / `#8f8799` (~5.7:1 on ink-900) |
 | `--key-500` / `--key-400` / `--key-600` | **Clickable only** — CTAs, active controls, logo bolt | `#ff4326` vermillion family |
 | `--live` | **Live pulse dot only** — never fill, border, or body text | `#e8256b` magenta |
 | `--cam-paper` / `--paper` | Affirmative / confirming (checks, wordmark text) | `#f3f1ee` |
@@ -38,9 +38,9 @@ Legacy cream/lime (`--paper-legacy`, `--accent`) remain only for unmigrated prod
 | --- | --- | --- |
 | Display | Schibsted Grotesk (700–800) | `--font-display` · wordmark + headlines |
 | Body | Schibsted Grotesk (400–600) | `--font-body` · `.cam-body` / `.cam-body-l` |
-| Mono / timers / eyebrows | Spline Sans Mono | `--font-mono` · `.cam-eyebrow` |
+| Mono (timers / live counts only) | Spline Sans Mono | `--font-mono` · `tabular-nums` |
 
-`--font-camera-display` aliases to `--font-display`. Do not use Inter, Poppins, Bricolage, DM Sans, Fraunces, or JetBrains.
+Do **not** use mono + uppercase + tracking for eyebrows, trust rows, marquee, or footer headings. Section labels use `.cam-eyebrow` (body sans, sentence case, 13px, weight 500, `--muted`).
 
 ## Primitives
 

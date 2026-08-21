@@ -56,7 +56,7 @@ export default async function MatchesPage() {
         <h1 className="font-[family-name:var(--font-camera-display)] text-4xl tracking-tight">
           {t.matches.title}
           {matches.length > 0 ? (
-            <span className="ml-2 align-middle font-[family-name:var(--font-mono)] text-lg font-normal text-[var(--cam-paper)]/45">
+            <span className="ml-2 align-middle font-[family-name:var(--font-mono)] text-lg font-normal tabular-nums text-[var(--cam-paper)]/45">
               ({matches.length})
             </span>
           ) : null}

@@ -25,7 +25,7 @@ export function SiteFooter() {
             glow="soft"
           />
           <p className="text-sm leading-relaxed text-white/65">{t.footer.blurb}</p>
-          <p className="text-xs uppercase tracking-[0.18em] text-white/35">
+          <p className="text-[13px] font-medium text-white/70">
             {t.footer.age}
           </p>
         </div>

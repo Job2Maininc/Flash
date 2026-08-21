@@ -87,7 +87,7 @@ function QuoteCard({
         <span
           aria-hidden
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-full font-[family-name:var(--font-mono)] text-xs",
+            "flex h-9 w-9 items-center justify-center rounded-full font-[family-name:var(--font-body)] text-xs font-medium",
             inverted
               ? "bg-[var(--ink-900)]/8 text-[var(--ink-600)]"
               : "bg-[var(--ink-700)] text-[var(--faint)]",
@@ -104,7 +104,7 @@ function QuoteCard({
           >
             {item.name}
           </span>
-          <span className="block font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--faint)]">
+          <span className="block text-[13px] font-medium text-[var(--muted)]">
             {item.detail}
           </span>
         </span>

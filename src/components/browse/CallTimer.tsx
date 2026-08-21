@@ -64,7 +64,7 @@ export function CallTimer({ endsAt, onExpire }: Props) {
         className={cn(
           "pointer-events-none absolute left-1/2 top-[max(4.5rem,calc(env(safe-area-inset-top)+3.5rem))] z-30 -translate-x-1/2",
           "rounded-[var(--radius-pill)] bg-[rgba(22,18,28,0.92)] px-3.5 py-1.5",
-          "font-[family-name:var(--font-mono)] text-sm tabular-nums tracking-wide",
+          "font-[family-name:var(--font-mono)] text-sm tabular-nums",
           warn ? "text-[var(--key-400)]" : "text-[var(--cam-paper)]/85",
         )}
         aria-hidden

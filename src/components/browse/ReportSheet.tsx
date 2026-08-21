@@ -117,7 +117,7 @@ export function ReportSheet({ open, partnerId, roomId, onClose }: Props) {
         </fieldset>
 
         <label className="mt-4 block">
-          <span className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--faint)]">
+          <span className="text-[13px] font-medium text-[var(--muted)]">
             {t.call.reportNote}
           </span>
           <textarea

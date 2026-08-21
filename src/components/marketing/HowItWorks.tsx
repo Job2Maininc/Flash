@@ -54,7 +54,7 @@ export function HowItWorks({ eyebrow, title: _title, lead, steps }: Props) {
   return (
     <Section id="how-it-works" seam>
       <ScrollReveal>
-        <p className="cam-eyebrow text-[var(--faint)]">{eyebrow}</p>
+        <p className="cam-eyebrow">{eyebrow}</p>
         <h2 className="cam-h2 mt-3">
           {how.before}{" "}
           <span className="font-extrabold">{how.emph}</span>
@@ -73,10 +73,10 @@ export function HowItWorks({ eyebrow, title: _title, lead, steps }: Props) {
               <FramePreview state={FRAME_STATES[index] ?? "setup"} />
             </DeviceFrame>
             <div className="rounded-[var(--radius-lg)] border border-[var(--ink-600)] bg-[var(--ink-800)] p-5 shadow-[var(--elev-1)]">
-              <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)]">
+              <p className="text-[13px] font-medium text-[var(--muted)]">
                 0{index + 1}
               </p>
-              <h3 className="mt-2 font-[family-name:var(--font-camera-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
+              <h3 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
                 {step.title}
               </h3>
               <p className="mt-3 max-w-[42ch] text-base leading-relaxed text-[var(--muted)] text-pretty">
@@ -111,10 +111,10 @@ export function HowItWorks({ eyebrow, title: _title, lead, steps }: Props) {
                     : "border-transparent opacity-35",
                 )}
               >
-                <p className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--faint)]">
+                <p className="text-[13px] font-medium text-[var(--muted)]">
                   0{index + 1}
                 </p>
-                <h3 className="mt-2 font-[family-name:var(--font-camera-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
+                <h3 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
                   {step.title}
                 </h3>
                 <p className="mt-3 max-w-[42ch] text-base leading-relaxed text-[var(--muted)] text-pretty">
@@ -156,7 +156,7 @@ function ScreenSetup({ active }: { active: boolean }) {
         <span className="font-[family-name:var(--font-camera-display)] text-lg font-bold text-[var(--cam-paper)]">
           Flash
         </span>
-        <span className="font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--faint)]">
+        <span className="text-[11px] font-medium text-[var(--muted)]">
           Setup
         </span>
       </div>
@@ -171,7 +171,7 @@ function ScreenSetup({ active }: { active: boolean }) {
       <div className="rounded-[var(--radius-pill)] bg-[var(--key-500)] py-2.5 text-center text-sm font-medium text-[var(--paper)] shadow-[var(--glow-key)]">
         Start video chat
       </div>
-      <p className="text-center font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-[var(--faint)]">
+      <p className="text-center text-[11px] font-medium text-[var(--muted)]">
         Camera on · Be kind · 18+
       </p>
     </div>
@@ -181,7 +181,7 @@ function ScreenSetup({ active }: { active: boolean }) {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[var(--radius-md)] border border-[var(--ink-600)] bg-[var(--ink-800)] px-3 py-2">
-      <p className="font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-[var(--faint)]">
+      <p className="text-[11px] font-medium text-[var(--muted)]">
         {label}
       </p>
       <p className="mt-0.5 text-sm text-[var(--cam-paper)]">{value}</p>
@@ -213,7 +213,7 @@ function ScreenCall({
         aria-hidden
         className="absolute inset-0 bg-gradient-to-t from-[var(--ink-900)]/80 via-transparent to-[var(--ink-900)]/35"
       />
-      <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-900)]/55 px-2.5 py-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--cam-paper)] backdrop-blur-md">
+      <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-900)]/55 px-2.5 py-1 text-[11px] font-medium text-[var(--cam-paper)] backdrop-blur-md">
         <span className="h-1.5 w-1.5 rounded-full bg-[var(--live)]" aria-hidden />
         Live
       </div>
