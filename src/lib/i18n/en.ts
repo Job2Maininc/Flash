@@ -13,6 +13,7 @@ export const en = {
     safety: "Safety",
     privacy: "Privacy",
     matches: "Matches",
+    login: "Log in",
     start: "Start video chat",
     joinVideoChat: "Start video chat",
     language: "Language",
@@ -374,6 +375,7 @@ export const en = {
     emptyTitle: "No sparks yet",
     emptyBody:
       "During a call, swipe right. If they like you too, they join your list — and you can call them back on video.",
+    loginPrompt: "Log in with your nickname to see matches from this session.",
     recall: "Call back",
     recallError: "Couldn’t start the recall",
     genericError: "Something went wrong",

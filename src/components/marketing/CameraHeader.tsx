@@ -36,6 +36,7 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
     { href: "/#how-it-works", label: t.nav.howItWorks },
     { href: "/about", label: t.nav.about },
     { href: "/safety", label: t.nav.safety },
+    { href: "/matches", label: t.nav.matches },
   ];
 
   const legalLinks = [
@@ -197,10 +198,18 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
             })}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden md:block">
               <LanguageSwitcher variant="dark" />
             </div>
+            <Link
+              href="/join"
+              className={cn(
+                "hidden items-center font-[family-name:var(--font-body)] text-[13px] font-medium text-[var(--cam-paper)]/75 transition hover:text-[var(--cam-paper)] md:inline-flex",
+              )}
+            >
+              {t.nav.login}
+            </Link>
             <Link
               href="/join"
               className={cn(
@@ -270,6 +279,13 @@ export function CameraHeader({ brandRef, brandHidden = false }: Props) {
                 {link.label}
               </MenuLink>
             ))}
+            <MenuLink
+              href="/join"
+              delay={links.length * 30}
+              onNavigate={() => setOpen(false)}
+            >
+              {t.nav.login}
+            </MenuLink>
           </nav>
 
           <Link

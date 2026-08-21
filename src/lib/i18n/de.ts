@@ -15,6 +15,7 @@ export const de = {
     safety: "Sicherheit",
     privacy: "Datenschutz",
     matches: "Matches",
+    login: "Anmelden",
     start: "Videochat starten",
     joinVideoChat: "Videochat starten",
     language: "Sprache",
@@ -378,6 +379,8 @@ export const de = {
     emptyTitle: "Noch kein Funke",
     emptyBody:
       "Während eines Anrufs nach rechts swipen. Wenn die Person auch liked, landet sie auf deiner Liste — und du kannst sie per Video zurückrufen.",
+    loginPrompt:
+      "Melde dich mit deinem Spitznamen an, um Matches aus dieser Sitzung zu sehen.",
     recall: "Zurückrufen",
     recallError: "Rückruf nicht möglich",
     genericError: "Etwas ist schiefgelaufen",

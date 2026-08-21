@@ -25,6 +25,7 @@ export function SiteHeader({
     { href: "/#how-it-works", label: t.nav.howItWorks },
     { href: "/about", label: t.nav.about },
     { href: "/safety", label: t.nav.safety },
+    { href: "/matches", label: t.nav.matches },
     { href: "/privacy", label: t.nav.privacy },
   ];
 
