@@ -130,12 +130,14 @@ function DemoPanel({ kind }: { kind: string }) {
           key={tile.src}
           className="cam-tile-enter relative aspect-square overflow-hidden rounded-[var(--radius-md)] bg-[var(--ink-700)]"
           style={{ ["--cam-enter-delay" as string]: `${i * 70}ms` }}
+          aria-hidden
         >
           <Image
             src={tile.src}
             alt=""
             fill
             sizes="120px"
+            quality={60}
             className="object-cover"
           />
           {i === 2 ? (

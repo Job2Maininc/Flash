@@ -1,20 +1,21 @@
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 type Props = {
   children: ReactNode;
   className?: string;
   label?: string;
-};
+} & Pick<HTMLAttributes<HTMLDivElement>, "aria-hidden">;
 
 /** Lightweight device frame — lit screen with inner highlight + soft reflection. */
-export function DeviceFrame({ children, className, label }: Props) {
+export function DeviceFrame({ children, className, label, ...rest }: Props) {
   return (
     <div
       className={cn(
         "relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--ink-600)] bg-[var(--ink-800)] p-2 shadow-[var(--elev-2)]",
         className,
       )}
+      {...rest}
     >
       <div
         aria-hidden
@@ -22,12 +23,10 @@ export function DeviceFrame({ children, className, label }: Props) {
       />
       <div className="relative aspect-[9/16] overflow-hidden rounded-[calc(var(--radius-xl)-6px)] bg-[var(--ink-900)] ring-1 ring-inset ring-[rgba(243,241,238,.1)]">
         {children}
-        {/* Soft screen reflection */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(243,241,238,.14)_0%,transparent_42%,transparent_100%)]"
         />
-        {/* 1px inner highlight */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-[calc(var(--radius-xl)-6px)] shadow-[inset_0_0_0_1px_rgba(243,241,238,.08)]"
