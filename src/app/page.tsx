@@ -5,22 +5,19 @@ import { FaqSection } from "@/components/marketing/FaqSection";
 import { FeatureBlocks } from "@/components/marketing/FeatureBlocks";
 import { HomeHero } from "@/components/marketing/HomeHero";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
+import { MatchesSection } from "@/components/marketing/MatchesSection";
 import { StickyMobileCta } from "@/components/marketing/StickyMobileCta";
 import { Testimonials } from "@/components/marketing/Testimonials";
 import { TrustSafety } from "@/components/marketing/TrustSafety";
 import { Marquee } from "@/components/ui/Marquee";
 import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
-import { clearGuestCookie } from "@/lib/guest";
 import { getLocale } from "@/lib/i18n/get-locale";
 import { getDictionary } from "@/lib/i18n";
 import { HERO_PORTRAITS } from "@/lib/hero-portraits";
 
 export default async function HomePage() {
-  try {
-    await clearGuestCookie();
-  } catch {
-    // Ignore cookie errors so the landing form still renders.
-  }
+  // Keep the guest cookie so blocks/matches survive a visit to /.
+  // New identity is created explicitly on /join via createGuest.
 
   const t = getDictionary(await getLocale());
 
@@ -40,6 +37,8 @@ export default async function HomePage() {
       >
         <HomeHero portraits={HERO_PORTRAITS} />
         <Marquee items={t.home.marquee} />
+
+        <MatchesSection />
 
         <HowItWorks
           eyebrow={t.home.howEyebrow}

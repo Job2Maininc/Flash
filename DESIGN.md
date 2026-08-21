@@ -140,3 +140,9 @@ DESIGN.md                    this file
 ## Change policy
 
 Visual PRs should prove **no logic diff** in matching, LiveKit token fetch, queue join, swipe, recall, or guest cookie contracts. Prefer className / presentational wrappers over rewriting handlers.
+
+## Guest safety limits (product truth)
+
+Blocks and reports are keyed to the guest session id in the signed `flash_guest` cookie. Clearing site data (or starting a brand-new guest on `/join`) creates a new identity — previous blocks do not follow that person. We do **not** fingerprint devices to paper over this: it would be weak, privacy-invasive, and a GDPR problem. The Safety page states the same limit in plain language.
+
+Call length is server-authoritative: `endsAt` is written into LiveKit room metadata at creation (`CALL_DURATION_MS`). Clients only display the timer; they must not invent their own end time.

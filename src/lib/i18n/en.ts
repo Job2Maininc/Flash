@@ -159,8 +159,8 @@ export const en = {
       },
       {
         icon: "verified",
-        title: "Verified presence",
-        body: "Live camera is the profile — fewer polished fakes.",
+        title: "Live on camera",
+        body: "Your face is the profile — no polished photo stack. Guest mode is not an ID check.",
       },
     ],
     trustEyebrow: "Trust & safety",
@@ -170,15 +170,15 @@ export const en = {
     trustBullets: [
       {
         title: "18+ only",
-        body: "Flash is for adults. If you are unsure about someone’s age, leave the call.",
+        body: "Flash is for adults. If someone seems underage, block and report — that report is prioritized.",
       },
       {
         title: "Consent first",
         body: "A no, silence, or discomfort ends it. Swipe left and move on — no explanation owed.",
       },
       {
-        title: "Reporting & blocks",
-        body: "Abusive behaviour can be reported. Accounts that cross the line can be blocked.",
+        title: "Block & report",
+        body: "One tap blocks and ends the call. You can report after hanging up. Blocks last only while your guest cookie remains.",
       },
       {
         title: "Data stays lean",
@@ -336,15 +336,15 @@ export const en = {
     tips: [
       {
         title: "18+ only",
-        body: "Flash is for adults. If you’re unsure about a partner’s age, leave the call.",
+        body: "Flash is for adults. If someone seems underage, block and report them — that report is prioritized for human review.",
       },
       {
         title: "Consent first",
         body: "Video isn’t a right. Respect a no, a silence, discomfort — swipe left and move on.",
       },
       {
-        title: "No harassment",
-        body: "Insults, threats, non-consensual exhibition: out of bounds. Abusive accounts can be blocked.",
+        title: "Block & report",
+        body: "One tap blocks someone and ends the call immediately. You can also report after you hang up. A block lasts while your guest session cookie remains — clearing site data creates a new guest identity.",
       },
       {
         title: "Protect your frame",
@@ -361,6 +361,7 @@ export const en = {
   },
   matches: {
     title: "Your matches",
+    eyebrow: "Matches",
     subtitlePrefix: "People you clicked with —",
     emptyTitle: "No sparks yet",
     emptyBody:
@@ -368,6 +369,9 @@ export const en = {
     recall: "Call back",
     recallError: "Couldn’t start the recall",
     genericError: "Something went wrong",
+    open: "Open",
+    unlocked: "Messaging unlocked",
+    locked: "Unlock to message",
   },
   browse: {
     matches: "Matches",
@@ -403,6 +407,22 @@ export const en = {
     match: "Match",
     mic: "Mute or unmute microphone",
     camera: "Turn camera on or off",
+    block: "Block",
+    reportTitle: "Report this person",
+    reportLead: "Optional — you already left the call. Reporting helps keep Flash safer.",
+    reportReason: "Reason",
+    reportNote: "Optional note",
+    reportSubmit: "Send report",
+    reportSkip: "Skip",
+    reportError: "Couldn’t send the report",
+    reportLastCall: "Report the last call",
+    reportReasons: {
+      seemed_underage: "Seemed underage",
+      harassment: "Harassment or threats",
+      sexual_content: "Unwanted sexual content",
+      spam: "Spam or scam",
+      other: "Something else",
+    },
   },
   celebration: {
     with: "with",
