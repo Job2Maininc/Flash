@@ -26,7 +26,7 @@ export function Testimonials({ eyebrow, title, quotes }: Props) {
         </h2>
       </ScrollReveal>
 
-      <div className="mt-10 hidden gap-4 md:columns-2 lg:columns-3">
+      <div className="mt-10 hidden md:block md:columns-2 md:gap-4 lg:columns-3">
         {quotes.map((item, index) => (
           <QuoteCard
             key={`${item.name}-${index}`}
