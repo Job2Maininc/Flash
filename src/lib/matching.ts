@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { getRedis, keys } from "./redis";
-import { ensureCallRoom } from "./livekit";
+import { closeCallRoom, ensureCallRoom } from "./livekit";
 import {
   banNickname,
   getIdleStrikes,
@@ -16,6 +16,8 @@ import {
   touchPresence,
 } from "./presence";
 import { areGuestsCompatible } from "./compatibility";
+import { blockedIdsFor, rememberLastPartner } from "./safety";
+import { ensureDurableMatch } from "./hearts";
 import type {
   Guest,
   MatchEntry,
@@ -30,7 +32,7 @@ const MATCH_EXTENSION_MS = 5 * 60 * 1000;
 const SESSION_TTL_SEC = 60 * 60 * 6;
 const MATCH_TTL_SEC = 60 * 60 * 24 * 90;
 
-function bannedView(userId: string): SessionView {
+function bannedView(_userId: string): SessionView {
   return {
     state: "banned",
     sessionId: null,
@@ -43,6 +45,7 @@ function bannedView(userId: string): SessionView {
     roundEndsAt: null,
     extendedUntil: null,
     idleStrikes: MAX_IDLE_STRIKES,
+    callEndsAt: null,
   };
 }
 
@@ -212,6 +215,7 @@ async function createPairedSession(
     extendedUntil: null,
     rightStartedAt: null,
     endReason: null,
+    callEndsAt: null,
   };
 
   await saveSession(session);
@@ -219,7 +223,9 @@ async function createPairedSession(
   await bindUserSession(userB, session.id);
   await touchPresence(userA);
   await touchPresence(userB);
-  await ensureCallRoom(session.roomName);
+  const { endsAt } = await ensureCallRoom(session.roomName);
+  session.callEndsAt = endsAt;
+  await saveSession(session);
   return session;
 }
 
@@ -261,6 +267,7 @@ async function tryPair(userId: string): Promise<Session | null> {
     }
 
     const deferred: string[] = [];
+    const blocked = await blockedIdsFor(userId);
 
     for (let i = 0; i < 40; i++) {
       const peer = await redis.rpop<string>(keys.waiting);
@@ -270,6 +277,11 @@ async function tryPair(userId: string): Promise<Session | null> {
       if (peer === userId) continue;
 
       if (await isUserStale(peer)) {
+        continue;
+      }
+
+      if (blocked.has(peer)) {
+        deferred.push(peer);
         continue;
       }
 
@@ -321,6 +333,12 @@ async function endSession(
   await clearUserSession(session.a);
   await clearUserSession(session.b);
 
+  await Promise.all([
+    rememberLastPartner(session.a, session.b, session.roomName),
+    rememberLastPartner(session.b, session.a, session.roomName),
+    closeCallRoom(session.roomName),
+  ]);
+
   if (requeue) {
     for (const uid of [session.a, session.b]) {
       if (!(await isUserStale(uid))) {
@@ -355,6 +373,8 @@ async function recordMatch(session: Session): Promise<void> {
     },
     { ex: MATCH_TTL_SEC },
   );
+
+  await ensureDurableMatch(session.a, session.b);
 }
 
 async function requeueUser(userId: string): Promise<void> {
@@ -370,6 +390,12 @@ async function handleRoundTimeout(session: Session): Promise<Session> {
   await saveSession(session);
   await clearUserSession(session.a);
   await clearUserSession(session.b);
+
+  await Promise.all([
+    rememberLastPartner(session.a, session.b, session.roomName),
+    rememberLastPartner(session.b, session.a, session.roomName),
+    closeCallRoom(session.roomName),
+  ]);
 
   for (const uid of [session.a, session.b]) {
     const vote = uid === session.a ? session.voteA : session.voteB;
@@ -431,6 +457,7 @@ function toView(session: Session | null, userId: string): SessionView {
       roundEndsAt: null,
       extendedUntil: null,
       idleStrikes: 0,
+      callEndsAt: null,
     };
   }
 
@@ -464,6 +491,7 @@ function toView(session: Session | null, userId: string): SessionView {
     extendedUntil:
       session.status === "matched" ? session.extendedUntil : null,
     idleStrikes: 0,
+    callEndsAt: session.callEndsAt ?? null,
   };
 }
 

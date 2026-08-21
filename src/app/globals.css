@@ -694,6 +694,21 @@
   }
 }
 
+@keyframes cam-timer-pulse {
+  from {
+    transform: scale(0.92);
+    opacity: 0.85;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.cam-timer-pulse {
+  animation: cam-timer-pulse 0.55s var(--ease-out) both;
+}
+
 @keyframes cam-echo-drift {
   0%,
   100% {

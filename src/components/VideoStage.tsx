@@ -23,7 +23,9 @@ import { RoomEvent } from "livekit-client";
 import type { TrackReference } from "@livekit/components-core";
 import "@livekit/components-styles";
 import { AttachedVideo } from "@/components/AttachedVideo";
+import { BlockButton } from "@/components/browse/BlockButton";
 import { CallControlBar } from "@/components/browse/CallControlBar";
+import { CallTimer } from "@/components/browse/CallTimer";
 import { DraggablePip } from "@/components/browse/DraggablePip";
 import { MediaControls } from "@/components/MediaControls";
 import { Spinner } from "@/components/Spinner";
@@ -41,17 +43,25 @@ const LIVEKIT_ROOM_OPTIONS = {
 type RoomShellProps = {
   token: string;
   url: string;
+  callEndsAt: number | null;
   onPeerLeft?: () => void;
   onDisconnected?: () => void;
   onConnected?: () => void;
+  onBlocked?: (partnerId: string) => void;
+  onLocalLeave?: () => void;
+  onCallExpired?: () => void;
 };
 
 const LiveKitRoomShell = memo(function LiveKitRoomShell({
   token,
   url,
+  callEndsAt,
   onPeerLeft,
   onDisconnected,
   onConnected,
+  onBlocked,
+  onLocalLeave,
+  onCallExpired,
 }: RoomShellProps) {
   return (
     <LiveKitRoom
@@ -67,7 +77,13 @@ const LiveKitRoomShell = memo(function LiveKitRoomShell({
       onDisconnected={onDisconnected}
     >
       <PeerDisconnectListener onPeerLeft={onPeerLeft} />
-      <StageInner onPeerLeft={onPeerLeft} />
+      <StageInner
+        onPeerLeft={onPeerLeft}
+        callEndsAt={callEndsAt}
+        onBlocked={onBlocked}
+        onLocalLeave={onLocalLeave}
+        onCallExpired={onCallExpired}
+      />
       <RoomAudioRenderer />
     </LiveKitRoom>
   );
@@ -110,14 +126,30 @@ function isCameraTrack(track: TrackReference): boolean {
   );
 }
 
-function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
+function StageInner({
+  onPeerLeft,
+  callEndsAt,
+  onBlocked,
+  onLocalLeave,
+  onCallExpired,
+}: {
+  onPeerLeft?: () => void;
+  callEndsAt: number | null;
+  onBlocked?: (partnerId: string) => void;
+  onLocalLeave?: () => void;
+  onCallExpired?: () => void;
+}) {
   const { t } = useI18n();
   const peerNickname = useContext(PeerNicknameContext);
+  const room = useRoomContext();
   const remoteParticipants = useRemoteParticipants();
   const { localParticipant } = useLocalParticipant();
   const prevRemoteCount = useRef(0);
   const peerLeftHandled = useRef(false);
   const [landscapePhone, setLandscapePhone] = useState(false);
+
+  const partnerId =
+    remoteParticipants.find((p) => !p.isLocal)?.identity ?? null;
 
   const cameraTracks = useTracks(
     [{ source: Track.Source.Camera, withPlaceholder: false }],
@@ -227,6 +259,8 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
         </div>
       ) : null}
 
+      <CallTimer endsAt={callEndsAt} onExpire={onCallExpired} />
+
       <CallControlBar
         className={
           landscapePhone
@@ -236,6 +270,21 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
       >
         <MediaControls />
       </CallControlBar>
+
+      {/* Block stays outside auto-hide — always reachable while panicking. */}
+      {partnerId ? (
+        <BlockButton
+          partnerId={partnerId}
+          roomId={room?.name ?? null}
+          onLeave={() => onLocalLeave?.()}
+          onBlocked={(id) => onBlocked?.(id)}
+          className={
+            landscapePhone
+              ? "absolute bottom-6 right-4 z-40"
+              : "absolute bottom-[max(2.5rem,env(safe-area-inset-bottom))] right-4 z-40 sm:bottom-8"
+          }
+        />
+      ) : null}
 
       {peerNickname && hasRemoteVideo ? (
         <div className="absolute left-4 top-16 z-20 sm:top-[4.5rem]">
@@ -263,17 +312,25 @@ function StageInner({ onPeerLeft }: { onPeerLeft?: () => void }) {
 type Props = {
   roomName: string;
   peerNickname: string | null;
+  callEndsAt?: number | null;
   onPeerLeft?: () => void;
   onDisconnected?: () => void;
   onConnected?: () => void;
+  onBlocked?: (partnerId: string) => void;
+  onLocalLeave?: () => void;
+  onCallExpired?: () => void;
 };
 
 export function VideoStage({
   roomName,
   peerNickname,
+  callEndsAt = null,
   onPeerLeft,
   onDisconnected,
   onConnected,
+  onBlocked,
+  onLocalLeave,
+  onCallExpired,
 }: Props) {
   const { t } = useI18n();
   const [creds, setCreds] = useState<{ token: string; url: string } | null>(
@@ -348,9 +405,13 @@ export function VideoStage({
       <LiveKitRoomShell
         token={creds.token}
         url={creds.url}
+        callEndsAt={callEndsAt}
         onPeerLeft={onPeerLeft}
         onDisconnected={onDisconnected}
         onConnected={onConnected}
+        onBlocked={onBlocked}
+        onLocalLeave={onLocalLeave}
+        onCallExpired={onCallExpired}
       />
     </PeerNicknameContext.Provider>
   );
