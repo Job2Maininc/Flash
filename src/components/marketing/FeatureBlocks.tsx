@@ -123,30 +123,29 @@ function DemoPanel({ kind }: { kind: string }) {
   }
 
   const tiles = HERO_PORTRAITS.slice(0, 6);
+  // Narrow slow strip — calmer than a 3×2 card grid after the hero lost its wall.
   return (
-    <div className="grid grid-cols-3 gap-2 rounded-[var(--radius-lg)] border border-[var(--ink-700)] bg-[var(--ink-800)] p-4 shadow-[var(--elev-1)]">
-      {tiles.map((tile, i) => (
-        <div
-          key={tile.src}
-          className="cam-tile-enter relative aspect-square overflow-hidden rounded-[var(--radius-md)] bg-[var(--ink-700)]"
-          style={{ ["--cam-enter-delay" as string]: `${i * 70}ms` }}
-          aria-hidden
-        >
-          <Image
-            src={tile.src}
-            alt=""
-            fill
-            sizes="120px"
-            quality={60}
-            className="object-cover"
-          />
-          {i === 2 ? (
-            <span className="cam-verify-stamp absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--ink-700)] text-xs text-[var(--cam-paper)] shadow-[var(--elev-1)]">
-              ✓
-            </span>
-          ) : null}
-        </div>
-      ))}
+    <div
+      className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--ink-700)] bg-[var(--ink-800)] py-4 shadow-[var(--elev-1)]"
+      aria-hidden
+    >
+      <div className="cam-portrait-strip flex w-max gap-2 px-4">
+        {[...tiles, ...tiles].map((tile, i) => (
+          <div
+            key={`${tile.src}-${i}`}
+            className="relative h-24 w-[4.5rem] shrink-0 overflow-hidden rounded-[var(--radius-md)] bg-[var(--ink-700)] sm:h-28 sm:w-20"
+          >
+            <Image
+              src={tile.src}
+              alt=""
+              fill
+              sizes="80px"
+              quality={60}
+              className="object-cover"
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

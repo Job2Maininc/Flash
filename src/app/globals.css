@@ -836,6 +836,33 @@ a,
   color: var(--cam-paper);
 }
 
+@keyframes cam-hero-pulse {
+  0%,
+  100% {
+    box-shadow: var(--elev-2);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgba(243, 241, 238, 0.18), var(--elev-2);
+  }
+}
+
+.cam-hero-pulse {
+  animation: cam-hero-pulse 1.6s var(--ease-out) infinite;
+}
+
+@keyframes cam-portrait-strip {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.cam-portrait-strip {
+  animation: cam-portrait-strip 48s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -856,11 +883,14 @@ a,
   .cam-demo-avatar,
   .cam-echo-tile,
   .flash-pulse-ring,
-  .flash-connect-bar {
+  .flash-connect-bar,
+  .cam-hero-pulse,
+  .cam-portrait-strip {
     animation: none !important;
   }
 
-  .cam-marquee-track {
+  .cam-marquee-track,
+  .cam-portrait-strip {
     transform: none !important;
   }
 }
