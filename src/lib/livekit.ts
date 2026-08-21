@@ -1,4 +1,5 @@
 import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
+import { CALL_DURATION_MS } from "./constants";
 
 export function getLiveKitUrl(): string {
   const url = process.env.LIVEKIT_URL;
@@ -21,7 +22,9 @@ function getLiveKitCredentials(): { apiKey: string; apiSecret: string } {
   return { apiKey, apiSecret };
 }
 
-export async function ensureCallRoom(roomName: string): Promise<void> {
+export async function ensureCallRoom(roomName: string): Promise<{
+  endsAt: number;
+}> {
   const { apiKey, apiSecret } = getLiveKitCredentials();
   const client = new RoomServiceClient(
     getLiveKitHttpHost(),
@@ -29,15 +32,48 @@ export async function ensureCallRoom(roomName: string): Promise<void> {
     apiSecret,
   );
 
+  const endsAt = Date.now() + CALL_DURATION_MS;
+  const metadata = JSON.stringify({ endsAt });
+
   try {
     await client.createRoom({
       name: roomName,
       maxParticipants: 2,
       emptyTimeout: 120,
       departureTimeout: 2,
+      metadata,
     });
+    return { endsAt };
   } catch {
-    // Room may already exist if participants joined first.
+    // Room already exists — keep the original endsAt; never rewrite it.
+    try {
+      const rooms = await client.listRooms([roomName]);
+      const raw = rooms[0]?.metadata;
+      if (raw) {
+        const parsed = JSON.parse(raw) as { endsAt?: number };
+        if (typeof parsed.endsAt === "number") {
+          return { endsAt: parsed.endsAt };
+        }
+      }
+    } catch {
+      // Fall through to session-stored endsAt.
+    }
+  }
+
+  return { endsAt };
+}
+
+export async function closeCallRoom(roomName: string): Promise<void> {
+  const { apiKey, apiSecret } = getLiveKitCredentials();
+  const client = new RoomServiceClient(
+    getLiveKitHttpHost(),
+    apiKey,
+    apiSecret,
+  );
+  try {
+    await client.deleteRoom(roomName);
+  } catch {
+    // Already gone.
   }
 }
 

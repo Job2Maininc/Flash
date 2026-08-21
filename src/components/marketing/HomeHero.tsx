@@ -70,7 +70,6 @@ export function HomeHero({ portraits }: Props) {
                 {t.home.beTheFirst}
               </li>
             )}
-            <li>{t.home.trustVerified}</li>
             <li>{t.home.trustNoAds}</li>
             <li>{t.home.trustAge}</li>
           </ul>

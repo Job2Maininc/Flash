@@ -14,6 +14,7 @@ import { StatusPill } from "@/components/StatusPill";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { SearchingOverlay } from "@/components/browse/SearchingOverlay";
 import { CountIn } from "@/components/browse/CountIn";
+import { ReportSheet } from "@/components/browse/ReportSheet";
 import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 import { useI18n } from "@/components/LocaleProvider";
 import { interpolate } from "@/lib/i18n";
@@ -51,6 +52,9 @@ export function BrowseClient() {
   const [connecting, setConnecting] = useState(false);
   const [callReady, setCallReady] = useState(false);
   const [recallNotice, setRecallNotice] = useState<string | null>(null);
+  const [reportFor, setReportFor] = useState<string | null>(null);
+  const [reportRoomId, setReportRoomId] = useState<string | null>(null);
+  const [lastPartnerId, setLastPartnerId] = useState<string | null>(null);
   const prevSessionState = useRef<SessionView["state"] | null>(null);
   const roomKey = session?.roomName ?? null;
 
@@ -90,10 +94,11 @@ export function BrowseClient() {
   }, [applySession, t.browse.queueError]);
 
   const processPeerLeft = useCallback(
-    (nickname?: string | null) => {
+    (nickname?: string | null, peerId?: string | null) => {
       if (peerLeftHandled.current) return;
       peerLeftHandled.current = true;
       setForceOutOfCall(true);
+      if (peerId) setLastPartnerId(peerId);
 
       const label =
         nickname ?? lastPeerNickname.current ?? t.browse.peerLeftFallback;
@@ -131,15 +136,15 @@ export function BrowseClient() {
     if (!res.ok) throw new Error(data.error ?? t.browse.sessionError);
     if (data.session) {
       if (data.session.peerLeft) {
-        processPeerLeft(data.session.peerNickname);
+        processPeerLeft(data.session.peerNickname, data.session.peerId);
       }
       applySession(data.session);
     }
   }, [applySession, processPeerLeft, t.browse.sessionError]);
 
   const handlePeerLeft = useCallback(() => {
-    processPeerLeft(session?.peerNickname);
-  }, [processPeerLeft, session?.peerNickname]);
+    processPeerLeft(session?.peerNickname, session?.peerId);
+  }, [processPeerLeft, session?.peerNickname, session?.peerId]);
 
   const leaveBrowse = useCallback((reason = "disconnect") => {
     if (leftSent.current) return;
@@ -153,6 +158,42 @@ export function BrowseClient() {
 
   const handleCallConnected = useCallback(() => {
     setCallReady(true);
+  }, []);
+
+  const handleLocalLeaveFromBlock = useCallback(() => {
+    setForceOutOfCall(true);
+    setCallReady(false);
+  }, []);
+
+  const handleBlocked = useCallback((partnerId: string) => {
+    setReportFor(partnerId);
+    setReportRoomId(roomKey);
+    setLastPartnerId(partnerId);
+  }, [roomKey]);
+
+  const handleCallExpired = useCallback(() => {
+    if (session?.peerId) setLastPartnerId(session.peerId);
+    leaveBrowse("timeout");
+  }, [leaveBrowse, session?.peerId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/last-partner", { credentials: "include" })
+      .then(async (res) => {
+        if (!res.ok) return null;
+        return res.json() as Promise<{
+          last?: { partnerId: string; roomId: string | null } | null;
+        }>;
+      })
+      .then((data) => {
+        if (cancelled || !data?.last?.partnerId) return;
+        setLastPartnerId(data.last.partnerId);
+        setReportRoomId(data.last.roomId);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -191,7 +232,7 @@ export function BrowseClient() {
     inCall: inCallSession,
     onSession: (next) => {
       if (next.peerLeft) {
-        processPeerLeft(next.peerNickname);
+        processPeerLeft(next.peerNickname, next.peerId);
       }
       setSession((prev) => mergeSessionUpdate(prev, next));
     },
@@ -227,7 +268,7 @@ export function BrowseClient() {
 
     if (wasInCall.current && !inCallNow) {
       if (session?.state === "waiting" && !peerLeftHandled.current) {
-        processPeerLeft(session.peerNickname);
+        processPeerLeft(session.peerNickname, session.peerId);
       }
     }
 
@@ -356,9 +397,13 @@ export function BrowseClient() {
                 key={roomKey}
                 roomName={roomKey}
                 peerNickname={session?.peerNickname ?? null}
+                callEndsAt={session?.callEndsAt ?? null}
                 onPeerLeft={handlePeerLeft}
                 onDisconnected={handleLocalDisconnect}
                 onConnected={handleCallConnected}
+                onBlocked={handleBlocked}
+                onLocalLeave={handleLocalLeaveFromBlock}
+                onCallExpired={handleCallExpired}
               />
             </SwipeSurface>
 
@@ -386,6 +431,21 @@ export function BrowseClient() {
         {peerLeftNotice ? (
           <div className="pointer-events-none absolute left-1/2 top-24 z-30 -translate-x-1/2">
             <StatusPill variant="muted">{peerLeftNotice}</StatusPill>
+          </div>
+        ) : null}
+
+        {!inCall && lastPartnerId ? (
+          <div className="absolute left-1/2 top-28 z-30 -translate-x-1/2">
+            <button
+              type="button"
+              className="pointer-events-auto rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[rgba(22,18,28,0.92)] px-4 py-2 text-xs text-[var(--muted)]"
+              onClick={() => {
+                setReportFor(lastPartnerId);
+                setReportRoomId(null);
+              }}
+            >
+              {t.call.reportLastCall}
+            </button>
           </div>
         ) : null}
 
@@ -425,6 +485,12 @@ export function BrowseClient() {
           </p>
         ) : null}
       </div>
+      <ReportSheet
+        open={Boolean(reportFor)}
+        partnerId={reportFor}
+        roomId={reportRoomId}
+        onClose={() => setReportFor(null)}
+      />
     </div>
   );
 }

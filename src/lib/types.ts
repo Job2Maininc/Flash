@@ -49,6 +49,8 @@ export type Session = {
   extendedUntil: number | null;
   rightStartedAt: number | null;
   endReason: SessionEndReason;
+  /** Server-authoritative call end (epoch ms) from room metadata */
+  callEndsAt?: number | null;
 };
 
 export type MatchEntry = {
@@ -74,4 +76,6 @@ export type SessionView = {
   idleStrikes: number;
   /** True when the peer just left — consumed once per poll */
   peerLeft?: boolean;
+  /** Server-authoritative call timer end (epoch ms) */
+  callEndsAt?: number | null;
 };

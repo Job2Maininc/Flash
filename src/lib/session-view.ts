@@ -17,6 +17,7 @@ export function sessionViewChanged(
     prev.roundEndsAt !== next.roundEndsAt ||
     prev.extendedUntil !== next.extendedUntil ||
     prev.idleStrikes !== next.idleStrikes ||
-    prev.peerLeft !== next.peerLeft
+    prev.peerLeft !== next.peerLeft ||
+    prev.callEndsAt !== next.callEndsAt
   );
 }

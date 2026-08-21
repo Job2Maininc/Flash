@@ -161,8 +161,8 @@ export const de = {
       },
       {
         icon: "verified",
-        title: "Echte Präsenz",
-        body: "Die Live-Kamera ist das Profil — weniger polierte Fakes.",
+        title: "Live vor der Kamera",
+        body: "Dein Gesicht ist das Profil — kein polierter Foto-Stapel. Gastmodus ist keine Ausweisprüfung.",
       },
     ],
     trustEyebrow: "Vertrauen & Sicherheit",
@@ -172,15 +172,15 @@ export const de = {
     trustBullets: [
       {
         title: "Nur 18+",
-        body: "Flash ist für Erwachsene. Wenn du unsicher beim Alter bist, leg auf.",
+        body: "Flash ist für Erwachsene. Wenn jemand minderjährig wirkt, blockiere und melde — diese Meldung hat Priorität.",
       },
       {
         title: "Consent zuerst",
         body: "Ein Nein, Stille oder Unwohlsein beendet es. Links swipen und weiter — ohne Erklärung.",
       },
       {
-        title: "Melden & blockieren",
-        body: "Missbrauch kann gemeldet werden. Konten, die die Linie überschreiten, können gesperrt werden.",
+        title: "Blockieren & melden",
+        body: "Ein Tippen blockiert und beendet den Anruf. Melden geht auch nach dem Auflegen. Blocks gelten nur, solange dein Gast-Cookie bleibt.",
       },
       {
         title: "Daten bleiben schlank",
@@ -340,15 +340,15 @@ export const de = {
     tips: [
       {
         title: "Nur 18+",
-        body: "Flash ist für Erwachsene. Wenn du unsicher beim Alter einer Person bist, leg auf.",
+        body: "Flash ist für Erwachsene. Wenn jemand minderjährig wirkt, blockiere und melde — diese Meldung hat höchste Priorität für die Prüfung.",
       },
       {
         title: "Consent zuerst",
         body: "Video ist kein Recht. Respektiere ein Nein, Stille, Unwohlsein — swipe nach links und geh weiter.",
       },
       {
-        title: "Kein Belästigen",
-        body: "Beleidigungen, Drohungen, nicht einvernehmliche Exhibition: tabu. Missbräuchliche Konten können gesperrt werden.",
+        title: "Blockieren & melden",
+        body: "Ein Tippen blockiert und beendet den Anruf sofort. Du kannst auch nach dem Auflegen melden. Ein Block gilt nur, solange dein Gast-Cookie bleibt — wer Site-Daten löscht, erscheint als neue Person.",
       },
       {
         title: "Schütz deinen Rahmen",
@@ -365,6 +365,7 @@ export const de = {
   },
   matches: {
     title: "Deine Matches",
+    eyebrow: "Matches",
     subtitlePrefix: "Menschen, mit denen es geklickt hat —",
     emptyTitle: "Noch kein Funke",
     emptyBody:
@@ -372,6 +373,9 @@ export const de = {
     recall: "Zurückrufen",
     recallError: "Rückruf nicht möglich",
     genericError: "Etwas ist schiefgelaufen",
+    open: "Öffnen",
+    unlocked: "Chat freigeschaltet",
+    locked: "Freischalten zum Chatten",
   },
   browse: {
     matches: "Matches",
@@ -407,6 +411,23 @@ export const de = {
     match: "Match",
     mic: "Mikrofon ein- oder ausschalten",
     camera: "Kamera ein- oder ausschalten",
+    block: "Blockieren",
+    reportTitle: "Person melden",
+    reportLead:
+      "Optional — du hast den Anruf schon verlassen. Melden hilft, Flash sicherer zu halten.",
+    reportReason: "Grund",
+    reportNote: "Optionale Notiz",
+    reportSubmit: "Meldung senden",
+    reportSkip: "Überspringen",
+    reportError: "Meldung konnte nicht gesendet werden",
+    reportLastCall: "Letzten Anruf melden",
+    reportReasons: {
+      seemed_underage: "Wirkt minderjährig",
+      harassment: "Belästigung oder Drohungen",
+      sexual_content: "Unerwünschte sexuelle Inhalte",
+      spam: "Spam oder Betrug",
+      other: "Sonstiges",
+    },
   },
   celebration: {
     with: "mit",
