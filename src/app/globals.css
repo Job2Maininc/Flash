@@ -863,6 +863,59 @@ a,
   animation: cam-portrait-strip 48s linear infinite;
 }
 
+@keyframes cam-how-ring {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.cam-how-ring {
+  animation: cam-how-ring 1.8s var(--ease-out) infinite;
+}
+
+.cam-how-ring-delay {
+  animation-delay: 0.45s;
+}
+
+.cam-how-ring-delay-2 {
+  animation-delay: 0.9s;
+}
+
+@keyframes cam-how-wave {
+  0%,
+  100% {
+    height: 22%;
+  }
+  50% {
+    height: 88%;
+  }
+}
+
+.cam-how-wave {
+  height: 40%;
+  animation: cam-how-wave 0.9s ease-in-out infinite;
+}
+
+@keyframes cam-how-match-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.cam-how-match-chip {
+  animation: cam-how-match-in var(--dur-base) var(--ease-out) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -885,7 +938,10 @@ a,
   .flash-pulse-ring,
   .flash-connect-bar,
   .cam-hero-pulse,
-  .cam-portrait-strip {
+  .cam-portrait-strip,
+  .cam-how-ring,
+  .cam-how-wave,
+  .cam-how-match-chip {
     animation: none !important;
   }
 

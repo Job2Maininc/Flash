@@ -27,7 +27,7 @@ export default async function HomePage() {
   }));
 
   return (
-    <div className="relative min-h-dvh overflow-x-hidden bg-[var(--ink-900)] text-[var(--cam-paper)]">
+    <div className="relative min-h-dvh overflow-x-clip bg-[var(--ink-900)] text-[var(--cam-paper)]">
       <NoiseOverlay />
       <HomeIntroHeader />
       <main

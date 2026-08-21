@@ -108,6 +108,18 @@ export const en = {
     enterLead:
       "Free to start. Camera and mic required. If it feels off, hang up. No speech required.",
     howFrameLabels: ["Setup", "Live call", "Match"],
+    howDemo: {
+      ringing: "Connecting…",
+      keep: "Keep",
+      pass: "Next",
+      swipeHint:
+        "Swipe right to keep, left to pass. Arrow keys do the same.",
+      swipeCardLabel: "Swipeable profile card",
+      keptLive: "Kept. Now on your list.",
+      passedLive: "Passed. Next person.",
+      deckEmpty: "That’s the stack — try a real call.",
+      matchesEmpty: "Swipe right to fill your list",
+    },
     features: [
       {
         eyebrow: "Matching",

@@ -62,7 +62,7 @@ export default async function RootLayout({
       lang={locale}
       className={`${display.variable} ${body.variable} ${mono.variable} h-full`}
     >
-      <body className="min-h-dvh overflow-x-hidden bg-[var(--ink-900)] font-[family-name:var(--font-body)] text-[var(--cam-paper)] antialiased">
+      <body className="min-h-dvh overflow-x-clip bg-[var(--ink-900)] font-[family-name:var(--font-body)] text-[var(--cam-paper)] antialiased">
         <LocaleProvider locale={locale}>
           <SkipLink label={t.a11y.skipToContent} />
           {children}
