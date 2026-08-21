@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { FlashBrand } from "@/components/FlashBrand";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MatchesList } from "@/components/MatchesList";
+import { Button } from "@/components/ui/Button";
 import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 import { getGuestFromCookie } from "@/lib/guest";
 import { listMatches } from "@/lib/matching";
@@ -18,15 +18,13 @@ export default async function MatchesPage() {
     guest = null;
   }
 
-  if (!guest) {
-    redirect("/join");
-  }
-
   let matches: Awaited<ReturnType<typeof listMatches>> = [];
-  try {
-    matches = await listMatches(guest.id);
-  } catch {
-    matches = [];
+  if (guest) {
+    try {
+      matches = await listMatches(guest.id);
+    } catch {
+      matches = [];
+    }
   }
 
   return (
@@ -43,17 +41,21 @@ export default async function MatchesPage() {
 
       <header className="relative z-10 flex items-center justify-between px-5 safe-top">
         <Link
-          href="/browse"
+          href={guest ? "/browse" : "/"}
           className="rounded-[var(--radius-pill)] border border-[var(--ink-600)] bg-[var(--ink-800)]/70 px-3.5 py-1.5 text-sm text-[var(--cam-paper)]/70 backdrop-blur-sm transition-colors hover:bg-[var(--ink-700)] hover:text-[var(--cam-paper)]"
         >
-          {t.nav.backToCall}
+          {guest ? t.nav.backToCall : t.nav.howItWorks}
         </Link>
-        <FlashBrand glow="strong" wordmarkClassName="text-[var(--cam-paper)]" />
+        <FlashBrand
+          href="/"
+          glow="strong"
+          wordmarkClassName="text-[var(--cam-paper)]"
+        />
         <LanguageSwitcher variant="dark" />
       </header>
 
       <main id="main" className="relative z-10 mx-auto w-full max-w-lg px-5 pb-12 pt-8">
-        <h1 className="font-[family-name:var(--font-camera-display)] text-4xl tracking-tight">
+        <h1 className="font-[family-name:var(--font-display)] text-4xl tracking-tight">
           {t.matches.title}
           {matches.length > 0 ? (
             <span className="ml-2 align-middle font-[family-name:var(--font-mono)] text-lg font-normal tabular-nums text-[var(--cam-paper)]/45">
@@ -61,15 +63,30 @@ export default async function MatchesPage() {
             </span>
           ) : null}
         </h1>
-        <p className="mt-2 text-sm text-[var(--cam-paper)]/55">
-          {t.matches.subtitlePrefix}{" "}
-          <span className="font-medium text-[var(--cam-paper)]">
-            {guest.nickname}
-          </span>
-        </p>
-        <div className="mt-8">
-          <MatchesList initialMatches={matches} />
-        </div>
+
+        {guest ? (
+          <>
+            <p className="mt-2 text-sm text-[var(--cam-paper)]/55">
+              {t.matches.subtitlePrefix}{" "}
+              <span className="font-medium text-[var(--cam-paper)]">
+                {guest.nickname}
+              </span>
+            </p>
+            <div className="mt-8">
+              <MatchesList initialMatches={matches} />
+            </div>
+          </>
+        ) : (
+          <div className="mt-8 space-y-6">
+            <p className="cam-body text-[var(--muted)]">{t.matches.emptyBody}</p>
+            <p className="text-[13px] font-medium text-[var(--muted)]">
+              {t.matches.loginPrompt}
+            </p>
+            <Link href="/join" className="inline-flex">
+              <Button size="lg">{t.nav.login}</Button>
+            </Link>
+          </div>
+        )}
       </main>
     </div>
   );
