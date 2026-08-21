@@ -925,6 +925,35 @@ a,
   animation: cam-how-match-in var(--dur-base) var(--ease-out) both;
 }
 
+@keyframes cam-how-auto-swipe {
+  0% {
+    transform: translateX(0) rotate(0deg);
+  }
+  100% {
+    transform: translateX(120%) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+.cam-how-auto-swipe {
+  animation: cam-how-auto-swipe 0.7s var(--ease-out) forwards;
+}
+
+@keyframes cam-how-match-burst {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cam-how-match-burst {
+  animation: cam-how-match-burst var(--dur-base) var(--ease-out) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -950,7 +979,9 @@ a,
   .cam-portrait-strip,
   .cam-how-ring,
   .cam-how-wave,
-  .cam-how-match-chip {
+  .cam-how-match-chip,
+  .cam-how-auto-swipe,
+  .cam-how-match-burst {
     animation: none !important;
   }
 

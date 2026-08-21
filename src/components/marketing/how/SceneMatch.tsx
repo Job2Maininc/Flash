@@ -18,7 +18,6 @@ import { cn } from "@/lib/cn";
 
 type Props = {
   active: boolean;
-  /** When true, swipe uses buttons only (no drag animation). */
   reducedMotion?: boolean;
 };
 
@@ -33,8 +32,10 @@ const DECK = [HERO_PORTRAITS[2], HERO_PORTRAITS[6], HERO_PORTRAITS[9]].filter(
   Boolean,
 );
 
+type DemoPhase = "intro" | "auto-swipe" | "match" | "play";
+
 /**
- * Step 2 — playable swipe stack → matches list with recall.
+ * Step 2 — auto swipe → “It’s a match”, then a playable stack.
  * CSS transforms only (no framer-motion).
  */
 export function SceneMatch({ active, reducedMotion = false }: Props) {
@@ -47,25 +48,59 @@ export function SceneMatch({ active, reducedMotion = false }: Props) {
   const [offsetX, setOffsetX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [exitDir, setExitDir] = useState<"left" | "right" | null>(null);
+  const [demo, setDemo] = useState<DemoPhase>("intro");
   const startRef = useRef<{ x: number; y: number } | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  const interactive = demo === "play";
   const current = DECK[index];
   const done = index >= DECK.length;
+  const demoCard = DECK[0];
 
   useEffect(() => {
-    if (active) return;
+    if (!active) {
+      setIndex(0);
+      setMatches([]);
+      setLiveMsg("");
+      setOffsetX(0);
+      setExitDir(null);
+      setDragging(false);
+      setDemo("intro");
+      startRef.current = null;
+      return;
+    }
+
+    if (reducedMotion) {
+      setDemo("play");
+      return;
+    }
+
+    setDemo("intro");
     setIndex(0);
     setMatches([]);
-    setLiveMsg("");
-    setOffsetX(0);
-    setExitDir(null);
-    setDragging(false);
-    startRef.current = null;
-  }, [active]);
+    const timers: number[] = [];
+    timers.push(window.setTimeout(() => setDemo("auto-swipe"), 450));
+    timers.push(
+      window.setTimeout(() => {
+        if (demoCard) {
+          setMatches([{ id: `demo-${demoCard.src}`, src: demoCard.src }]);
+          setLiveMsg(t.browse.itsAMatch);
+        }
+        setDemo("match");
+      }, 1200),
+    );
+    timers.push(
+      window.setTimeout(() => {
+        setIndex(1);
+        setDemo("play");
+      }, 2800),
+    );
+    return () => timers.forEach((id) => window.clearTimeout(id));
+  }, [active, reducedMotion, demoCard, t.browse.itsAMatch]);
 
   const commit = useCallback(
     (dir: "left" | "right") => {
+      if (!interactive) return;
       const card = DECK[index];
       if (!card) return;
       setExitDir(dir);
@@ -86,11 +121,17 @@ export function SceneMatch({ active, reducedMotion = false }: Props) {
         startRef.current = null;
       }, reducedMotion ? 0 : 280);
     },
-    [index, reducedMotion, t.home.howDemo.keptLive, t.home.howDemo.passedLive],
+    [
+      index,
+      interactive,
+      reducedMotion,
+      t.home.howDemo.keptLive,
+      t.home.howDemo.passedLive,
+    ],
   );
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (reducedMotion || done || exitDir) return;
+    if (!interactive || reducedMotion || done || exitDir) return;
     startRef.current = { x: e.clientX, y: e.clientY };
     setDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -116,7 +157,7 @@ export function SceneMatch({ active, reducedMotion = false }: Props) {
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (done || exitDir) return;
+    if (!interactive || done || exitDir) return;
     if (e.key === "ArrowRight") {
       e.preventDefault();
       commit("right");
@@ -127,21 +168,30 @@ export function SceneMatch({ active, reducedMotion = false }: Props) {
   };
 
   const rot = Math.max(-MAX_ROT, Math.min(MAX_ROT, (offsetX / 120) * MAX_ROT));
-  const keepOpacity = Math.min(1, Math.max(0, offsetX / THRESHOLD));
+  const keepOpacity =
+    demo === "auto-swipe"
+      ? 1
+      : Math.min(1, Math.max(0, offsetX / THRESHOLD));
   const passOpacity = Math.min(1, Math.max(0, -offsetX / THRESHOLD));
 
-  const cardStyle: CSSProperties = exitDir
-    ? {
-        transform: `translateX(${exitDir === "right" ? 140 : -140}%) rotate(${exitDir === "right" ? MAX_ROT : -MAX_ROT}deg)`,
-        opacity: 0,
-        transition: "transform 280ms var(--ease-out), opacity 280ms var(--ease-out)",
-      }
-    : {
-        transform: `translateX(${offsetX}px) rotate(${rot}deg)`,
-        transition: dragging
-          ? "none"
-          : "transform 320ms var(--ease-out)",
-      };
+  const showDemoCard =
+    demo === "intro" || demo === "auto-swipe" || demo === "match";
+  const showPlayCard = interactive && !done && current;
+
+  const cardStyle: CSSProperties | undefined =
+    demo === "auto-swipe"
+      ? undefined
+      : exitDir
+        ? {
+            transform: `translateX(${exitDir === "right" ? 140 : -140}%) rotate(${exitDir === "right" ? MAX_ROT : -MAX_ROT}deg)`,
+            opacity: 0,
+            transition:
+              "transform 280ms var(--ease-out), opacity 280ms var(--ease-out)",
+          }
+        : {
+            transform: `translateX(${offsetX}px) rotate(${rot}deg)`,
+            transition: dragging ? "none" : "transform 320ms var(--ease-out)",
+          };
 
   return (
     <div
@@ -151,7 +201,7 @@ export function SceneMatch({ active, reducedMotion = false }: Props) {
           ? "z-[1] translate-y-0 opacity-100"
           : "pointer-events-none z-0 translate-y-2 opacity-0",
       )}
-      aria-hidden={!active}
+      {...(!active ? { "aria-hidden": true } : {})}
     >
       <div className="flex items-center justify-between px-4 pt-4">
         <span className="font-[family-name:var(--font-camera-display)] text-lg font-bold text-[var(--cam-paper)]">
@@ -163,7 +213,59 @@ export function SceneMatch({ active, reducedMotion = false }: Props) {
       </div>
 
       <div className="relative mx-3 mt-3 min-h-0 flex-1">
-        {!done && current ? (
+        {showDemoCard && demoCard ? (
+          <div
+            className={cn(
+              "absolute inset-x-2 top-2 bottom-16 overflow-hidden rounded-[var(--radius-lg)] border border-[var(--ink-600)] bg-[var(--ink-800)] shadow-[var(--elev-2)]",
+              demo === "auto-swipe" && "cam-how-auto-swipe",
+              demo === "match" && "pointer-events-none opacity-0",
+            )}
+            style={demo === "auto-swipe" ? undefined : (cardStyle ?? undefined)}
+            aria-hidden
+          >
+            <div className="relative h-full w-full">
+              <Image
+                src={demoCard.src}
+                alt=""
+                fill
+                sizes="280px"
+                quality={60}
+                className="object-cover"
+                draggable={false}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink-900)]/70 via-transparent to-transparent" />
+              <span
+                className="absolute left-3 top-3 rounded-[var(--radius-md)] border-2 border-[var(--live)] px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-[var(--live)]"
+                style={{ opacity: keepOpacity }}
+              >
+                {t.home.howDemo.keep}
+              </span>
+            </div>
+          </div>
+        ) : null}
+
+        {demo === "match" && demoCard ? (
+          <div className="cam-how-match-burst absolute inset-0 z-[2] flex flex-col items-center justify-center gap-3 px-4 text-center">
+            <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-[var(--key-500)] shadow-[var(--glow-key)]">
+              <Image
+                src={demoCard.src}
+                alt=""
+                fill
+                sizes="80px"
+                quality={60}
+                className="object-cover"
+              />
+            </div>
+            <p className="font-[family-name:var(--font-camera-display)] text-2xl font-bold tracking-tight text-[var(--cam-paper)]">
+              {t.browse.itsAMatch}
+            </p>
+            <p className="text-xs text-[var(--muted)]">
+              {t.home.howDemo.keptLive}
+            </p>
+          </div>
+        ) : null}
+
+        {showPlayCard && current ? (
           <div
             ref={cardRef}
             role="button"
@@ -208,9 +310,13 @@ export function SceneMatch({ active, reducedMotion = false }: Props) {
               </span>
             </div>
           </div>
-        ) : (
+        ) : null}
+
+        {interactive && done ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center">
-            <p className="text-sm text-[var(--muted)]">{t.home.howDemo.deckEmpty}</p>
+            <p className="text-sm text-[var(--muted)]">
+              {t.home.howDemo.deckEmpty}
+            </p>
             <Link
               href="/join"
               className="rounded-[var(--radius-pill)] bg-[var(--key-500)] px-5 py-2.5 text-sm font-medium text-[var(--paper)] shadow-[var(--glow-key)]"
@@ -219,9 +325,9 @@ export function SceneMatch({ active, reducedMotion = false }: Props) {
               {t.join.startChat}
             </Link>
           </div>
-        )}
+        ) : null}
 
-        {reducedMotion && !done ? (
+        {reducedMotion && interactive && !done ? (
           <div className="absolute inset-x-2 bottom-2 flex gap-2">
             <button
               type="button"
@@ -248,7 +354,6 @@ export function SceneMatch({ active, reducedMotion = false }: Props) {
         {liveMsg}
       </p>
 
-      {/* Matches tray */}
       <div className="border-t border-[var(--ink-700)] px-3 py-2.5">
         <p className="text-[10px] font-medium text-[var(--muted)]">
           {t.nav.matches}
